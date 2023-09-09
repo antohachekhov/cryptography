@@ -1,6 +1,9 @@
-﻿using System;
+﻿using PSZI_lr1_v2;
+using System;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
+using System.Linq;
+using System.Text;
 
 namespace PSZI_lr1
 {
@@ -8,14 +11,13 @@ namespace PSZI_lr1
     {
         public string originalText;
         public string key;
-        public static string cipherText;
-
+        public string cipherText;
 
         const string fileNameStartText = "originalText.txt";
         const string fileNameCipherText = "cipherText.txt";
         const string fileNameKey = "key.txt";
 
-        static void Start()
+        /*static void Start()
         {
             // Чтение текста из файла
             Console.WriteLine("Читаем текст из файла...");
@@ -35,7 +37,7 @@ namespace PSZI_lr1
             Console.WriteLine("Зашифрованный текст = " + "\'" + cipherText + "\'");
 
             Console.WriteLine("Hello World!");
-        }
+        }*/
 
 
         // Чтение текста из файла
@@ -52,32 +54,32 @@ namespace PSZI_lr1
             key = readFromFile(filename);
             Console.WriteLine("Ключ = " + "\'" + originalText + "\'");
         }
-
+        
 
         // Генерация ключа
-        public void GenerateKey(int command) // command = 0 - случайно, 1 - 1й скремблер, 2 - 2й скремблер
+        public void GenerateKey(ModeGenKey command)
         {
-            Console.WriteLine("Генерируем ключ...");
-            if (command == 0)
-            {
-                key = CipherXOR.generateKey(originalText.Length);
-            }
-            else
-            {
-                if (command > 2 || command < 1)
-                {
-                    throw new Exception("Неизвестная ошибка");
-                }
-                else
-                {
-                    LFSR lfsr = new LFSR(command);
-                    long startShiftRegister = 0; // ХЗ ЧТО ЭТО
-                    key = Convert.ToString(lfsr.generatePRV(originalText.Length, startShiftRegister));
-                }
-            }
-            
+            GeneratorKey generatorKey = new GeneratorKey();
+            generatorKey.GenerateKey(command, originalText.Length);
+            key = generatorKey.key;
             writeToFile(fileNameKey, key);
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
+        }
+
+
+        public string toBin(string str)
+        {
+            string cc2 = "";
+            for (int i = 0; i < str.Length; i++)
+                cc2 += Convert.ToString(str[i], 2);
+            return cc2;
+        }
+        public string toHex(string str)
+        {
+            string cc16 = "";
+            for (int i = 0; i < str.Length; i++)
+                cc16 += Convert.ToString(str[i], 16);
+            return cc16;
         }
 
 
@@ -89,7 +91,7 @@ namespace PSZI_lr1
                 // Открываем файл для чтения текста 
                 using (var sr = new StreamReader(fileName))
                 {
-                   text = sr.ReadToEnd();
+                    text = sr.ReadToEnd();
                 }
             }
             catch (IOException e)
@@ -108,6 +110,7 @@ namespace PSZI_lr1
                 // Открытие файла для записи данных
                 using (var sr = new StreamWriter(fileName))
                 {
+                    
                     sr.Write(text);
                 }
             }
@@ -118,6 +121,37 @@ namespace PSZI_lr1
         }
 
 
+        // + вызов на кнопку вывода баланса
+
+        public double calcBalance(string key)
+        {
+            string KeyToBit = toBin(key);
+
+            double relativeNumberOfOnes = KeyToBit.Count(x => x == '1') / KeyToBit.Length;
+            double relativeNumberOfZeros = KeyToBit.Count(x => x == '0') / KeyToBit.Length;
+
+            double ratio = 0.0;
+
+            if (relativeNumberOfOnes != relativeNumberOfZeros)
+            {
+                ratio = Math.Abs(relativeNumberOfOnes - relativeNumberOfZeros);
+            }
+            return ratio;
+        }
+
+        /*public int calcFirstСycleLengthInBin(string key)
+        {
+
+        }*/
+
+        /*public double calcСorrelation(string key)
+        {
+            long keyToNumber = Convert.ToInt32(key);
+
+            long shiftKey = keyToNumber >> calcFirstСycleLengthInBin(key);
+
+            return calcBalance(Convert.ToString(shiftKey ^ keyToNumber));
+        }*/
 
     }
 }

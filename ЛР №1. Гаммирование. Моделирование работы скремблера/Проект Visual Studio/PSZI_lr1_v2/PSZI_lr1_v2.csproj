@@ -64,11 +64,16 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CipherXOR.cs" />
+    <Compile Include="GeneratorKey.cs" />
     <Compile Include="LFSR.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="ResearchWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Program.cs" />
