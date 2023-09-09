@@ -10,23 +10,29 @@ namespace PSZI_lr1
     {
         int num_polinomial;
 
-        public string generatePRV(int length, long startShiftRegister)
+        public string generatePRV(int lengthInBit, long startShiftRegister)
         {
-            //long shiftRegister = startShiftRegister;
-            long shiftRegister = 397;
+            long shiftRegister = startShiftRegister;
             long value = 0;
-            for(int i = 0; i < length * 16; i++)
+
+            for (int i = 0; i < lengthInBit; i++)
             {
-                value *= 2;
-                value += Convert.ToInt32(getLowBitAndShift(ref shiftRegister));
+                value = value << 1 | getLowBitAndShift(ref shiftRegister);
             }
 
-            return Convert.ToString(value);
+            string b = "";
+            while (value > 0 )
+            {
+                char charValue = Convert.ToChar(value & 0xFF);
+                b = charValue + b;
+                value >>= 7;
+            }
+            return b;
         }
 
-        private bool getLowBitAndShift(ref long shiftRegister)
+        private long getLowBitAndShift(ref long shiftRegister)
         {
-            bool lowBit = Convert.ToBoolean((shiftRegister >> 1) & 0x1);
+            long lowBit = shiftRegister & 0x1;
             if (num_polinomial == 1)
                 shiftRegister = ((shiftRegister >> 10 ^ shiftRegister >> 5 ^ shiftRegister >> 4 ^ shiftRegister >> 2 ^ shiftRegister) & 0x1) << 9 | shiftRegister >> 1;
             else

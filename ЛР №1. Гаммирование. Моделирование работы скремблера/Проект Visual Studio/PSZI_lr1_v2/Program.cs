@@ -60,21 +60,21 @@ namespace PSZI_lr1
         public void GenerateKey(ModeGenKey command)
         {
             GeneratorKey generatorKey = new GeneratorKey();
-            generatorKey.GenerateKey(command, originalText.Length);
+            generatorKey.GenerateKey(command, originalText);
             key = generatorKey.key;
             writeToFile(fileNameKey, key);
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
         }
 
 
-        public string toBin(string str)
+        public static string toBin(string str)
         {
             string cc2 = "";
             for (int i = 0; i < str.Length; i++)
                 cc2 += Convert.ToString(str[i], 2);
             return cc2;
         }
-        public string toHex(string str)
+        public static string toHex(string str)
         {
             string cc16 = "";
             for (int i = 0; i < str.Length; i++)

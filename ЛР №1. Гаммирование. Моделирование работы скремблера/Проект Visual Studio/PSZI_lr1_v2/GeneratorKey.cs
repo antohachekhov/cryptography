@@ -39,16 +39,16 @@ namespace PSZI_lr1
 
 
         // Генерация ключа
-        public void GenerateKey(ModeGenKey command, int length)
+        public void GenerateKey(ModeGenKey command, string originalText)
         {
             Console.WriteLine("Генерируем ключ...");
             long startShiftRegisterLong = generateRandomValue(0, maxBeginValueLFSR);
             if (command == ModeGenKey.random)
-                key = generateRandomKey(length);
+                key = generateRandomKey(originalText.Length);
             else if (command <= ModeGenKey.LFSR2)
             {
                 LFSR lfsr = new LFSR((int)command);
-                key = lfsr.generatePRV(length, startShiftRegisterLong);
+                key = lfsr.generatePRV(Program.toBin(originalText).Length, startShiftRegisterLong);
                 startShiftRegister = Convert.ToString(startShiftRegisterLong);
             }
             else
