@@ -19,15 +19,42 @@ namespace PSZI_lr1
             {
                 value = value << 1 | getLowBitAndShift(ref shiftRegister);
             }
-
+            Console.WriteLine("Int:" + value);
             string b = "";
-            while (value > 0 )
-            {
-                char charValue = Convert.ToChar(value & 0xFF);
-                b = charValue + b;
-                value >>= 7;
-            }
+            //while (value > 0)
+            //{
+                //char charValue = Convert.ToChar(value & 0xFF);
+                //Console.WriteLine("charValue:" + charValue + " = " + (value & 0xFF));
+                //b = charValue + b;
+                //value >>= 7;
+                
+            //}
+            byte[] ii = BitConverter.GetBytes(value);
+            b = Encoding.ASCII.GetString(ii);
+            Console.WriteLine("ii = " + ii);
+
             return b;
+        }
+
+        public int calcPeriod(long startShiftRegister)
+        {
+            long shiftRegister = startShiftRegister;
+            HashSet<long> set = new HashSet<long>();
+            int setLength = set.Count;
+            long lastShiftRegister = shiftRegister;
+            set.Add(shiftRegister);
+            while (setLength != set.Count)
+            {
+                setLength = set.Count;
+                getLowBitAndShift(ref shiftRegister);
+                lastShiftRegister = shiftRegister;
+                if (!set.Contains(shiftRegister))
+                    set.Add(shiftRegister);
+            }
+
+            int ind = Array.IndexOf(set.ToArray(), lastShiftRegister);
+            Console.WriteLine(ind);
+            return setLength - ind;
         }
 
         private long getLowBitAndShift(ref long shiftRegister)

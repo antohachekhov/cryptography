@@ -40,7 +40,7 @@
     </Window.Resources>
 
     <Grid>
-        <ScrollViewer Margin="0,10,0.2,-59.6">
+        <ScrollViewer Margin="0,10,0.2,-113.6" Height="934" VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel Margin="5">
                     <TextBlock Style="{StaticResource Title}" Text="Гаммирование. Моделирование работы скремблера" />
@@ -91,6 +91,11 @@
                                         <Image Source="see.png" Height="20"/>
                                     </Button>
                                 </StackPanel>
+                                <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
+                                    <Button x:Name="ButtonCheckBalance" Click="ButtonCheckBalance_Click" Width="200">Сбалансированность</Button>
+                                    <Button x:Name="ButtonCheckCycle" Click="ButtonCheckCycle_Click" Width="200">Цикличность</Button>
+                                    <Button x:Name="ButtonCheckCorrelation" Click="ButtonCheckCorrelation_Click" Width="200">Корреляция</Button>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -114,8 +119,8 @@
 
                         <TextBlock Style="{StaticResource Text}" Text="Выберите скремблер:"/>
                         <StackPanel>
-                            <CheckBox>x^10+x^5+x^4+x^2+1</CheckBox>
-                            <CheckBox>x^10+x^7+1</CheckBox>
+                            <CheckBox x:Name="CheckBoxScr1" Checked="ChooseLFSR11">x^10+x^5+x^4+x^2+1</CheckBox>
+                            <CheckBox x:Name="CheckBoxScr2" Checked="ChooseLFSR21">x^10+x^7+1</CheckBox>
                         </StackPanel>
 
                         <StackPanel Style="{StaticResource InputBlock}">

@@ -31,13 +31,14 @@ namespace PSZI_lr1_v2
     {
         Program program = null;
         ModeGenKey chooseModToGenKey = ModeGenKey.random;
+        ModeGenKey chooseModToGenKey1 = ModeGenKey.random;
 
         public MainWindow()
         {
             InitializeComponent();
             program = new Program();
         }
-
+        
         private void ChooseRandom(object sender, RoutedEventArgs e)
         {
             chooseModToGenKey = ModeGenKey.random;
@@ -59,7 +60,19 @@ namespace PSZI_lr1_v2
             CheckBoxRandom.IsChecked = false;
         }
 
+        private void ChooseLFSR11(object sender, RoutedEventArgs e)
+        {
+            chooseModToGenKey1 = ModeGenKey.LFSR1;
+            CheckBoxScr2.IsChecked = false;
+        }
 
+        private void ChooseLFSR21(object sender, RoutedEventArgs e)
+        {
+            chooseModToGenKey1 = ModeGenKey.LFSR2;
+            CheckBoxScr1.IsChecked = false;
+        }
+
+        // генерация ключа
         private void ButtonGenKey_Click(object sender, RoutedEventArgs e)
         {
             ModeGenKey command = chooseModToGenKey; 
@@ -67,6 +80,7 @@ namespace PSZI_lr1_v2
             writeKeyToWindow(program.key);
         }
 
+        // чтение ключа из файла
         private void ButtonReadKey_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -76,6 +90,31 @@ namespace PSZI_lr1_v2
                 program.ReadKey(openFileDialog.FileName);
                 writeKeyToWindow(program.key);
             }
+        }
+
+        // проверка сбалансированности
+        private void ButtonCheckBalance_Click(object sender, RoutedEventArgs e)
+        {
+            string key = TextBoxKeyCC.Text;
+            program.calcBalance(key);
+            // ВЫВОД НА ЭКРАН
+        }
+
+        // проверка цикличности
+        private void ButtonCheckCycle_Click(object sender, RoutedEventArgs e)
+        {
+            string key = TextBoxKeyCC.Text;
+            program.calcСyclicality(key);
+            // ВЫВОД НА ЭКРАН
+        }
+
+        // проверка корреляции
+        private void ButtonCheckCorrelation_Click(object sender, RoutedEventArgs e)
+        {
+            string key = TextBoxKeyCC.Text;
+            string startShiftRegister = Program.readFromFile("startShiftRegister.txt");
+            program.calcСorrelation(key, startShiftRegister);
+            // ВЫВОД НА ЭКРАН
         }
 
         private void ButtonOpenOriginalFile_Click(object sender, RoutedEventArgs e)
@@ -93,6 +132,7 @@ namespace PSZI_lr1_v2
 
         private void ButtonCipherText_Click(object sender, RoutedEventArgs e)
         {
+            //string original = TextBoxOriginalTextContentCC.Text;
             program.cipherText = CipherXOR.encryptText(program.originalText, program.key);
             Program.writeToFile("cipherText.txt", program.cipherText);
             writeCipherToWindow(program.cipherText);
@@ -100,8 +140,10 @@ namespace PSZI_lr1_v2
 
         private void ButtonResearchScrambler_Click(object sender, RoutedEventArgs e)
         {
-            TextBoxTScr.Text = "тут будет период";
-            TextBoxX2.Text = "тут будет хи-квадрат";
+            ModeGenKey command = chooseModToGenKey1;
+            string key = TextBoxBeginKeyCC.Text;
+            TextBoxTScr.Text = program.calcPeriod(command, key).ToString();
+            TextBoxX2.Text = program.calcChiSquare(key).ToString();
         }
 
         public void writeKeyToWindow(string key)

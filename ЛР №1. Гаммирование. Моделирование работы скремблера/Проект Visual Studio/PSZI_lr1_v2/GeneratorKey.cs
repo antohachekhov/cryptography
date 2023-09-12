@@ -15,7 +15,7 @@ namespace PSZI_lr1
         int[] startEndASCII = { Convert.ToInt32('!'), Convert.ToInt32('~') };
 
         // Максимальное число, полученное из 9 бит для скремблеров
-        const int maxBeginValueLFSR = 511;
+        public const int maxBeginValueLFSR = 511;
 
         Random rand = new Random();
 
@@ -38,15 +38,28 @@ namespace PSZI_lr1
         }
 
 
+
         // Генерация ключа
         public void GenerateKey(ModeGenKey command, string originalText)
         {
             Console.WriteLine("Генерируем ключ...");
-            long startShiftRegisterLong = generateRandomValue(0, maxBeginValueLFSR);
+
+            
             if (command == ModeGenKey.random)
                 key = generateRandomKey(originalText.Length);
             else if (command <= ModeGenKey.LFSR2)
             {
+                long startShiftRegisterLong = 0;
+                if (this.startShiftRegister != "")
+                {
+                    startShiftRegisterLong = Program.toNum(this.startShiftRegister);
+                    if (startShiftRegisterLong > maxBeginValueLFSR)
+                        throw new Exception("Стартовое значение генератора должно занимать максимум 10 бит");
+                }
+                else
+                {
+                    startShiftRegisterLong = generateRandomValue(0, maxBeginValueLFSR);
+                }
                 LFSR lfsr = new LFSR((int)command);
                 key = lfsr.generatePRV(Program.toBin(originalText).Length, startShiftRegisterLong);
                 startShiftRegister = Convert.ToString(startShiftRegisterLong);
@@ -58,6 +71,16 @@ namespace PSZI_lr1
             
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
             Console.WriteLine("Начальное значение скремблера = " + "\'" + startShiftRegister + "\'");
+        }
+
+        public GeneratorKey()
+        {
+            this.startShiftRegister = "";
+        }
+
+        public GeneratorKey(string startShiftRegister)
+        {
+            this.startShiftRegister = startShiftRegister;
         }
     }
 }
