@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.34031.81
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PSZI_lr1_v1", "PSZI_lr1_v1\PSZI_lr1_v1.csproj", "{DF48BCF9-6C55-4A0E-948A-7B9108DFB45F}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{DF48BCF9-6C55-4A0E-948A-7B9108DFB45F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DF48BCF9-6C55-4A0E-948A-7B9108DFB45F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DF48BCF9-6C55-4A0E-948A-7B9108DFB45F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DF48BCF9-6C55-4A0E-948A-7B9108DFB45F}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3535AC68-8897-4AE7-BACC-78723697050B}
+	EndGlobalSection
+EndGlobal

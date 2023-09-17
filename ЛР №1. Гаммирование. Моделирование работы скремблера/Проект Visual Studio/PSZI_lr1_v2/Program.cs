@@ -13,6 +13,7 @@ namespace PSZI_lr1
     {
         public string originalText;
         public string key;
+        public string startshift;
         public string cipherText;
         public GeneratorKey generatorKey = new GeneratorKey();
 
@@ -56,7 +57,14 @@ namespace PSZI_lr1
         {
             Console.WriteLine("Читаем ключ из файла...");
             key = readFromFile(filename);
-            Console.WriteLine("Ключ = " + "\'" + originalText + "\'");
+            Console.WriteLine("Ключ = " + "\'" + key + "\'");
+        }
+
+        public void ReadScr(string filename)
+        {
+            Console.WriteLine("Читаем начальное значение скремблера из файла...");
+            string scr = readFromFile(filename);
+            Console.WriteLine("Начальное значение скремблера = " + "\'" + scr + "\'");
         }
 
 
@@ -65,8 +73,9 @@ namespace PSZI_lr1
         {
             generatorKey.GenerateKey(command, originalText);
             key = generatorKey.key;
+            startshift = generatorKey.startShiftRegister;
             writeToFile(fileNameKey, key);
-            writeToFile(fileNameStartShiftRegister, generatorKey.startShiftRegister);
+            writeToFile(fileNameStartShiftRegister, startshift);
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
         }
 
