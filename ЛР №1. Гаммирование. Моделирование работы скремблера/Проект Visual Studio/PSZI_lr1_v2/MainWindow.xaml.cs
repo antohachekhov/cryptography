@@ -149,19 +149,20 @@ namespace PSZI_lr1_v2
         public void writeKeyToWindow(string key)
         {
             TextBoxKeyCC.Text = key;
-            TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key);
+            TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key, EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
             TextBoxKeyCC16.Text = EncoderClass.StringtoHex(key);
         }
         public void writeOriginToWindow(string origin)
         {
+            Console.WriteLine(EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
             TextBoxOriginalTextContentCC.Text = origin;
-            TextBoxOriginalTextContentCC2.Text = EncoderClass.StringtoBin(origin);
+            TextBoxOriginalTextContentCC2.Text = EncoderClass.StringtoBin(origin, EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
             TextBoxOriginalTextContentCC16.Text = EncoderClass.StringtoHex(origin);
         }
         public void writeCipherToWindow(string cipher)
         {
             TextBoxCipherTextCC.Text = cipher.ToString();
-            TextBoxCipherTextCC2.Text = EncoderClass.StringtoBin(cipher);
+            TextBoxCipherTextCC2.Text = EncoderClass.StringtoBin(cipher, EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
             TextBoxCipherTextCC16.Text = EncoderClass.StringtoHex(cipher);
         }
     }

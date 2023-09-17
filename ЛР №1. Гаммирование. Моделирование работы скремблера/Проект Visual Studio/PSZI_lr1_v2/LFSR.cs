@@ -11,26 +11,26 @@ namespace PSZI_lr1
         int num_polinomial;
 
         // Генерация псевдослучайной последовательности
-        public byte[] generatePRV(int lengthInBit, int startShiftRegister)
+        public byte[] generatePRV(int lengthInBit, uint startShiftRegister)
         {
-            int shiftRegister = startShiftRegister;
-            int value = 0;
+            uint shiftRegister = startShiftRegister;
+            uint value = 0;
 
             for (int i = 0; i < lengthInBit; i++)
             {
                 value = value << 1 | getLowBitAndShift(ref shiftRegister);
             }
 
-            return PSZI_lr1_v2.EncoderClass.IntToByteArray(value);
+            return PSZI_lr1_v2.EncoderClass.UintToByteArray(value);
         }
 
-        public int calcPeriod(int startShiftRegister)
+        public int calcPeriod(uint startShiftRegister)
         {
-            int shiftRegister = startShiftRegister;
+            uint shiftRegister = startShiftRegister;
 
             // Сохраняем последний для нахождения по нему 
             // расстояния между повторяющимися элементами
-            int lastShiftRegister = shiftRegister;
+            uint lastShiftRegister = shiftRegister;
 
             // Создаем коллекцию, хранящую только уникальные значения
             SortedSet<long> set = new SortedSet<long>();
@@ -52,9 +52,9 @@ namespace PSZI_lr1
             return setLength - ind;
         }
 
-        private int getLowBitAndShift(ref int shiftRegister)
+        private uint getLowBitAndShift(ref uint shiftRegister)
         {
-            int lowBit = shiftRegister & 0x1;
+            uint lowBit = shiftRegister & 0x1;
             if (num_polinomial == 1)
                 shiftRegister = ((shiftRegister >> 10 ^ shiftRegister >> 5 ^ shiftRegister >> 4 ^ shiftRegister >> 2 ^ shiftRegister) & 0x1) << 9 | shiftRegister >> 1;
             else

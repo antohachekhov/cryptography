@@ -13,6 +13,7 @@ namespace PSZI_lr1
 
            for (int i = 0; i < text.Length; i++)
             {
+                Console.WriteLine(text[i] ^ key[i]);
                 ciphertext += Convert.ToChar(text[i]  ^  key[i]);
             }
             return ciphertext;

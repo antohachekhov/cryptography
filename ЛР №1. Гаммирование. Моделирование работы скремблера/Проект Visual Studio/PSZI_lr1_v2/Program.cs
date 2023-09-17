@@ -42,13 +42,13 @@ namespace PSZI_lr1
         {
             byte[] keyToByte = generatorKey.GenerateKey(command, originalText);
 
-            string key = EncoderClass.ByteArrayToString(keyToByte);
+            key = EncoderClass.ByteArrayToString(keyToByte);
 
             // Вывод ключа
             writeToFile(fileNameKey, key);
 
             // Вывод стартового значения сдвигового регистра
-            writeToFile(fileNameStartShiftRegister, EncoderClass.ByteArrayToString(EncoderClass.IntToByteArray((int)generatorKey.startShiftRegister)));
+            writeToFile(fileNameStartShiftRegister,generatorKey.startShiftRegister);
         }
 
         public static string readFromFile(string fileName)
@@ -93,7 +93,7 @@ namespace PSZI_lr1
 
         public double calcBalance(string key)
         {
-            string KeyToBit = EncoderClass.StringtoBin(key);
+            string KeyToBit = EncoderClass.StringtoBin(key, originalText.Length);
 
             double relativeNumberOfOnes = (double)KeyToBit.Count(x => x == '1') / KeyToBit.Length;
             double relativeNumberOfZeros = (double)KeyToBit.Count(x => x == '0') / KeyToBit.Length;
@@ -111,16 +111,16 @@ namespace PSZI_lr1
 
         public double calcPeriod(ModeGenKey command, string startShiftRegister)
         {
-            int startShiftRegisterInt = EncoderClass.ByteArrayToInt(EncoderClass.StringToByteArray(startShiftRegister));
+            uint startShiftRegisterInt = EncoderClass.ByteArrayToUint(EncoderClass.StringToByteArray(startShiftRegister));
             LFSR lfsr = new LFSR((int)command);
             int period = lfsr.calcPeriod(startShiftRegisterInt);
             return period;
         }
 
 
-        public static int calcFirstСycleLengthInBin(string key)
+        public int calcFirstСycleLengthInBin(string key)
         {
-            string KeyToBit = EncoderClass.StringtoBin(key);
+            string KeyToBit = EncoderClass.StringtoBin(key, originalText.Length);
             char firstBit = KeyToBit[0];
             int sizeOfFirstCicle = 1;
             for (int i = 1; i < KeyToBit.Length && KeyToBit[i] == firstBit; i++, sizeOfFirstCicle++) ;
@@ -130,7 +130,7 @@ namespace PSZI_lr1
 
         public double calcChiSquare(string key)
         {
-            string KeyToBit = EncoderClass.StringtoBin(key);
+            string KeyToBit = EncoderClass.StringtoBin(key, originalText.Length);
 
             double relativeNumberOfOnes = (double)KeyToBit.Count(x => x == '1') / KeyToBit.Length;
             double relativeNumberOfZeros = (double)KeyToBit.Count(x => x == '0') / KeyToBit.Length;
@@ -149,7 +149,7 @@ namespace PSZI_lr1
 
         public List<double> calcСyclicality(string key)
         {
-            string KeyToBit = EncoderClass.StringtoBin(key);
+            string KeyToBit = EncoderClass.StringtoBin(key, originalText.Length);
             // Определение длин циклов с 1
             string[] strs1 = regexSplit(KeyToBit, "0+").Where(s => !string.IsNullOrEmpty(s)).ToArray();
             // Определение длин циклов с 0
