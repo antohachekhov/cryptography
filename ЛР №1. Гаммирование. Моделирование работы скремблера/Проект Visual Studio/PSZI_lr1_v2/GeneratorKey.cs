@@ -7,8 +7,8 @@ namespace PSZI_lr1
 {
     class GeneratorKey
     {
-        public string key;
-        public string startShiftRegister;
+        public byte[] key;
+        public int? startShiftRegister;
 
         // Начальный и конечный символы из ASCII,
         // символы между которыми будут использоваться для генерации ключа
@@ -25,62 +25,56 @@ namespace PSZI_lr1
             return rand.Next(start, end);
         }
 
-        public string generateRandomKey(int length)
+        public byte[] generateRandomKey(int length)
         {
-            string key = "";
+            byte[] key = new byte[length];
 
             for (int i = 0; i < length; i++)
-            {
-                key += Convert.ToChar(generateRandomValue(startEndASCII[0], startEndASCII[1]));
-            }
+                rand.NextBytes(key);
 
+            Console.WriteLine(String.Join(",", key));
             return key;
         }
 
 
 
         // Генерация ключа
-        public void GenerateKey(ModeGenKey command, string originalText)
+        public byte[] GenerateKey(ModeGenKey command, string originalText)
         {
             Console.WriteLine("Генерируем ключ...");
 
-            
             if (command == ModeGenKey.random)
                 key = generateRandomKey(originalText.Length);
             else if (command <= ModeGenKey.LFSR2)
             {
-                long startShiftRegisterLong = 0;
-                if (this.startShiftRegister != "")
-                {
-                    startShiftRegisterLong = Program.toNum(this.startShiftRegister);
-                    if (startShiftRegisterLong > maxBeginValueLFSR)
+                // Проверка входного значения стартового значения сдвигового регистра
+                if(this.startShiftRegister == null)
+                    startShiftRegister = generateRandomValue(0, maxBeginValueLFSR);
+                else if (startShiftRegister > maxBeginValueLFSR)
                         throw new Exception("Стартовое значение генератора должно занимать максимум 10 бит");
-                }
-                else
-                {
-                    startShiftRegisterLong = generateRandomValue(0, maxBeginValueLFSR);
-                }
+
+
+
                 LFSR lfsr = new LFSR((int)command);
-                key = lfsr.generatePRV(Program.toBin(originalText).Length, startShiftRegisterLong);
-                startShiftRegister = Convert.ToString(startShiftRegisterLong);
+                key = lfsr.generatePRV(EncoderClass.StringtoBin(originalText).Length, (int)startShiftRegister);
             }
             else
             {
                 throw new Exception("Нет такой команды генерации кода");
             }
-            
-            Console.WriteLine("Ключ = " + "\'" + key + "\'");
-            Console.WriteLine("Начальное значение скремблера = " + "\'" + startShiftRegister + "\'");
+
+            Console.WriteLine("Сгенерированный ключ: " + String.Join(",", key));
+            return key;
         }
 
         public GeneratorKey()
         {
-            this.startShiftRegister = "";
+            this.startShiftRegister = null;
         }
 
         public GeneratorKey(string startShiftRegister)
         {
-            this.startShiftRegister = startShiftRegister;
+            this.startShiftRegister = EncoderClass.ByteArrayToInt(EncoderClass.StringToByteArray(startShiftRegister));
         }
     }
 }

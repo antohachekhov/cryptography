@@ -37,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Numerics" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -64,6 +65,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CipherXOR.cs" />
+    <Compile Include="EncoderClass.cs" />
     <Compile Include="GeneratorKey.cs" />
     <Compile Include="LFSR.cs" />
     <Compile Include="MainWindow.xaml.cs">

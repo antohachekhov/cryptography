@@ -21,28 +21,6 @@ namespace PSZI_lr1
         const string fileNameKey = "key.txt";
         const string fileNameStartShiftRegister = "startShiftRegister.txt";
 
-        /*static void Start()
-        {
-            // Чтение текста из файла
-            Console.WriteLine("Читаем текст из файла...");
-            string originalText = readFromFile(fileNameStartText);
-            Console.WriteLine("Текст = " + "\'" + originalText + "\'");
-
-            // Генерация ключа
-            Console.WriteLine("Генерируем ключ...");
-            string key = CipherXOR.generateKey(originalText.Length);
-            writeToFile(fileNameKey, key);
-            Console.WriteLine("Ключ = " + "\'" + key + "\'");
-
-            // Шифрование текста
-            Console.WriteLine("Шифруем текст...");
-            string cipherText = CipherXOR.encryptText(originalText, key);
-            writeToFile(fileNameKey, cipherText);
-            Console.WriteLine("Зашифрованный текст = " + "\'" + cipherText + "\'");
-
-            Console.WriteLine("Hello World!");
-        }*/
-
 
         // Чтение текста из файла
         public void ReadOriginalText(string filename)
@@ -59,44 +37,19 @@ namespace PSZI_lr1
             Console.WriteLine("Ключ = " + "\'" + originalText + "\'");
         }
 
-
         // Генерация ключа
         public void GenerateKey(ModeGenKey command)
         {
-            generatorKey.GenerateKey(command, originalText);
-            key = generatorKey.key;
+            byte[] keyToByte = generatorKey.GenerateKey(command, originalText);
+
+            string key = EncoderClass.ByteArrayToString(keyToByte);
+
+            // Вывод ключа
             writeToFile(fileNameKey, key);
-            writeToFile(fileNameStartShiftRegister, generatorKey.startShiftRegister);
-            Console.WriteLine("Ключ = " + "\'" + key + "\'");
-        }
 
-        public static long toNum(string str)
-        {
-            byte[] asciiBytes = Encoding.ASCII.GetBytes(str);
-            long num = 0;
-            for (int i = 0; i < asciiBytes.Length; i++)
-            {
-                num += Convert.ToInt32(asciiBytes[i]);
-                Console.WriteLine("charValue:" + num);
-            }
-                        
-            return num;
+            // Вывод стартового значения сдвигового регистра
+            writeToFile(fileNameStartShiftRegister, EncoderClass.ByteArrayToString(EncoderClass.IntToByteArray((int)generatorKey.startShiftRegister)));
         }
-        public static string toBin(string str)
-        {
-            string cc2 = "";
-            for (int i = 0; i < str.Length; i++)
-                cc2 += Convert.ToString(str[i], 2);
-            return cc2;
-        }
-        public static string toHex(string str)
-        {
-            string cc16 = "";
-            for (int i = 0; i < str.Length; i++)
-                cc16 += Convert.ToString(str[i], 16);
-            return cc16;
-        }
-
 
         public static string readFromFile(string fileName)
         {
@@ -140,7 +93,7 @@ namespace PSZI_lr1
 
         public double calcBalance(string key)
         {
-            string KeyToBit = toBin(key);
+            string KeyToBit = EncoderClass.StringtoBin(key);
 
             double relativeNumberOfOnes = (double)KeyToBit.Count(x => x == '1') / KeyToBit.Length;
             double relativeNumberOfZeros = (double)KeyToBit.Count(x => x == '0') / KeyToBit.Length;
@@ -158,16 +111,16 @@ namespace PSZI_lr1
 
         public double calcPeriod(ModeGenKey command, string startShiftRegister)
         {
-            long startShiftRegisterLong = toNum(startShiftRegister);
+            int startShiftRegisterInt = EncoderClass.ByteArrayToInt(EncoderClass.StringToByteArray(startShiftRegister));
             LFSR lfsr = new LFSR((int)command);
-            int period = lfsr.calcPeriod(startShiftRegisterLong);
+            int period = lfsr.calcPeriod(startShiftRegisterInt);
             return period;
         }
 
 
         public static int calcFirstСycleLengthInBin(string key)
         {
-            string KeyToBit = toBin(key);
+            string KeyToBit = EncoderClass.StringtoBin(key);
             char firstBit = KeyToBit[0];
             int sizeOfFirstCicle = 1;
             for (int i = 1; i < KeyToBit.Length && KeyToBit[i] == firstBit; i++, sizeOfFirstCicle++) ;
@@ -177,7 +130,7 @@ namespace PSZI_lr1
 
         public double calcChiSquare(string key)
         {
-            string KeyToBit = toBin(key);
+            string KeyToBit = EncoderClass.StringtoBin(key);
 
             double relativeNumberOfOnes = (double)KeyToBit.Count(x => x == '1') / KeyToBit.Length;
             double relativeNumberOfZeros = (double)KeyToBit.Count(x => x == '0') / KeyToBit.Length;
@@ -196,7 +149,7 @@ namespace PSZI_lr1
 
         public List<double> calcСyclicality(string key)
         {
-            string KeyToBit = toBin(key);
+            string KeyToBit = EncoderClass.StringtoBin(key);
             // Определение длин циклов с 1
             string[] strs1 = regexSplit(KeyToBit, "0+").Where(s => !string.IsNullOrEmpty(s)).ToArray();
             // Определение длин циклов с 0
@@ -222,24 +175,37 @@ namespace PSZI_lr1
             return relativeCountCicles;
         }
 
-
-
         public double calcСorrelation(string key, string startShiftRegister)
         {
-            long keyToNumber = toNum(key);
+            byte[] keyToByte = EncoderClass.StringToByteArray(key);
+            Console.WriteLine("Входной ключ: " + String.Join(", ", keyToByte));
 
-            generatorKey.GenerateKey(ModeGenKey.LFSR1, key + " ");
+            uint keyToUint = EncoderClass.ByteArrayToUint(keyToByte);
+            Console.WriteLine("Входной ключ: " + keyToUint);
 
-            long shiftKey = toNum(generatorKey.key);
-            Console.WriteLine("shiftKey:" + shiftKey);
+            int shiftLengthInBit = calcFirstСycleLengthInBin(key);
 
-            Console.WriteLine("keyToNumber:" + keyToNumber);
+            string newKey = key;
+            // Генерация такого же ключа только с дополнительными символами
+            for (int i = 0; i < shiftLengthInBit / 8; i++)
+            {
+                newKey += " ";
+            }
+            byte[] shiftKeyByte = generatorKey.GenerateKey(ModeGenKey.LFSR1, newKey);
+            uint shiftKeyToUint = EncoderClass.ByteArrayToUint(shiftKeyByte);
+            Console.WriteLine("Сгенерированный ключ: " + shiftKeyToUint);
 
-            shiftKey = shiftKey >> calcFirstСycleLengthInBin(key);
+            // Осуществляем циклический сдвиг 
+            shiftKeyToUint = shiftKeyToUint >> shiftLengthInBit;
 
-            Console.WriteLine("Корреляция:" + calcBalance(Convert.ToString(shiftKey ^ keyToNumber)));
-            Console.WriteLine("shiftKey:" + shiftKey);
-            return calcBalance(Convert.ToString(shiftKey ^ keyToNumber));
+            // XOR
+            uint xorKeysToUint = shiftKeyToUint ^ keyToUint;
+            string xorKeys = EncoderClass.ByteArrayToString(EncoderClass.UintToByteArray(xorKeysToUint));
+            Console.WriteLine("Разница ключей:" + xorKeysToUint);
+            Console.WriteLine("Разница ключей:" + xorKeys);
+
+            Console.WriteLine("Корреляция:" + calcBalance(xorKeys));
+            return calcBalance(xorKeys);
         }
 
     }
