@@ -5,8 +5,8 @@ namespace PSZI_lr1_v2
 {
     class EncoderClass
     {
-        public static Encoding enc = Encoding.ASCII;
-        public static int byteCountUint = 8;
+        public static Encoding enc = Encoding.GetEncoding(1251);
+        public static int byteCountLong = 8;
         public static int byteCountInt = 4;
 
         public static byte[] StringToByteArray(string str)
@@ -38,9 +38,8 @@ namespace PSZI_lr1_v2
 
         public static string StringtoBin(string str, int length)
         {
-            string cc2 = "";
-            for (int i = 0; i < str.Length; i++)
-                cc2 += Convert.ToString(str[i], 2);
+            long number = EncoderClass.ByteArrayToLong(EncoderClass.StringToByteArray(str));
+            string cc2 = Convert.ToString(number, 2);
 
             if (cc2.Length < length)
             {
@@ -59,19 +58,19 @@ namespace PSZI_lr1_v2
             return cc16;
         }
 
-        internal static uint ByteArrayToUint(byte[] byteArray)
+        internal static long ByteArrayToLong(byte[] byteArray)
         {
-            byte[] byteArrayToUint = new byte[EncoderClass.byteCountUint];
+            byte[] byteArrayToLong = new byte[EncoderClass.byteCountLong];
             Array.Reverse(byteArray);
             for (int i = 0; i < byteArray.Length; i++)
             {
-                byteArrayToUint[i] = byteArray[i];
+                byteArrayToLong[i] = byteArray[i];
             }
-            uint number = BitConverter.ToUInt32(byteArrayToUint, 0);
+            long number = BitConverter.ToInt64(byteArrayToLong, 0);
             return number;
         }
 
-        internal static byte[] UintToByteArray(uint number)
+        internal static byte[] LongToByteArray(long number)
         {
             byte[] byteArray = BitConverter.GetBytes(number);
             Array.Reverse(byteArray);

@@ -11,26 +11,28 @@ namespace PSZI_lr1
         int num_polinomial;
 
         // Генерация псевдослучайной последовательности
-        public byte[] generatePRV(int lengthInBit, uint startShiftRegister)
+        public byte[] generatePRV(int lengthInBit, long startShiftRegister)
         {
-            uint shiftRegister = startShiftRegister;
-            uint value = 0;
+            long shiftRegister = startShiftRegister;
+            long value = 0;
+            long[] lowBits = new long[lengthInBit];
 
             for (int i = 0; i < lengthInBit; i++)
             {
-                value = value << 1 | getLowBitAndShift(ref shiftRegister);
+                lowBits[i] = getLowBitAndShift(ref shiftRegister);
+                value = value << 1 | lowBits[i];
             }
-
-            return PSZI_lr1_v2.EncoderClass.UintToByteArray(value);
+            Console.WriteLine("Сгенерированный ключ в двоичке: " + String.Join(", ", lowBits));
+            return PSZI_lr1_v2.EncoderClass.LongToByteArray(value);
         }
 
-        public int calcPeriod(uint startShiftRegister)
+        public int calcPeriod(long startShiftRegister)
         {
-            uint shiftRegister = startShiftRegister;
+            long shiftRegister = startShiftRegister;
 
             // Сохраняем последний для нахождения по нему 
             // расстояния между повторяющимися элементами
-            uint lastShiftRegister = shiftRegister;
+            long lastShiftRegister = shiftRegister;
 
             // Создаем коллекцию, хранящую только уникальные значения
             SortedSet<long> set = new SortedSet<long>();
@@ -52,9 +54,9 @@ namespace PSZI_lr1
             return setLength - ind;
         }
 
-        private uint getLowBitAndShift(ref uint shiftRegister)
+        private long getLowBitAndShift(ref long shiftRegister)
         {
-            uint lowBit = shiftRegister & 0x1;
+            long lowBit = shiftRegister & 0x1;
             if (num_polinomial == 1)
                 shiftRegister = ((shiftRegister >> 10 ^ shiftRegister >> 5 ^ shiftRegister >> 4 ^ shiftRegister >> 2 ^ shiftRegister) & 0x1) << 9 | shiftRegister >> 1;
             else

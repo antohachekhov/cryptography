@@ -108,6 +108,7 @@ namespace PSZI_lr1_v2
             Program.writeToFile("originalText.txt", text);
             TextBoxOriginalTextContentCC2.Text = EncoderClass.StringtoBin(text);
             TextBoxOriginalTextContentCC16.Text = EncoderClass.StringtoHex(text);
+            program.originalText = text;
         }
 
         // Изменение ключа
@@ -117,6 +118,7 @@ namespace PSZI_lr1_v2
             Program.writeToFile("key.txt", key);
             TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key, EncoderClass.StringtoBin(program.originalText).Length);
             TextBoxKeyCC16.Text = EncoderClass.StringtoHex(key);
+            program.key = key;
         }
 
         // Изменение начального значения скремблера
@@ -126,6 +128,7 @@ namespace PSZI_lr1_v2
             Program.writeToFile("startShiftRegister.txt", scr);
             TextBoxScrCC2.Text = EncoderClass.StringtoBin(scr);
             TextBoxScrCC16.Text = EncoderClass.StringtoHex(scr);
+            program.startshift = scr;
         }
 
         // Изменение шифротекста
@@ -135,6 +138,7 @@ namespace PSZI_lr1_v2
             Program.writeToFile("cipherText.txt", cipher);
             TextBoxCipherTextCC2.Text = EncoderClass.StringtoBin(cipher, EncoderClass.StringtoBin(program.originalText).Length);
             TextBoxCipherTextCC16.Text = EncoderClass.StringtoHex(cipher);
+            program.cipherText = cipher;
         }
 
         // Проверка сбалансированности
@@ -160,7 +164,7 @@ namespace PSZI_lr1_v2
         {
             string key = TextBoxKeyCC.Text;
             string startShiftRegister = Program.readFromFile("startShiftRegister.txt");
-            TextBoxKeyCorr.Text = program.calcСorrelation(key, startShiftRegister).ToString();
+            TextBoxKeyCorr.Text = program.calcСorrelation(chooseModToGenKey, key, startShiftRegister).ToString();
         }
 
         // Открытие файла с текстом по ссылке

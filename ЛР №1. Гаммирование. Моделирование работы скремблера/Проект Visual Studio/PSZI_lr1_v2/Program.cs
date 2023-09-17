@@ -119,7 +119,7 @@ namespace PSZI_lr1
 
         public double calcPeriod(ModeGenKey command, string startShiftRegister)
         {
-            uint startShiftRegisterInt = EncoderClass.ByteArrayToUint(EncoderClass.StringToByteArray(startShiftRegister));
+            long startShiftRegisterInt = EncoderClass.ByteArrayToLong(EncoderClass.StringToByteArray(startShiftRegister));
             LFSR lfsr = new LFSR((int)command);
             int period = lfsr.calcPeriod(startShiftRegisterInt);
             return period;
@@ -183,12 +183,12 @@ namespace PSZI_lr1
             return relativeCountCicles;
         }
 
-        public double calcСorrelation(string key, string startShiftRegister)
+        public double calcСorrelation(ModeGenKey command, string key, string startShiftRegister)
         {
             byte[] keyToByte = EncoderClass.StringToByteArray(key);
             Console.WriteLine("Входной ключ: " + String.Join(", ", keyToByte));
 
-            uint keyToUint = EncoderClass.ByteArrayToUint(keyToByte);
+            long keyToUint = EncoderClass.ByteArrayToLong(keyToByte);
             Console.WriteLine("Входной ключ: " + keyToUint);
 
             int shiftLengthInBit = calcFirstСycleLengthInBin(key);
@@ -199,16 +199,16 @@ namespace PSZI_lr1
             {
                 newKey += " ";
             }
-            byte[] shiftKeyByte = generatorKey.GenerateKey(ModeGenKey.LFSR1, newKey);
-            uint shiftKeyToUint = EncoderClass.ByteArrayToUint(shiftKeyByte);
+            byte[] shiftKeyByte = generatorKey.GenerateKey(command, newKey.Length, EncoderClass.StringtoBin(key).Length + shiftLengthInBit);
+            long shiftKeyToUint = EncoderClass.ByteArrayToLong(shiftKeyByte);
             Console.WriteLine("Сгенерированный ключ: " + shiftKeyToUint);
 
             // Осуществляем циклический сдвиг 
             shiftKeyToUint = shiftKeyToUint >> shiftLengthInBit;
 
             // XOR
-            uint xorKeysToUint = shiftKeyToUint ^ keyToUint;
-            string xorKeys = EncoderClass.ByteArrayToString(EncoderClass.UintToByteArray(xorKeysToUint));
+            long xorKeysToUint = shiftKeyToUint ^ keyToUint;
+            string xorKeys = EncoderClass.ByteArrayToString(EncoderClass.LongToByteArray(xorKeysToUint));
             Console.WriteLine("Разница ключей:" + xorKeysToUint);
             Console.WriteLine("Разница ключей:" + xorKeys);
 
