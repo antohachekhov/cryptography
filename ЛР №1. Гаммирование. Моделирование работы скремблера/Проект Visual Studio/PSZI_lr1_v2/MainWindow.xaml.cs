@@ -39,6 +39,7 @@ namespace PSZI_lr1_v2
             program = new Program();
         }
         
+        // Выбран случайный ключ
         private void ChooseRandom(object sender, RoutedEventArgs e)
         {
             chooseModToGenKey = ModeGenKey.random;
@@ -46,6 +47,7 @@ namespace PSZI_lr1_v2
             CheckBoxLFSR2.IsChecked = false;
         }
 
+        // Выбран первый скремблер
         private void ChooseLFSR1(object sender, RoutedEventArgs e)
         {
             chooseModToGenKey = ModeGenKey.LFSR1;
@@ -53,6 +55,7 @@ namespace PSZI_lr1_v2
             CheckBoxLFSR2.IsChecked = false;
         }
 
+        // Выбран второй скремблер
         private void ChooseLFSR2(object sender, RoutedEventArgs e)
         {
             chooseModToGenKey = ModeGenKey.LFSR2;
@@ -60,27 +63,31 @@ namespace PSZI_lr1_v2
             CheckBoxRandom.IsChecked = false;
         }
 
+        // Выбран первый скремблер в исследовании
         private void ChooseLFSR11(object sender, RoutedEventArgs e)
         {
             chooseModToGenKey1 = ModeGenKey.LFSR1;
             CheckBoxScr2.IsChecked = false;
         }
 
+        // Выбран второй скремблер в исследовании
         private void ChooseLFSR21(object sender, RoutedEventArgs e)
         {
             chooseModToGenKey1 = ModeGenKey.LFSR2;
             CheckBoxScr1.IsChecked = false;
         }
 
-        // генерация ключа
+        // Генерация ключа
         private void ButtonGenKey_Click(object sender, RoutedEventArgs e)
         {
-            ModeGenKey command = chooseModToGenKey; 
+            ModeGenKey command = chooseModToGenKey;
             program.GenerateKey(command);
             writeKeyToWindow(program.key);
+            if (command != ModeGenKey.random)
+                writeShiftToWindow(program.startshift);
         }
 
-        // чтение ключа из файла
+        // Чтение ключа из файла
         private void ButtonReadKey_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -90,33 +97,73 @@ namespace PSZI_lr1_v2
                 program.ReadKey(openFileDialog.FileName);
                 writeKeyToWindow(program.key);
             }
+            program.ReadScr("startShiftRegister.txt");
+            writeShiftToWindow(program.startshift);
         }
 
-        // проверка сбалансированности
+        // Изменение оригинального текста 
+        private void TextBoxOriginalTextContentCC_TextChanged(object sender, RoutedEventArgs e)
+        {
+            string text = TextBoxOriginalTextContentCC.Text;
+            Program.writeToFile("originalText.txt", text);
+            TextBoxOriginalTextContentCC2.Text = EncoderClass.StringtoBin(text);
+            TextBoxOriginalTextContentCC16.Text = EncoderClass.StringtoHex(text);
+        }
+
+        // Изменение ключа
+        private void TextBoxKeyCC_TextChanged(object sender, RoutedEventArgs e)
+        {
+            string key = TextBoxKeyCC.Text;
+            Program.writeToFile("key.txt", key);
+            TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key, EncoderClass.StringtoBin(program.originalText).Length);
+            TextBoxKeyCC16.Text = EncoderClass.StringtoHex(key);
+        }
+
+        // Изменение начального значения скремблера
+        private void TextBoxScrCC_TextChanged(object sender, RoutedEventArgs e)
+        {
+            string scr = TextBoxScrCC.Text;
+            Program.writeToFile("startShiftRegister.txt", scr);
+            TextBoxScrCC2.Text = EncoderClass.StringtoBin(scr);
+            TextBoxScrCC16.Text = EncoderClass.StringtoHex(scr);
+        }
+
+        // Изменение шифротекста
+        private void TextBoxCipherTextCC_TextChanged(object sender, RoutedEventArgs e)
+        {
+            string cipher = TextBoxCipherTextCC.Text;
+            Program.writeToFile("cipherText.txt", cipher);
+            TextBoxCipherTextCC2.Text = EncoderClass.StringtoBin(cipher, EncoderClass.StringtoBin(program.originalText).Length);
+            TextBoxCipherTextCC16.Text = EncoderClass.StringtoHex(cipher);
+        }
+
+        // Проверка сбалансированности
         private void ButtonCheckBalance_Click(object sender, RoutedEventArgs e)
         {
             string key = TextBoxKeyCC.Text;
-            program.calcBalance(key);
-            // ВЫВОД НА ЭКРАН
+            TextBoxKeyBal.Text = program.calcBalance(key).ToString();
         }
 
-        // проверка цикличности
+        // Проверка цикличности
         private void ButtonCheckCycle_Click(object sender, RoutedEventArgs e)
         {
             string key = TextBoxKeyCC.Text;
-            program.calcСyclicality(key);
-            // ВЫВОД НА ЭКРАН
+            List<double> cl = program.calcСyclicality(key);
+            string clT = "";
+            for (int i = 0; i < cl.Count; i++)
+                clT = clT + cl[i] + " ";
+            TextBoxKeyCycle.Text = clT;
         }
 
-        // проверка корреляции
+        // Проверка корреляции
         private void ButtonCheckCorrelation_Click(object sender, RoutedEventArgs e)
         {
             string key = TextBoxKeyCC.Text;
             string startShiftRegister = Program.readFromFile("startShiftRegister.txt");
-            program.calcСorrelation(key, startShiftRegister);
-            // ВЫВОД НА ЭКРАН
+            TextBoxKeyCorr.Text = program.calcСorrelation(key, startShiftRegister).ToString();
         }
 
+        // Открытие файла с текстом по ссылке
         private void ButtonOpenOriginalFile_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
@@ -130,6 +177,7 @@ namespace PSZI_lr1_v2
             }
         }
 
+        // Открытие шифротекста из файла
         private void ButtonCipherText_Click(object sender, RoutedEventArgs e)
         {
             //string original = TextBoxOriginalTextContentCC.Text;
@@ -138,6 +186,7 @@ namespace PSZI_lr1_v2
             writeCipherToWindow(program.cipherText);
         }
 
+        // Исследование скремблера
         private void ButtonResearchScrambler_Click(object sender, RoutedEventArgs e)
         {
             ModeGenKey command = chooseModToGenKey1;
@@ -146,12 +195,23 @@ namespace PSZI_lr1_v2
             TextBoxX2.Text = program.calcChiSquare(key).ToString();
         }
 
+        // Запись ключа в текстовые окна
         public void writeKeyToWindow(string key)
         {
             TextBoxKeyCC.Text = key;
             TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key, EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
             TextBoxKeyCC16.Text = EncoderClass.StringtoHex(key);
         }
+
+        // Запись начального значения скремблера в текстовые окна
+        public void writeShiftToWindow(string reg)
+        {
+            TextBoxScrCC.Text = reg;
+            TextBoxScrCC2.Text = EncoderClass.StringtoBin(reg);
+            TextBoxScrCC16.Text = EncoderClass.StringtoHex(reg);
+        }
+
+        // Запись текста в тектовые окна
         public void writeOriginToWindow(string origin)
         {
             Console.WriteLine(EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
@@ -159,6 +219,8 @@ namespace PSZI_lr1_v2
             TextBoxOriginalTextContentCC2.Text = EncoderClass.StringtoBin(origin, EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
             TextBoxOriginalTextContentCC16.Text = EncoderClass.StringtoHex(origin);
         }
+
+        // Запись шифротекста в текстовые окна
         public void writeCipherToWindow(string cipher)
         {
             TextBoxCipherTextCC.Text = cipher.ToString();

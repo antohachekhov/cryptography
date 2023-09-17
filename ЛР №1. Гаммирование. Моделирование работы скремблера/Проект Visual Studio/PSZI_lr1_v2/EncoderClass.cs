@@ -28,6 +28,14 @@ namespace PSZI_lr1_v2
             return str;
         }
 
+        public static string StringtoBin(string str)
+        {
+            string cc2 = "";
+            for (int i = 0; i < str.Length; i++)
+                cc2 += Convert.ToString(str[i], 2);
+            return cc2;
+        }
+
         public static string StringtoBin(string str, int length)
         {
             string cc2 = "";
