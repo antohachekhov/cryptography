@@ -1,5 +1,6 @@
 ﻿using PSZI_lr1_v2;
 using System;
+using System.Collections;
 using System.Diagnostics.Eventing.Reader;
 using System.IO;
 
@@ -7,8 +8,8 @@ namespace PSZI_lr1
 {
     class GeneratorKey
     {
-        public byte[] key;
-        public string startShiftRegister;
+        public BitArray keyToBitArray;
+        public BitArray startShiftRegister;
 
         // Начальный и конечный символы из ASCII,
         // символы между которыми будут использоваться для генерации ключа
@@ -26,7 +27,7 @@ namespace PSZI_lr1
             return rnd;
         }
 
-        public byte[] generateRandomKey(int length)
+        public BitArray generateRandomKey(int length)
         {
             byte[] key = new byte[length];
 
@@ -35,90 +36,52 @@ namespace PSZI_lr1
 
 
             Console.WriteLine(String.Join(",", key));
-            return key;
+            return EncoderClass.ByteArrayToBitArray(key);
         }
 
 
 
         // Генерация ключа
-        public byte[] GenerateKey(ModeGenKey command, string originalText)
+        public BitArray GenerateKey(ModeGenKey command, BitArray originalTextToBitArray)
         {
             Console.WriteLine("Генерируем ключ...");
 
             if (command == ModeGenKey.random)
-                key = generateRandomKey(originalText.Length);
+                keyToBitArray = generateRandomKey(EncoderClass.BitArrayToByteArray(originalTextToBitArray).Length);
             else if (command <= ModeGenKey.LFSR2)
             {
-                long startShiftRegisterToInt;
                 // Проверка входного значения стартового значения сдвигового регистра
-                if (this.startShiftRegister == "")
-                {
-                    startShiftRegisterToInt = (uint)generateRandomValue(0, maxBeginValueLFSR);
-                    this.startShiftRegister = EncoderClass.ByteArrayToString(EncoderClass.LongToByteArray(startShiftRegisterToInt));
-                }
-                else
-                {
-                    startShiftRegisterToInt = EncoderClass.ByteArrayToLong(EncoderClass.StringToByteArray(this.startShiftRegister));
-                }
-
-                if (startShiftRegisterToInt > maxBeginValueLFSR)
+                if (startShiftRegister.Length > 10)
                     throw new Exception("Стартовое значение генератора должно занимать максимум 10 бит");
-                Console.WriteLine("Стартовое значение: " + startShiftRegisterToInt);
+
+                
+                long startShiftRegisterToLong = EncoderClass.ByteArrayToLong(EncoderClass.BitArrayToByteArray(startShiftRegister));
+                Console.WriteLine("Стартовое значение: " + startShiftRegisterToLong);
                 LFSR lfsr = new LFSR((int)command);
-                key = lfsr.generatePRV(EncoderClass.StringtoBin(originalText, originalText.Length).Length, startShiftRegisterToInt);
+                keyToBitArray = lfsr.generatePRV(originalTextToBitArray.Length, startShiftRegisterToLong);
             }
             else
             {
                 throw new Exception("Нет такой команды генерации кода");
             }
 
-            Console.WriteLine("Сгенерированный ключ: " + String.Join(",", key));
-            return key;
-        }
-
-        public byte[] GenerateKey(ModeGenKey command, int originalTextLength, int originalTextLengthBin)
-        {
-            Console.WriteLine("Генерируем ключ...");
-
-            if (command == ModeGenKey.random)
-                key = generateRandomKey(originalTextLength);
-            else if (command <= ModeGenKey.LFSR2)
-            {
-                long startShiftRegisterToInt;
-                // Проверка входного значения стартового значения сдвигового регистра
-                if (this.startShiftRegister == "")
-                {
-                    startShiftRegisterToInt = (uint)generateRandomValue(0, maxBeginValueLFSR);
-                    this.startShiftRegister = EncoderClass.ByteArrayToString(EncoderClass.LongToByteArray(startShiftRegisterToInt));
-                }
-                else
-                {
-                    startShiftRegisterToInt = EncoderClass.ByteArrayToLong(EncoderClass.StringToByteArray(this.startShiftRegister));
-                }
-
-                if (startShiftRegisterToInt > maxBeginValueLFSR)
-                    throw new Exception("Стартовое значение генератора должно занимать максимум 10 бит");
-                Console.WriteLine("Стартовое значение: " + startShiftRegisterToInt);
-                LFSR lfsr = new LFSR((int)command);
-                key = lfsr.generatePRV(originalTextLengthBin, startShiftRegisterToInt);
-            }
-            else
-            {
-                throw new Exception("Нет такой команды генерации кода");
-            }
-
-            Console.WriteLine("Сгенерированный ключ: " + String.Join(",", key));
-            return key;
+            Console.WriteLine("Сгенерированный ключ: " + String.Join(",", keyToBitArray));
+            return keyToBitArray;
         }
 
         public GeneratorKey()
         {
-            this.startShiftRegister = "";
+            this.startShiftRegister = new BitArray(10);
+
+            // Заполнение начального значения сдвигового регистра
+            // случайным образом
+            for (int i = 0; i < 10; i++)
+                this.startShiftRegister.Set(i, generateRandomValue(0, 1) == 1 ? true : false);
         }
 
-        public GeneratorKey(string startShiftRegister)
+        public GeneratorKey(BitArray startShiftRegister)
         {
-            this.startShiftRegister = startShiftRegister;
+            this.startShiftRegister = new BitArray(startShiftRegister);
         }
     }
 }

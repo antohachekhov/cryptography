@@ -6,15 +6,16 @@ using System.Linq;
 using System.Text;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Collections;
 
 namespace PSZI_lr1
 {
     class Program
     {
-        public string originalText;
-        public string key;
-        public string startshift;
-        public string cipherText;
+        public BitArray originalText;
+        public BitArray key;
+        public BitArray startshift;
+        public BitArray cipherText;
         public GeneratorKey generatorKey = new GeneratorKey();
 
         const string fileNameStartText = "originalText.txt";
@@ -27,36 +28,35 @@ namespace PSZI_lr1
         public void ReadOriginalText(string filename)
         {
             Console.WriteLine("Читаем текст из файла...");
-            originalText = readFromFile(filename);
+            originalText = EncoderClass.StringToBitArray(readFromFile(filename));
             Console.WriteLine("Текст = " + "\'" + originalText + "\'");
         }
 
         public void ReadKey(string filename)
         {
             Console.WriteLine("Читаем ключ из файла...");
-            key = readFromFile(filename);
+            key = EncoderClass.StringToBitArray(filename);
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
         }
 
         public void ReadScr(string filename)
         {
             Console.WriteLine("Читаем начальное значение скремблера из файла...");
-            string scr = readFromFile(filename);
-            Console.WriteLine("Начальное значение скремблера = " + "\'" + scr + "\'");
+            startshift = EncoderClass.StringToBitArray(readFromFile(filename));
+            Console.WriteLine("Начальное значение скремблера = " + "\'" + startshift + "\'");
         }
 
         // Генерация ключа
         public void GenerateKey(ModeGenKey command)
         {
-            byte[] keyToByte = generatorKey.GenerateKey(command, originalText);
+            key = generatorKey.GenerateKey(command, originalText);
 
-            key = EncoderClass.ByteArrayToString(keyToByte);
             startshift = generatorKey.startShiftRegister;
             // Вывод ключа
-            writeToFile(fileNameKey, key);
+            writeToFile(fileNameKey, EncoderClass.BitArrayToString(key));
 
             // Вывод стартового значения сдвигового регистра
-            writeToFile(fileNameStartShiftRegister,generatorKey.startShiftRegister);
+            writeToFile(fileNameStartShiftRegister, EncoderClass.BitArrayToString(generatorKey.startShiftRegister));
         }
 
         public static string readFromFile(string fileName)
@@ -96,12 +96,9 @@ namespace PSZI_lr1
             }
         }
 
-
-        // + вызов на кнопку вывода баланса
-
-        public double calcBalance(string key)
+        public double calcBalance(BitArray keyToBitArray)
         {
-            string KeyToBit = EncoderClass.StringtoBin(key, originalText.Length);
+            string KeyToBit = EncoderClass.BitArraytoBinString(keyToBitArray);
 
             double relativeNumberOfOnes = (double)KeyToBit.Count(x => x == '1') / KeyToBit.Length;
             double relativeNumberOfZeros = (double)KeyToBit.Count(x => x == '0') / KeyToBit.Length;
@@ -126,19 +123,18 @@ namespace PSZI_lr1
         }
 
 
-        public int calcFirstСycleLengthInBin(string key)
+        public int calcFirstСycleLengthInBin(BitArray keyToBitArray)
         {
-            string KeyToBit = EncoderClass.StringtoBin(key, originalText.Length);
-            char firstBit = KeyToBit[0];
+            bool firstBit = keyToBitArray.Get(0);
             int sizeOfFirstCicle = 1;
-            for (int i = 1; i < KeyToBit.Length && KeyToBit[i] == firstBit; i++, sizeOfFirstCicle++) ;
+            for (int i = 1; i < keyToBitArray.Length && keyToBitArray.Get(i) == firstBit; i++, sizeOfFirstCicle++) ;
 
             return sizeOfFirstCicle;
         }
 
-        public double calcChiSquare(string key)
+        public double calcChiSquare(BitArray keyToBitArray)
         {
-            string KeyToBit = EncoderClass.StringtoBin(key, originalText.Length);
+            string KeyToBit = EncoderClass.BitArraytoBinString(keyToBitArray);
 
             double relativeNumberOfOnes = (double)KeyToBit.Count(x => x == '1') / KeyToBit.Length;
             double relativeNumberOfZeros = (double)KeyToBit.Count(x => x == '0') / KeyToBit.Length;
@@ -155,9 +151,9 @@ namespace PSZI_lr1
             return substrings;
         }
 
-        public List<double> calcСyclicality(string key)
+        public List<double> calcСyclicality(BitArray keyToBitArray)
         {
-            string KeyToBit = EncoderClass.StringtoBin(key, originalText.Length);
+            string KeyToBit = EncoderClass.BitArraytoBinString(keyToBitArray);
             // Определение длин циклов с 1
             string[] strs1 = regexSplit(KeyToBit, "0+").Where(s => !string.IsNullOrEmpty(s)).ToArray();
             // Определение длин циклов с 0
@@ -183,37 +179,35 @@ namespace PSZI_lr1
             return relativeCountCicles;
         }
 
-        public double calcСorrelation(ModeGenKey command, string key, string startShiftRegister)
+        public double calcСorrelation(ModeGenKey command, BitArray keyToBitArray, string startShiftRegister)
         {
-            byte[] keyToByte = EncoderClass.StringToByteArray(key);
-            Console.WriteLine("Входной ключ: " + String.Join(", ", keyToByte));
+            Console.WriteLine("Входной ключ: " + String.Join(", ", keyToBitArray));
 
-            long keyToUint = EncoderClass.ByteArrayToLong(keyToByte);
-            Console.WriteLine("Входной ключ: " + keyToUint);
+            int shiftLengthInBit = calcFirstСycleLengthInBin(keyToBitArray);
 
-            int shiftLengthInBit = calcFirstСycleLengthInBin(key);
-
-            string newKey = key;
             // Генерация такого же ключа только с дополнительными символами
-            for (int i = 0; i < shiftLengthInBit / 8; i++)
-            {
-                newKey += " ";
-            }
-            byte[] shiftKeyByte = generatorKey.GenerateKey(command, newKey.Length, EncoderClass.StringtoBin(key).Length + shiftLengthInBit);
-            long shiftKeyToUint = EncoderClass.ByteArrayToLong(shiftKeyByte);
-            Console.WriteLine("Сгенерированный ключ: " + shiftKeyToUint);
+            BitArray newKeyToBitArray = new BitArray(keyToBitArray.Length + shiftLengthInBit);
+
+
+            newKeyToBitArray = generatorKey.GenerateKey(command, newKeyToBitArray);
+            Console.WriteLine("Сгенерированный ключ: " + String.Join(", ", newKeyToBitArray));
 
             // Осуществляем циклический сдвиг 
-            shiftKeyToUint = shiftKeyToUint >> shiftLengthInBit;
+            bool[] shiftKeyToBool = new bool[keyToBitArray.Length];
+
+            for(int i = 0; i < keyToBitArray.Count; i++)
+            {
+                shiftKeyToBool[i] = newKeyToBitArray.Get(i + shiftLengthInBit);
+            }
+
+            BitArray shiftKeyToBitArray = new BitArray(shiftKeyToBool);
 
             // XOR
-            long xorKeysToUint = shiftKeyToUint ^ keyToUint;
-            string xorKeys = EncoderClass.ByteArrayToString(EncoderClass.LongToByteArray(xorKeysToUint));
-            Console.WriteLine("Разница ключей:" + xorKeysToUint);
-            Console.WriteLine("Разница ключей:" + xorKeys);
+            BitArray xorKeysToBitArray = keyToBitArray.Xor(shiftKeyToBitArray);
+            Console.WriteLine("Разница ключей:" + String.Join(", ", xorKeysToBitArray));
 
-            Console.WriteLine("Корреляция:" + calcBalance(xorKeys));
-            return calcBalance(xorKeys);
+            Console.WriteLine("Корреляция:" + calcBalance(xorKeysToBitArray));
+            return calcBalance(xorKeysToBitArray);
         }
 
     }

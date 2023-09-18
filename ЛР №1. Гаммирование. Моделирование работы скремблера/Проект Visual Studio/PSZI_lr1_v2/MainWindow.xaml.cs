@@ -116,7 +116,7 @@ namespace PSZI_lr1_v2
         {
             string key = TextBoxKeyCC.Text;
             Program.writeToFile("key.txt", key);
-            TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key, EncoderClass.StringtoBin(program.originalText).Length);
+            TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key);
             TextBoxKeyCC16.Text = EncoderClass.StringtoHex(key);
             program.key = key;
         }
@@ -136,7 +136,7 @@ namespace PSZI_lr1_v2
         {
             string cipher = TextBoxCipherTextCC.Text;
             Program.writeToFile("cipherText.txt", cipher);
-            TextBoxCipherTextCC2.Text = EncoderClass.StringtoBin(cipher, EncoderClass.StringtoBin(program.originalText).Length);
+            TextBoxCipherTextCC2.Text = EncoderClass.StringtoBin(cipher);
             TextBoxCipherTextCC16.Text = EncoderClass.StringtoHex(cipher);
             program.cipherText = cipher;
         }
@@ -203,7 +203,7 @@ namespace PSZI_lr1_v2
         public void writeKeyToWindow(string key)
         {
             TextBoxKeyCC.Text = key;
-            TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key, EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
+            TextBoxKeyCC2.Text = EncoderClass.StringtoBin(key);
             TextBoxKeyCC16.Text = EncoderClass.StringtoHex(key);
         }
 
@@ -218,9 +218,8 @@ namespace PSZI_lr1_v2
         // Запись текста в тектовые окна
         public void writeOriginToWindow(string origin)
         {
-            Console.WriteLine(EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
             TextBoxOriginalTextContentCC.Text = origin;
-            TextBoxOriginalTextContentCC2.Text = EncoderClass.StringtoBin(origin, EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
+            TextBoxOriginalTextContentCC2.Text = EncoderClass.StringtoBin(origin);
             TextBoxOriginalTextContentCC16.Text = EncoderClass.StringtoHex(origin);
         }
 
@@ -228,7 +227,7 @@ namespace PSZI_lr1_v2
         public void writeCipherToWindow(string cipher)
         {
             TextBoxCipherTextCC.Text = cipher.ToString();
-            TextBoxCipherTextCC2.Text = EncoderClass.StringtoBin(cipher, EncoderClass.StringtoBin(program.originalText, program.originalText.Length).Length);
+            TextBoxCipherTextCC2.Text = EncoderClass.StringtoBin(cipher);
             TextBoxCipherTextCC16.Text = EncoderClass.StringtoHex(cipher);
         }
     }
