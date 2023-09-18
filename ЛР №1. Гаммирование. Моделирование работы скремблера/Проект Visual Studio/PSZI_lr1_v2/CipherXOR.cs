@@ -1,24 +1,20 @@
 ﻿
+using PSZI_lr1_v2;
 using System;
+using System.Collections;
 
 namespace PSZI_lr1
 {
 
     class CipherXOR
     {
-
-        public static string encryptText(string text, string key)
+        internal static BitArray encryptText(BitArray originalText, BitArray key)
         {
-           string ciphertext = ""; 
-
-           for (int i = 0; i < text.Length; i++)
-            {
-                Console.WriteLine(text[i] ^ key[i]);
-                ciphertext += Convert.ToChar(text[i]  ^  key[i]);
-            }
-            return ciphertext;
+            BitArray cipherText = new BitArray(originalText);
+            Console.WriteLine(EncoderClass.BitArrayToString(originalText));
+            Console.WriteLine(EncoderClass.BitArrayToString(key));
+            Console.WriteLine(EncoderClass.BitArrayToString(cipherText));
+            return cipherText.Xor(key);
         }
-
-
     }
 }

@@ -54,7 +54,7 @@ namespace PSZI_lr1
                 if (startShiftRegister.Length > 10)
                     throw new Exception("Стартовое значение генератора должно занимать максимум 10 бит");
 
-                
+
                 long startShiftRegisterToLong = EncoderClass.ByteArrayToLong(EncoderClass.BitArrayToByteArray(startShiftRegister));
                 Console.WriteLine("Стартовое значение: " + startShiftRegisterToLong);
                 LFSR lfsr = new LFSR((int)command);
@@ -69,19 +69,18 @@ namespace PSZI_lr1
             return keyToBitArray;
         }
 
-        public GeneratorKey()
-        {
-            this.startShiftRegister = new BitArray(10);
-
-            // Заполнение начального значения сдвигового регистра
-            // случайным образом
-            for (int i = 0; i < 10; i++)
-                this.startShiftRegister.Set(i, generateRandomValue(0, 1) == 1 ? true : false);
-        }
-
         public GeneratorKey(BitArray startShiftRegister)
         {
-            this.startShiftRegister = new BitArray(startShiftRegister);
+            if (startShiftRegister == null || startShiftRegister.Length == 0)
+            {
+                this.startShiftRegister = new BitArray(10);
+                // Заполнение начального значения сдвигового регистра
+                // случайным образом
+                for (int i = 0; i < 10; i++)
+                    this.startShiftRegister.Set(i, generateRandomValue(0, maxBeginValueLFSR) % 2 == 1 ? true : false);
+            }
+            else
+                this.startShiftRegister = new BitArray(startShiftRegister);
         }
     }
 }

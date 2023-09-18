@@ -6,7 +6,7 @@ namespace PSZI_lr1_v2
 {
     class EncoderClass
     {
-        public static Encoding enc = Encoding.GetEncoding(1251);
+        public static Encoding enc = Encoding.ASCII;
         public static int byteCountLong = 8;
         public static int byteCountInt = 4;
 
@@ -22,19 +22,20 @@ namespace PSZI_lr1_v2
             return str;
         }
 
-        public static string BitArraytoBinString(BitArray bits)
+        public static string BitArrayToBinString(BitArray bits)
         {
             string binaryStr = "";
-            foreach (var bit in bits)
+            foreach (bool bit in bits)
             {
-                binaryStr += Convert.ToChar(bit);
+                binaryStr += bit ? '1' : '0';
             }             
             return binaryStr;
         }
 
-        public static string ByteArraytoHex(byte[] bytes)
+        public static string BitArraytoHexString(BitArray bits)
         {
             StringBuilder sb = new StringBuilder();
+            byte[] bytes = EncoderClass.BitArrayToByteArray(bits);
             foreach (byte b in bytes)
                 sb.Append(Convert.ToString(b, 16).PadLeft(2, '0')).Append(' ');
 
@@ -81,6 +82,16 @@ namespace PSZI_lr1_v2
         public static BitArray ByteArrayToBitArray(byte[] bytes)
         {
             BitArray bits = new BitArray(bytes);
+            return bits;
+        }
+
+        internal static BitArray BinStringToBitArray(string str)
+        {
+            BitArray bits = new BitArray(str.Length);
+            for (int i = 0; i < str.Length; i++)
+            {
+                bits.Set(i, str[i] == '1');
+            }
             return bits;
         }
     }

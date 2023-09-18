@@ -16,7 +16,7 @@ namespace PSZI_lr1
         public BitArray key;
         public BitArray startshift;
         public BitArray cipherText;
-        public GeneratorKey generatorKey = new GeneratorKey();
+        public GeneratorKey generatorKey;
 
         const string fileNameStartText = "originalText.txt";
         const string fileNameCipherText = "cipherText.txt";
@@ -47,8 +47,9 @@ namespace PSZI_lr1
         }
 
         // Генерация ключа
-        public void GenerateKey(ModeGenKey command)
+        public void GenerateKey(ModeGenKey command, BitArray startShiftRegister)
         {
+            generatorKey = new GeneratorKey(startShiftRegister);
             key = generatorKey.GenerateKey(command, originalText);
 
             startshift = generatorKey.startShiftRegister;
@@ -98,7 +99,7 @@ namespace PSZI_lr1
 
         public double calcBalance(BitArray keyToBitArray)
         {
-            string KeyToBit = EncoderClass.BitArraytoBinString(keyToBitArray);
+            string KeyToBit = EncoderClass.BitArrayToBinString(keyToBitArray);
 
             double relativeNumberOfOnes = (double)KeyToBit.Count(x => x == '1') / KeyToBit.Length;
             double relativeNumberOfZeros = (double)KeyToBit.Count(x => x == '0') / KeyToBit.Length;
@@ -114,9 +115,9 @@ namespace PSZI_lr1
         }
 
 
-        public double calcPeriod(ModeGenKey command, string startShiftRegister)
+        public double calcPeriod(ModeGenKey command, BitArray startShiftRegister)
         {
-            long startShiftRegisterInt = EncoderClass.ByteArrayToLong(EncoderClass.StringToByteArray(startShiftRegister));
+            long startShiftRegisterInt = EncoderClass.ByteArrayToLong(EncoderClass.BitArrayToByteArray(startShiftRegister));
             LFSR lfsr = new LFSR((int)command);
             int period = lfsr.calcPeriod(startShiftRegisterInt);
             return period;
@@ -134,7 +135,7 @@ namespace PSZI_lr1
 
         public double calcChiSquare(BitArray keyToBitArray)
         {
-            string KeyToBit = EncoderClass.BitArraytoBinString(keyToBitArray);
+            string KeyToBit = EncoderClass.BitArrayToBinString(keyToBitArray);
 
             double relativeNumberOfOnes = (double)KeyToBit.Count(x => x == '1') / KeyToBit.Length;
             double relativeNumberOfZeros = (double)KeyToBit.Count(x => x == '0') / KeyToBit.Length;
@@ -153,7 +154,7 @@ namespace PSZI_lr1
 
         public List<double> calcСyclicality(BitArray keyToBitArray)
         {
-            string KeyToBit = EncoderClass.BitArraytoBinString(keyToBitArray);
+            string KeyToBit = EncoderClass.BitArrayToBinString(keyToBitArray);
             // Определение длин циклов с 1
             string[] strs1 = regexSplit(KeyToBit, "0+").Where(s => !string.IsNullOrEmpty(s)).ToArray();
             // Определение длин циклов с 0
@@ -179,7 +180,7 @@ namespace PSZI_lr1
             return relativeCountCicles;
         }
 
-        public double calcСorrelation(ModeGenKey command, BitArray keyToBitArray, string startShiftRegister)
+        public double calcСorrelation(ModeGenKey command, BitArray keyToBitArray)
         {
             Console.WriteLine("Входной ключ: " + String.Join(", ", keyToBitArray));
 
