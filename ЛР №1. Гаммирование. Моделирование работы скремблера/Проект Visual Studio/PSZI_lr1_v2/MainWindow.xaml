@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PSZI_lr1_v2"
         mc:Ignorable="d"
-        Title="LR1_Encrypt" Height="1100" Width="770">
+        Title="LR1_Encrypt" Height="1100" Width="798.5">
     <Window.Resources>
         <Style x:Key="Title" TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
@@ -25,6 +25,11 @@
             <Setter Property="ItemsControl.FontSize" Value="14"/>
             <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="ItemsControl.IsEnabled" Value="True"/>
+            <Setter Property="ItemsControl.Width" Value="230"/>
+            <Setter Property="ItemsControl.Margin" Value="10"/>
         </Style>
         <Style x:Key="ButtonWithoutStyle" TargetType="Button"/>
         <Style TargetType="Button">
@@ -57,9 +62,9 @@
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}" Text="Исходный текст:"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="TextBoxOriginalTextContentCC" IsReadOnly="False" Width="230" Margin="10" TextChanged="TextBoxOriginalTextContentCC_TextChanged"></TextBox>
-                            <TextBox x:Name="TextBoxOriginalTextContentCC2" IsReadOnly="True" Width="230" Height="20" Margin="10"></TextBox>
-                            <TextBox x:Name="TextBoxOriginalTextContentCC16" IsReadOnly="True" Width="230" Margin="10"></TextBox>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC" TextChanged="TextBoxOriginalTextContentCC_TextChanged"></TextBox>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC2" TextChanged="TextBoxOriginalTextContentCC2_TextChanged"></TextBox>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC16" IsEnabled="False"></TextBox>
                         </StackPanel>
                     </StackPanel>
 
@@ -84,18 +89,15 @@
 
                                 <TextBlock Style="{StaticResource Text}" Text="Начальное значение скремблера:"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="TextBoxScrCC" IsReadOnly="False" Width="230" Margin="10" TextChanged="TextBoxScrCC_TextChanged"></TextBox>
-                                    <TextBox x:Name="TextBoxScrCC2" IsReadOnly="True" Width="230" Height="20" Margin="10"></TextBox>
-                                    <TextBox x:Name="TextBoxScrCC16" IsReadOnly="True" Width="230" Margin="10"></TextBox>
-                                    <Button Style="{StaticResource ButtonWithoutStyle}">
-                                        <Image Source="see.png" Height="20"/>
-                                    </Button>
+                                    <TextBox x:Name="TextBoxScrCC" TextChanged="TextBoxScrCC_TextChanged"></TextBox>
+                                    <TextBox x:Name="TextBoxScrCC2" TextChanged="TextBoxScrCC2_TextChanged"></TextBox>
+                                    <TextBox x:Name="TextBoxScrCC16" IsEnabled="False"></TextBox>
                                 </StackPanel>
                                 <TextBlock Style="{StaticResource Text}" Text="Ключ:"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="TextBoxKeyCC" IsReadOnly="False" Width="230" Margin="10" TextChanged="TextBoxKeyCC_TextChanged"></TextBox>
-                                    <TextBox x:Name="TextBoxKeyCC2" IsReadOnly="True" Width="230" Height="20" Margin="10"></TextBox>
-                                    <TextBox x:Name="TextBoxKeyCC16" IsReadOnly="True" Width="230" Margin="10"></TextBox>
+                                    <TextBox x:Name="TextBoxKeyCC" TextChanged="TextBoxKeyCC_TextChanged"></TextBox>
+                                    <TextBox x:Name="TextBoxKeyCC2" TextChanged="TextBoxKeyCC2_TextChanged"></TextBox>
+                                    <TextBox x:Name="TextBoxKeyCC16" IsEnabled="False"></TextBox>
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
                                     <Button x:Name="ButtonCheckBalance" Click="ButtonCheckBalance_Click" Width="200">Сбалансированность</Button>
@@ -103,9 +105,9 @@
                                     <Button x:Name="ButtonCheckCorrelation" Click="ButtonCheckCorrelation_Click" Width="200">Корреляция</Button>
                                 </StackPanel>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10">
-                                    <TextBox x:Name="TextBoxKeyBal" IsReadOnly="True" Width="200" Margin="10" Height="20"></TextBox>
-                                    <TextBox x:Name="TextBoxKeyCycle" IsReadOnly="True" Width="200" Margin="10" Height="20"></TextBox>
-                                    <TextBox x:Name="TextBoxKeyCorr" IsReadOnly="True" Width="200" Margin="10" Height="20"></TextBox>
+                                    <TextBox x:Name="TextBoxKeyBal" ></TextBox>
+                                    <TextBox x:Name="TextBoxKeyCycle"></TextBox>
+                                    <TextBox x:Name="TextBoxKeyCorr" IsEnabled="False"></TextBox>
                                 </StackPanel>
                             </StackPanel>
                         </Border>
@@ -116,12 +118,9 @@
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}" Text="Зашифрованный текст:"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="TextBoxCipherTextCC" IsReadOnly="False" Width="230" Margin="10" TextChanged="TextBoxCipherTextCC_TextChanged"></TextBox>
-                            <TextBox x:Name="TextBoxCipherTextCC2" IsReadOnly="True" Width="230" Height="20" Margin="10"></TextBox>
+                            <TextBox x:Name="TextBoxCipherTextCC" Width="230" Margin="10" TextChanged="TextBoxCipherTextCC_TextChanged"></TextBox>
+                            <TextBox x:Name="TextBoxCipherTextCC2" Width="230" Height="20" Margin="10"></TextBox>
                             <TextBox x:Name="TextBoxCipherTextCC16" IsReadOnly="True" Width="230" Margin="10"></TextBox>
-                            <Button Style="{StaticResource ButtonWithoutStyle}">
-                                <Image Source="see.png" Height="20"/>
-                            </Button>
                         </StackPanel>
                     </StackPanel>
 
@@ -134,14 +133,7 @@
                             <CheckBox x:Name="CheckBoxScr2" Checked="ChooseLFSR21">x^10+x^7+1</CheckBox>
                         </StackPanel>
 
-                        <StackPanel Style="{StaticResource InputBlock}">
-                            <TextBlock Style="{StaticResource Text}" Text="Введите начальное значение ключа:"/>
-                            <StackPanel Orientation="Horizontal">
-                                <TextBox x:Name="TextBoxBeginKeyCC" IsReadOnly="False" Width="230" Margin="10"></TextBox>
-                                <TextBox x:Name="TextBoxBeginKeyCC2" IsReadOnly="False" Width="230" Height="20" Margin="10"></TextBox>
-                                <TextBox x:Name="TextBoxBeginKeyCC16" IsReadOnly="False" Width="230" Margin="10"></TextBox>
-                            </StackPanel>
-                        </StackPanel>
+                        <StackPanel Style="{StaticResource InputBlock}"/>
 
 
                         <Button x:Name="ButtonResearchScrambler" Click="ButtonResearchScrambler_Click">Исследовать скремблер</Button>

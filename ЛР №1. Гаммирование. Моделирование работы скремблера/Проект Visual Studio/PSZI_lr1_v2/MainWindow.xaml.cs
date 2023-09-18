@@ -21,11 +21,13 @@ namespace PSZI_lr1_v2
     {
         Program program = null;
         ModeGenKey chooseModToGenKey = ModeGenKey.random;
-        ModeGenKey chooseModToGenKey1 = ModeGenKey.random;
+        ModeGenKey chooseModToGenKey1 = ModeGenKey.LFSR1;
 
         public MainWindow()
         {
             InitializeComponent();
+            CheckBoxRandom.IsChecked = true;
+            CheckBoxScr1.IsChecked = true;
             program = new Program();
         }
         
@@ -104,7 +106,7 @@ namespace PSZI_lr1_v2
         {
             string text = TextBoxOriginalTextContentCC2.Text;
             program.originalText = EncoderClass.BinStringToBitArray(text);
-            Program.writeToFile("originalText.txt", text);
+            Program.writeToFile("originalText.txt", EncoderClass.BitArrayToString(program.originalText));
             writeOriginToWindow();
         }
 
@@ -119,9 +121,9 @@ namespace PSZI_lr1_v2
 
         private void TextBoxKeyCC2_TextChanged(object sender, RoutedEventArgs e)
         {
-            string key = TextBoxKeyCC.Text;
+            string key = TextBoxKeyCC2.Text;
             program.key = EncoderClass.BinStringToBitArray(key);
-            Program.writeToFile("key.txt", key);
+            Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
             writeKeyToWindow();
         }
 
@@ -136,9 +138,9 @@ namespace PSZI_lr1_v2
 
         private void TextBoxScrCC2_TextChanged(object sender, RoutedEventArgs e)
         {
-            string scr = TextBoxScrCC.Text;
+            string scr = TextBoxScrCC2.Text;
             program.startshift = EncoderClass.BinStringToBitArray(scr);
-            Program.writeToFile("startShiftRegister.txt", scr);
+            Program.writeToFile("startShiftRegister.txt", EncoderClass.BitArrayToString(program.startshift));
             writeShiftToWindow();
         }
 
@@ -199,7 +201,7 @@ namespace PSZI_lr1_v2
         private void ButtonResearchScrambler_Click(object sender, RoutedEventArgs e)
         {
             ModeGenKey command = chooseModToGenKey1;
-            BitArray keyToBitArray = EncoderClass.StringToBitArray(TextBoxBeginKeyCC.Text);
+            BitArray keyToBitArray = EncoderClass.StringToBitArray(TextBoxScrCC.Text);
             TextBoxTScr.Text = program.calcPeriod(command, keyToBitArray).ToString();
             TextBoxX2.Text = program.calcChiSquare(keyToBitArray).ToString();
         }
