@@ -45,7 +45,7 @@
     </Window.Resources>
 
     <Grid Margin="0,0,0.2,40.4">
-        <ScrollViewer Margin="0,10,0,0" Height="1010" VerticalAlignment="Top">
+        <ScrollViewer Margin="0,10,-0.2,0" Height="713" VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel Margin="5">
                     <TextBlock Style="{StaticResource Title}" Text="Гаммирование. Моделирование работы скремблера" />

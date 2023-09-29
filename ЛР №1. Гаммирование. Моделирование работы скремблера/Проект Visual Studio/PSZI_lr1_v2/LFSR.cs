@@ -48,6 +48,7 @@ namespace PSZI_lr1
             }
 
             int ind = Array.IndexOf(set.ToArray(), lastShiftRegister);
+            Console.WriteLine("set count = " + set.Count);
             return setLength - ind;
         }
 
