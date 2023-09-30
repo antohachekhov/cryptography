@@ -11,6 +11,17 @@ using System.Windows;
 
 namespace PSZI_lr1
 {
+    public static class BitArrayFuctions
+    {
+        public static BitArray Append(this BitArray current, BitArray after)
+        {
+            var bools = new bool[current.Count + after.Count];
+            current.CopyTo(bools, 0);
+            after.CopyTo(bools, current.Count);
+            return new BitArray(bools);
+        }
+    }
+
     class Program
     {
         public BitArray originalText;
@@ -38,7 +49,7 @@ namespace PSZI_lr1
         public void ReadKey(string filename)
         {
             Console.WriteLine("Читаем ключ из файла...");
-            key = EncoderClass.StringToBitArray(filename);
+            key = EncoderClass.StringToBitArray(readFromFile(filename));
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
         }
 
@@ -81,6 +92,8 @@ namespace PSZI_lr1
             {
                 data = encryptorByFeistelNetwork.Encrypte(data);
             }
+
+            this.cipherText = BitArrayFuctions.Append(data.firstPartText, data.secondPartText);
         }
 
         public static string readFromFile(string fileName)

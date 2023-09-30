@@ -27,6 +27,7 @@ namespace PSZI_lr1_v2
         Program program = null;
         ModeGenKey chooseModToGenKey = ModeGenKey.one;
         ModeGenFunc chooseModToFunc = ModeGenFunc.one;
+        bool flagText = false;
 
         public MainWindow()
         {
@@ -88,16 +89,19 @@ namespace PSZI_lr1_v2
         // Изменение оригинального текста 
         private void TextBoxOriginalTextContentCC_TextChanged(object sender, RoutedEventArgs e)
         {
+            if (flagText == false)
+                TextBoxOriginalTextContentCC16.TextChanged -= TextBoxOriginalTextContentCC16_TextChanged;
             string text = TextBoxOriginalTextContentCC.Text;
             program.originalText = EncoderClass.StringToBitArray(text);
             Program.writeToFile("originalText.txt", text);
             writeOriginToWindow();
         }
 
-        private void TextBoxOriginalTextContentCC2_TextChanged(object sender, RoutedEventArgs e)
+        private void TextBoxOriginalTextContentCC16_TextChanged(object sender, RoutedEventArgs e)
         {
-            //string text = TextBoxOriginalTextContentCC2.Text;
-            //program.originalText = EncoderClass.BinStringToBitArray(text);
+            string text = TextBoxOriginalTextContentCC16.Text;
+            string binString = EncoderClass.HexStringToBinString(text);
+            program.originalText = EncoderClass.BinStringToBitArray(binString);
             Program.writeToFile("originalText.txt", EncoderClass.BitArrayToString(program.originalText));
             writeOriginToWindow();
         }
@@ -108,13 +112,15 @@ namespace PSZI_lr1_v2
             string key = TextBoxKeyCC.Text;
             program.key = EncoderClass.StringToBitArray(key);
             Program.writeToFile("key.txt", key);
+            //TextBoxKeyCC.TextChanged = false;
             writeKeyToWindow();
         }
 
-        private void TextBoxKeyCC2_TextChanged(object sender, RoutedEventArgs e)
+        private void TextBoxKeyCC16_TextChanged(object sender, RoutedEventArgs e)
         {
-            //string key = TextBoxKeyCC2.Text;
-            //program.key = EncoderClass.BinStringToBitArray(key);
+            string key = TextBoxKeyCC16.Text;
+            string binString = EncoderClass.HexStringToBinString(key);
+            program.key = EncoderClass.BinStringToBitArray(binString);
             Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
             writeKeyToWindow();
         }
@@ -125,7 +131,6 @@ namespace PSZI_lr1_v2
             string cipher = TextBoxCipherTextCC.Text;
             program.cipherText = EncoderClass.StringToBitArray(cipher);
             Program.writeToFile("cipherText.txt", cipher);
-            //TextBoxCipherTextCC2.Text = EncoderClass.BitArrayToBinString(program.cipherText);
             TextBoxCipherTextCC16.Text = EncoderClass.BitArraytoHexString(program.cipherText);
         }
 
@@ -140,6 +145,7 @@ namespace PSZI_lr1_v2
                 program.ReadOriginalText(openFileDialog.FileName);
                 writeOriginToWindow();
             }
+            flagText = true;
         }
 
         // Открытие файла с ключом по ссылке
@@ -149,16 +155,18 @@ namespace PSZI_lr1_v2
             openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                FilenameOriginalText.Text = openFileDialog.FileName;
-                program.ReadOriginalText(openFileDialog.FileName);
-                writeOriginToWindow();
+                FilenameKey.Text = openFileDialog.FileName;
+                program.ReadKey(openFileDialog.FileName);
+                writeKeyToWindow();
             }
         }
 
-        // Открытие шифротекста из файла
+        // Шифрование
         private void ButtonCipherText_Click(object sender, RoutedEventArgs e)
         {
-            program.cipherText = CipherXOR.encryptText(program.originalText, program.key);
+            program.GenerateKey(chooseModToGenKey);
+            program.GenerateEncryptor(chooseModToFunc);
+            program.Encryption();
             Program.writeToFile("cipherText.txt", EncoderClass.BitArrayToString(program.cipherText));
             writeCipherToWindow();
         }
@@ -167,7 +175,6 @@ namespace PSZI_lr1_v2
         public void writeKeyToWindow()
         {
             TextBoxKeyCC.Text = EncoderClass.BitArrayToString(program.key);
-            //TextBoxKeyCC2.Text = EncoderClass.BitArrayToBinString(program.key);
             TextBoxKeyCC16.Text = EncoderClass.BitArraytoHexString(program.key);
         }
 
@@ -175,7 +182,6 @@ namespace PSZI_lr1_v2
         public void writeOriginToWindow()
         {
             TextBoxOriginalTextContentCC.Text = EncoderClass.BitArrayToString(program.originalText);
-            //TextBoxOriginalTextContentCC2.Text = EncoderClass.BitArrayToBinString(program.originalText);
             TextBoxOriginalTextContentCC16.Text = EncoderClass.BitArraytoHexString(program.originalText);
         }
 
@@ -183,8 +189,31 @@ namespace PSZI_lr1_v2
         public void writeCipherToWindow()
         {
             TextBoxCipherTextCC.Text = EncoderClass.BitArrayToString(program.cipherText);
-            //TextBoxCipherTextCC2.Text = EncoderClass.BitArrayToBinString(program.cipherText);
             TextBoxCipherTextCC16.Text = EncoderClass.BitArraytoHexString(program.cipherText);
         }
+
+        /*private void TextBoxOriginalTextContentCC_IsMouseCaptured(object sender, RoutedEventArgs e)
+        {
+            if(TextBoxOriginalTextContentCC.IsMouseCaptured)
+            {
+                TextBoxOriginalTextContentCC.TextChanged += new System.Windows.Controls.TextChangedEventHandler(TextBoxOriginalTextContentCC_TextChanged);
+            }
+            else
+            {
+                TextBoxOriginalTextContentCC.TextChanged += null;
+            }
+        }
+
+        private void TextBoxKeyCC_IsMouseCaptured(object sender, RoutedEventArgs e)
+        {
+            if (TextBoxOriginalTextContentCC.IsMouseCaptured)
+            {
+                TextBoxKeyCC.TextChanged += new System.Windows.Controls.TextChangedEventHandler(TextBoxKeyCC_TextChanged);
+            }
+            else
+            {
+                TextBoxKeyCC.TextChanged += new System.Windows.Controls.TextChangedEventHandler(null);
+            }
+        }*/
     }
 }

@@ -26,16 +26,23 @@ namespace PSZI_lr1
 
         BitArray func(BitArray partText, BitArray partKey)
         {
-            BitArray newPartText = new BitArray(partText.Length);
+            BitArray newPartText;
 
             if (command == ModeGenFunc.one)
             {
-                newPartText = partKey;
+                newPartText = new BitArray(partKey);
             }
             else
             {
-                // ещё больше магии               
-                // Доделать
+                // функция имеет вид ( ) ( ), где() – левая часть шифруемого блока,
+                // на которую посредством операции XOR была наложена 32 - битная последовательность, сгенерированная 16 разрядным скремблером вида
+                BitArray leftPartText = new BitArray(partKey.Length);
+                for (int i = 0; i < partKey.Length && i < partText.Length; i++)
+                    leftPartText[i] = partText[i];
+                LFSR lfsr = new LFSR(false);
+                BitArray sequence = lfsr.generatePRV(partKey.Length, 100);
+                leftPartText.Xor(sequence);
+                newPartText = new BitArray(leftPartText);
             }
 
             return newPartText;

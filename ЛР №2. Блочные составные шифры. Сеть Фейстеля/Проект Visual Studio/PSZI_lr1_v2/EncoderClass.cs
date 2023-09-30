@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Text;
+using System.Linq;
 
 namespace PSZI_lr1_v2
 {
@@ -15,6 +16,14 @@ namespace PSZI_lr1_v2
             return enc.GetBytes(str);
         }
 
+        public static string HexStringToBinString(string hexstring)
+        {
+            hexstring = hexstring.Replace(" ", "");
+            return String.Join(String.Empty, 
+                               hexstring.Select(c => Convert.ToString(Convert.ToInt32(c.ToString(), 16), 2).PadLeft(4, '0')));
+        }
+
+
         public static string ByteArrayToString(byte[] bytes)
         {
             string str = enc.GetString(bytes);
@@ -28,7 +37,7 @@ namespace PSZI_lr1_v2
             foreach (bool bit in bits)
             {
                 binaryStr += bit ? '1' : '0';
-            }             
+            }
             return binaryStr;
         }
 
@@ -87,6 +96,8 @@ namespace PSZI_lr1_v2
 
         internal static BitArray BinStringToBitArray(string str)
         {
+
+
             BitArray bits = new BitArray(str.Length);
             for (int i = 0; i < str.Length; i++)
             {
@@ -94,5 +105,7 @@ namespace PSZI_lr1_v2
             }
             return bits;
         }
+
+
     }
 }

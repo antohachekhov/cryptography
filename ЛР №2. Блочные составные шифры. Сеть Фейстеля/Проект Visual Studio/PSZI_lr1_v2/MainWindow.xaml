@@ -56,14 +56,13 @@
                             <TextBox x:Name="FilenameOriginalText" Width="520" VerticalAlignment="Center" UseLayoutRounding="False" Height="20" MaxWidth="520" MaxHeight="20"/>
                             <Button x:Name="ButtonOpenOriginalFile" Content="Выбрать файл" HorizontalAlignment="Right" Width="200" VerticalAlignment="Center" MinHeight="20" Height="22" HorizontalContentAlignment="Center" Padding="0,0,0,0" Click="ButtonOpenOriginalFile_Click"/>
                         </StackPanel>
-
                     </StackPanel>
 
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}" Text="Исходный текст:"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="TextBoxOriginalTextContentCC" TextChanged="TextBoxOriginalTextContentCC_TextChanged" Width="350"></TextBox>
-                            <TextBox x:Name="TextBoxOriginalTextContentCC16" Width="350"/>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC" TextChanged="TextBoxOriginalTextContentCC_TextChanged" Width="350" Cursor="None" IsEnabled="True"></TextBox>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC16" TextChanged="TextBoxOriginalTextContentCC16_TextChanged" Width="350" IsEnabled="True"/>
                         </StackPanel>
                     </StackPanel>
 
@@ -73,24 +72,30 @@
                         <Border BorderThickness="2" BorderBrush="#E667AF">
 
                             <StackPanel Style="{StaticResource InputBlock}" Margin="5,5" >
-                                <TextBlock Style="{StaticResource Title}" Text="Шифрование"/>
+                                <TextBlock Style="{StaticResource Title}" Text="Шифрование" Margin="322,0,321.8,0"/>
+                                <TextBlock Height="10" />
+                                <TextBlock Style="{StaticResource Text}" Text="Введите путь к файлу, в котором расположен ключ для шифрования."/>
+                                <StackPanel Height="29" UseLayoutRounding="False" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBox x:Name="FilenameKey" Width="520" VerticalAlignment="Center" UseLayoutRounding="False" Height="20" MaxWidth="520" MaxHeight="20" Margin="10,4.4"/>
+                                    <Button x:Name="ButtonOpenKey" Content="Выбрать файл" HorizontalAlignment="Right" Width="200" VerticalAlignment="Center" MinHeight="20" Height="22" HorizontalContentAlignment="Center" Padding="0,0,0,0" Click="ButtonOpenKey_Click"/>
+                                </StackPanel>
 
                                 <TextBlock Style="{StaticResource Text}" Text="Ключ:"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="TextBoxKeyCC" TextChanged="TextBoxKeyCC_TextChanged" Width="350"></TextBox>
-                                    <TextBox x:Name="TextBoxKeyCC16" Width="350"/>
+                                    <TextBox x:Name="TextBoxKeyCC" TextChanged="TextBoxKeyCC_TextChanged" Width="350" IsEnabled="True"/>
+                                    <TextBox x:Name="TextBoxKeyCC16" TextChanged="TextBoxKeyCC16_TextChanged" Width="350" IsEnabled="True"/>
                                 </StackPanel>
-                                
+
                                 <StackPanel Style="{StaticResource InputBlock}">
                                     <TextBlock Style="{StaticResource Text}" Text="С использованием способа генерации подключей:"/>
-                                    <CheckBox x:Name="CheckBoxKeyN1" Checked="ChooseKeyN1">а) 32 подряд идущих бит заданного ключа</CheckBox>
-                                    <CheckBox x:Name="CheckBoxKeyN2" Checked="ChooseKeyN2">б) 8 подряд идущих бит ключа</CheckBox>
+                                    <CheckBox x:Name="CheckBoxKeyN1" Checked="ChooseKeyN1" Content="а) 32 подряд идущих бит заданного ключа"/>
+                                    <CheckBox x:Name="CheckBoxKeyN2" Checked="ChooseKeyN2" Content="б) 8 подряд идущих бит ключа"/>
                                 </StackPanel>
 
                                 <StackPanel Style="{StaticResource InputBlock}">
                                     <TextBlock Style="{StaticResource Text}" Text="С использованием образующей функции:"/>
-                                    <CheckBox x:Name="CheckBoxOF1" Checked="ChooseOF1">F(Vi) = Vi</CheckBox>
-                                    <CheckBox x:Name="CheckBoxOF2" Checked="ChooseOF2">F(Vi, X) = S(X) ⊕ Vi</CheckBox>
+                                    <CheckBox x:Name="CheckBoxOF1" Checked="ChooseOF1" Content="F(Vi) = Vi"/>
+                                    <CheckBox x:Name="CheckBoxOF2" Checked="ChooseOF2" Content="F(Vi, X) = S(X) ⊕ Vi"/>
                                 </StackPanel>
                                 <TextBlock Style="{StaticResource Text}" Text="Количество раундов:"/>
                                 <StackPanel Orientation="Horizontal">
