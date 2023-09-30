@@ -51,7 +51,7 @@ namespace PSZI_lr1
         public dataToEncryption Encrypte(dataToEncryption data)
         {
             BitArray firstPartText = new BitArray(data.firstPartText);
-            data.firstPartText = func(data.firstPartText, data.partKey).Xor(data.secondPartText);
+            data.firstPartText = func(data.firstPartText, data.partKey).And(data.secondPartText);
 
             data.secondPartText = firstPartText;
             return data;

@@ -61,8 +61,8 @@
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}" Text="Исходный текст:"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="TextBoxOriginalTextContentCC" TextChanged="TextBoxOriginalTextContentCC_TextChanged" Width="350" Cursor="None" IsEnabled="True"></TextBox>
-                            <TextBox x:Name="TextBoxOriginalTextContentCC16" TextChanged="TextBoxOriginalTextContentCC16_TextChanged" Width="350" IsEnabled="True"/>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC" GotFocus="TextBoxOriginalTextContentCC_GotFocus" LostFocus="TextBoxOriginalTextContentCC_LostFocus" Width="350"></TextBox>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC16" GotFocus="TextBoxOriginalTextContentCC16_GotFocus" LostFocus="TextBoxOriginalTextContentCC16_LostFocus" Width="350" IsEnabled="True"/>
                         </StackPanel>
                     </StackPanel>
 

@@ -19,8 +19,11 @@ namespace PSZI_lr1_v2
         public static string HexStringToBinString(string hexstring)
         {
             hexstring = hexstring.Replace(" ", "");
-            return String.Join(String.Empty, 
+            string binString = String.Join(String.Empty,
                                hexstring.Select(c => Convert.ToString(Convert.ToInt32(c.ToString(), 16), 2).PadLeft(4, '0')));
+            char[] charArray = binString.ToCharArray();
+            Array.Reverse(charArray);
+            return new string(charArray);
         }
 
 
@@ -96,8 +99,6 @@ namespace PSZI_lr1_v2
 
         internal static BitArray BinStringToBitArray(string str)
         {
-
-
             BitArray bits = new BitArray(str.Length);
             for (int i = 0; i < str.Length; i++)
             {

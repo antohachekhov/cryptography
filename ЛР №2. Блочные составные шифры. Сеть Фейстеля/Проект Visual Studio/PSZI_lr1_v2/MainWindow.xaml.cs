@@ -1,9 +1,8 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Windows;
 using Microsoft.Win32;
 using PSZI_lr1;
+using System.Windows.Controls;
 
 namespace PSZI_lr1_v2
 {
@@ -89,12 +88,9 @@ namespace PSZI_lr1_v2
         // Изменение оригинального текста 
         private void TextBoxOriginalTextContentCC_TextChanged(object sender, RoutedEventArgs e)
         {
-            if (flagText == false)
-                TextBoxOriginalTextContentCC16.TextChanged -= TextBoxOriginalTextContentCC16_TextChanged;
             string text = TextBoxOriginalTextContentCC.Text;
             program.originalText = EncoderClass.StringToBitArray(text);
             Program.writeToFile("originalText.txt", text);
-            writeOriginToWindow();
         }
 
         private void TextBoxOriginalTextContentCC16_TextChanged(object sender, RoutedEventArgs e)
@@ -103,7 +99,6 @@ namespace PSZI_lr1_v2
             string binString = EncoderClass.HexStringToBinString(text);
             program.originalText = EncoderClass.BinStringToBitArray(binString);
             Program.writeToFile("originalText.txt", EncoderClass.BitArrayToString(program.originalText));
-            writeOriginToWindow();
         }
 
         // Изменение ключа
@@ -164,11 +159,22 @@ namespace PSZI_lr1_v2
         // Шифрование
         private void ButtonCipherText_Click(object sender, RoutedEventArgs e)
         {
-            program.GenerateKey(chooseModToGenKey);
-            program.GenerateEncryptor(chooseModToFunc);
-            program.Encryption();
-            Program.writeToFile("cipherText.txt", EncoderClass.BitArrayToString(program.cipherText));
-            writeCipherToWindow();
+            decimal d;
+            if (decimal.TryParse(TextBoxRound.Text, out d))
+            {
+                program.countRounds = (int)d;
+                program.GenerateKey(chooseModToGenKey);
+                program.GenerateEncryptor(chooseModToFunc);
+                program.Encryption();
+                Program.writeToFile("cipherText.txt", EncoderClass.BitArrayToString(program.cipherText));
+                writeCipherToWindow();
+            }
+            else
+            {
+                //invalid
+                MessageBox.Show("Please enter a valid number of rounds");
+                return;
+            }
         }
 
         // Запись ключа в текстовые окна
@@ -192,28 +198,25 @@ namespace PSZI_lr1_v2
             TextBoxCipherTextCC16.Text = EncoderClass.BitArraytoHexString(program.cipherText);
         }
 
-        /*private void TextBoxOriginalTextContentCC_IsMouseCaptured(object sender, RoutedEventArgs e)
+        private void TextBoxOriginalTextContentCC_GotFocus(object sender, RoutedEventArgs e)
         {
-            if(TextBoxOriginalTextContentCC.IsMouseCaptured)
-            {
-                TextBoxOriginalTextContentCC.TextChanged += new System.Windows.Controls.TextChangedEventHandler(TextBoxOriginalTextContentCC_TextChanged);
-            }
-            else
-            {
-                TextBoxOriginalTextContentCC.TextChanged += null;
-            }
+            TextBoxOriginalTextContentCC.TextChanged += TextBoxOriginalTextContentCC_TextChanged;
         }
 
-        private void TextBoxKeyCC_IsMouseCaptured(object sender, RoutedEventArgs e)
+        private void TextBoxOriginalTextContentCC_LostFocus(object sender, RoutedEventArgs e)
         {
-            if (TextBoxOriginalTextContentCC.IsMouseCaptured)
-            {
-                TextBoxKeyCC.TextChanged += new System.Windows.Controls.TextChangedEventHandler(TextBoxKeyCC_TextChanged);
-            }
-            else
-            {
-                TextBoxKeyCC.TextChanged += new System.Windows.Controls.TextChangedEventHandler(null);
-            }
-        }*/
+            writeOriginToWindow();
+            TextBoxOriginalTextContentCC.TextChanged -= TextBoxOriginalTextContentCC_TextChanged;
+        }
+        private void TextBoxOriginalTextContentCC16_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBoxOriginalTextContentCC16.TextChanged += TextBoxOriginalTextContentCC16_TextChanged;
+        }
+
+        private void TextBoxOriginalTextContentCC16_LostFocus(object sender, RoutedEventArgs e)
+        {
+            writeOriginToWindow();
+            TextBoxOriginalTextContentCC16.TextChanged -= TextBoxOriginalTextContentCC16_TextChanged;
+        }
     }
 }

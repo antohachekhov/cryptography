@@ -26,7 +26,6 @@ namespace PSZI_lr1
     {
         public BitArray originalText;
         public BitArray key;
-        public BitArray startshift;
         public BitArray cipherText;
         public GeneratorKey generatorKey;
         public EncryptorByFeistelNetwork encryptorByFeistelNetwork;
@@ -84,16 +83,25 @@ namespace PSZI_lr1
                 secondBlockOfText[j] = originalText[lenghtOfBlock + j];
 
             int i = 0;
-            BitArray partKey = this.generatorKey.GenerateKey(0);
+            BitArray partKey = generatorKey.GenerateKey(0);
 
             dataToEncryption data = new dataToEncryption(firstBlockOfText, secondBlockOfText, partKey);
 
-            for (; i < this.countRounds; i++)
+            for (; i < countRounds; i++, data.partKey = generatorKey.GenerateKey(i))
             {
+                Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
+                Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
+                Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
+
                 data = encryptorByFeistelNetwork.Encrypte(data);
+
+
             }
 
-            this.cipherText = BitArrayFuctions.Append(data.firstPartText, data.secondPartText);
+            Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
+            Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
+            Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
+            cipherText = BitArrayFuctions.Append(data.firstPartText, data.secondPartText);
         }
 
         public static string readFromFile(string fileName)
