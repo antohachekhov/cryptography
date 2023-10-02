@@ -184,6 +184,54 @@ namespace PSZI_lr1_v2
             }
         }
 
+        // Подача бита от 1 до 64
+        public void TextBoxChangeBit_TextChanged (object sender, RoutedEventArgs e)
+        {
+            decimal d;
+            if (decimal.TryParse(TextBoxChangeBit.Text, out d))
+            {
+                if (d > 0 && d < 65)
+                {
+                    TextBoxChangeBit.Text = "1";
+                }
+                else
+                {
+                    throw new Exception();
+                }
+                
+            }
+            else
+            {
+                //invalid
+                MessageBox.Show("Please enter a valid number of rounds");
+                return;
+            }
+        }
+
+        public void ButtonSearch_Click (object sender, RoutedEventArgs e)
+        {
+            decimal countRounds;
+            if (decimal.TryParse(TextBoxChangeBit.Text, out countRounds))
+            {
+                    program.countRounds = (int)countRounds;
+                    program.GenerateKey(chooseModToGenKey);
+                    program.GenerateEncryptor(chooseModToFunc);
+                int[] a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text));
+                TextBoxExitCC.Text = String.Join(" ", a);
+            }
+            else
+            {
+                //invalid
+                MessageBox.Show("Please enter a valid number of rounds");
+                return;
+            }
+        }
+
+        /*public static void TextBoxExitCC_TextChanged()
+        {
+
+        }*/
+
         // Запись ключа в текстовые окна
         public void writeKeyToWindow()
         {

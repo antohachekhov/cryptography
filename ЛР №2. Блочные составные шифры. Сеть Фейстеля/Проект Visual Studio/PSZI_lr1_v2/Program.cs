@@ -164,5 +164,68 @@ namespace PSZI_lr1
                 Console.WriteLine("В файл " + e.Message.ToString() + " невозможно записать данные");
             }
         }
+
+        public int countChangedBits(BitArray one, BitArray two)
+        {
+            BitArray bitChangeArray = new BitArray(one);
+            bitChangeArray.Xor(two);
+
+            int count = 0;
+
+            for (int i = 0; i < bitChangeArray.Count; i++)
+            {
+                if (bitChangeArray.Get(i))
+                    count++;
+            }
+
+            return count;
+
+        }
+
+
+        public int[] searchAvalancheEffect(int index)
+        {
+            BitArray originalTextFalse = new BitArray(this.originalText);
+            BitArray originalTextTrue = new BitArray(this.originalText);
+
+            int lenghtOfBlock = originalText.Length / 2;
+            BitArray firstBlockOfTextFalse = new BitArray(lenghtOfBlock);
+            BitArray secondBlockOfTextFalse = new BitArray(lenghtOfBlock);
+
+            if (lenghtOfBlock + lenghtOfBlock != originalText.Length)
+                MessageBox.Show("Длины не совпадают! Никита был не прав, а Саша неправильно перевела текст", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+
+            for (int j = 0; j < lenghtOfBlock; j++)
+                firstBlockOfTextFalse[j] = originalText[j];
+
+            for (int j = 0; j < lenghtOfBlock; j++)
+                secondBlockOfTextFalse[j] = originalText[lenghtOfBlock + j];
+
+            BitArray firstBlockOfTextTrue = new BitArray(firstBlockOfTextFalse);
+            BitArray secondBlockOfTextTrue = new BitArray(secondBlockOfTextFalse);
+
+            firstBlockOfTextFalse.Set(index, false);
+            firstBlockOfTextTrue.Set(index, true);
+            secondBlockOfTextFalse.Set(index, false);
+            secondBlockOfTextTrue.Set(index, true);
+
+            int i = 0;
+            BitArray partKey = generatorKey.GenerateKey(i);
+
+            dataToEncryption dataFalse = new dataToEncryption(firstBlockOfTextFalse, secondBlockOfTextFalse, partKey);
+            dataToEncryption dataTrue = new dataToEncryption(firstBlockOfTextTrue, secondBlockOfTextTrue, partKey);
+
+            int[] countChangedBitsArray = new int[countRounds];
+            for (; i < countRounds; i++, dataFalse.partKey = generatorKey.GenerateKey(i), dataTrue.partKey = generatorKey.GenerateKey(i))
+            {
+                dataFalse = encryptorByFeistelNetwork.Encrypte(dataFalse);
+                dataTrue = encryptorByFeistelNetwork.Encrypte(dataTrue);
+                BitArray cipherTextFalse = BitArrayFuctions.Append(dataFalse.firstPartText, dataFalse.secondPartText);
+                BitArray cipherTextTrue = BitArrayFuctions.Append(dataTrue.firstPartText, dataTrue.secondPartText);
+                countChangedBitsArray[i] = countChangedBits(cipherTextFalse, cipherTextTrue);
+            }
+
+            return countChangedBitsArray;
+        }
     }
 }
