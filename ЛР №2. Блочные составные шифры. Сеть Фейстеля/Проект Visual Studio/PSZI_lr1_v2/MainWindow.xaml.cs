@@ -3,6 +3,10 @@ using System.Windows;
 using Microsoft.Win32;
 using PSZI_lr1;
 using System.Windows.Controls;
+using System.Diagnostics;
+using System.IO;
+using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace PSZI_lr1_v2
 {
@@ -213,12 +217,13 @@ namespace PSZI_lr1_v2
         public void ButtonSearch_Click (object sender, RoutedEventArgs e)
         {
             decimal countRounds;
+            int[] a;
             if (decimal.TryParse(TextBoxRound.Text, out countRounds))
             {
-                    program.countRounds = (int)countRounds;
-                    program.GenerateKey(chooseModToGenKey);
-                    program.GenerateEncryptor(chooseModToFunc);
-                int[] a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text));
+                program.countRounds = (int)countRounds;
+                program.GenerateKey(chooseModToGenKey);
+                program.GenerateEncryptor(chooseModToFunc);
+                a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text));
                 TextBoxExitCC.Text = String.Join(" ", a);
             }
             else
@@ -227,6 +232,25 @@ namespace PSZI_lr1_v2
                 MessageBox.Show("Please enter a valid number of rounds");
                 return;
             }
+
+            string fileNameRounds = @".\rounds.txt";
+            string fileNameCount = @".\countChanges.txt";
+
+            int[] rounds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+
+            using (var sr = new StreamWriter(fileNameRounds))
+            {
+                sr.Write(String.Join("\n", rounds));
+            }
+
+            using (var sr = new StreamWriter(fileNameCount))
+            {
+                sr.Write(String.Join("\n", a));
+            }
+
+            Process.Start("..\\..\\..\\..\\main.exe");
+
+
         }
 
         /*public static void TextBoxExitCC_TextChanged()
