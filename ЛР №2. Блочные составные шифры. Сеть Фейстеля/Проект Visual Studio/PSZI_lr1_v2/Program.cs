@@ -187,33 +187,44 @@ namespace PSZI_lr1
         {
             BitArray originalTextFalse = new BitArray(this.originalText);
             BitArray originalTextTrue = new BitArray(this.originalText);
+            originalTextFalse.Set(index, false);
+            originalTextTrue.Set(index, true);
 
             int lenghtOfBlock = originalText.Length / 2;
             BitArray firstBlockOfTextFalse = new BitArray(lenghtOfBlock);
             BitArray secondBlockOfTextFalse = new BitArray(lenghtOfBlock);
+            BitArray firstBlockOfTextTrue = new BitArray(lenghtOfBlock);
+            BitArray secondBlockOfTextTrue = new BitArray(lenghtOfBlock);
 
             if (lenghtOfBlock + lenghtOfBlock != originalText.Length)
                 MessageBox.Show("Длины не совпадают! Никита был не прав, а Саша неправильно перевела текст", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
 
             for (int j = 0; j < lenghtOfBlock; j++)
-                firstBlockOfTextFalse[j] = originalText[j];
+            {
+                firstBlockOfTextTrue[j] = originalTextTrue[j];
+                firstBlockOfTextFalse[j] = originalTextFalse[j];
+            }
 
             for (int j = 0; j < lenghtOfBlock; j++)
-                secondBlockOfTextFalse[j] = originalText[lenghtOfBlock + j];
+            {
+                secondBlockOfTextTrue[j] = originalTextTrue[lenghtOfBlock + j];
+                secondBlockOfTextFalse[j] = originalTextFalse[lenghtOfBlock + j];
+            }
+                
 
-            BitArray firstBlockOfTextTrue = new BitArray(firstBlockOfTextFalse);
-            BitArray secondBlockOfTextTrue = new BitArray(secondBlockOfTextFalse);
 
-            firstBlockOfTextFalse.Set(index, false);
-            firstBlockOfTextTrue.Set(index, true);
-            secondBlockOfTextFalse.Set(index, false);
-            secondBlockOfTextTrue.Set(index, true);
 
             int i = 0;
             BitArray partKey = generatorKey.GenerateKey(i);
 
             dataToEncryption dataFalse = new dataToEncryption(firstBlockOfTextFalse, secondBlockOfTextFalse, partKey);
             dataToEncryption dataTrue = new dataToEncryption(firstBlockOfTextTrue, secondBlockOfTextTrue, partKey);
+
+            Console.WriteLine("firstBlockOfTextFalse = " + EncoderClass.BitArrayToString(firstBlockOfTextFalse));
+            Console.WriteLine("firstBlockOfTextTrue = " + EncoderClass.BitArrayToString(firstBlockOfTextTrue));
+
+            Console.WriteLine("secondBlockOfTextFalse = " + EncoderClass.BitArrayToString(secondBlockOfTextFalse));
+            Console.WriteLine("secondBlockOfTextTrue = " + EncoderClass.BitArrayToString(secondBlockOfTextTrue));
 
             int[] countChangedBitsArray = new int[countRounds];
             for (; i < countRounds; i++, dataFalse.partKey = generatorKey.GenerateKey(i), dataTrue.partKey = generatorKey.GenerateKey(i))
@@ -222,6 +233,11 @@ namespace PSZI_lr1
                 dataTrue = encryptorByFeistelNetwork.Encrypte(dataTrue);
                 BitArray cipherTextFalse = BitArrayFuctions.Append(dataFalse.firstPartText, dataFalse.secondPartText);
                 BitArray cipherTextTrue = BitArrayFuctions.Append(dataTrue.firstPartText, dataTrue.secondPartText);
+
+                Console.WriteLine("cipherTextFalse = " + EncoderClass.BitArraytoHexString(cipherTextFalse));
+                Console.WriteLine("cipherTextTrue = " + EncoderClass.BitArraytoHexString(cipherTextTrue));
+                Console.WriteLine("partKey = " + EncoderClass.BitArraytoHexString(dataTrue.partKey));
+
                 countChangedBitsArray[i] = countChangedBits(cipherTextFalse, cipherTextTrue);
             }
 

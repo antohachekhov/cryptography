@@ -112,7 +112,7 @@ namespace PSZI_lr1_v2
                 return;
             string key = TextBoxKeyCC.Text;
             program.key = EncoderClass.StringToBitArray(key);
-            //Program.writeToFile("key.txt", key);
+            Program.writeToFile("key.txt", key);
             writeKeyToWindow();
         }
 
@@ -123,7 +123,7 @@ namespace PSZI_lr1_v2
             string key = TextBoxKeyCC16.Text;
             string binString = EncoderClass.HexStringToBinString(key);
             program.key = EncoderClass.BinStringToBitArray(binString);
-            //Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
+            Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
             writeKeyToWindow();
         }
 
@@ -192,11 +192,13 @@ namespace PSZI_lr1_v2
             {
                 if (d > 0 && d < 65)
                 {
-                    TextBoxChangeBit.Text = "1";
+                    
                 }
                 else
                 {
+                    TextBoxChangeBit.Text = "1";
                     throw new Exception();
+
                 }
                 
             }
@@ -211,7 +213,7 @@ namespace PSZI_lr1_v2
         public void ButtonSearch_Click (object sender, RoutedEventArgs e)
         {
             decimal countRounds;
-            if (decimal.TryParse(TextBoxChangeBit.Text, out countRounds))
+            if (decimal.TryParse(TextBoxRound.Text, out countRounds))
             {
                     program.countRounds = (int)countRounds;
                     program.GenerateKey(chooseModToGenKey);

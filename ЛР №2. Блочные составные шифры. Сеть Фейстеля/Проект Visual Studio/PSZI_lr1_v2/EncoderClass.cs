@@ -8,7 +8,7 @@ namespace PSZI_lr1_v2
 {
     class EncoderClass
     {
-        public static Encoding enc = Encoding.ASCII;
+        public static Encoding enc = Encoding.UTF8;
         public static int byteCountLong = 8;
         public static int byteCountInt = 4;
 

@@ -45,8 +45,8 @@
     </Window.Resources>
 
     <Grid Margin="0,0,0.2,40.4">
-        <ScrollViewer Margin="0,10,-0.2,0" Height="878" VerticalAlignment="Top">
-            <StackPanel Height="850">
+        <ScrollViewer Margin="0,10,-0.2,0" Height="696" VerticalAlignment="Top">
+            <StackPanel>
                 <StackPanel Margin="5">
                     <TextBlock Style="{StaticResource Title}" Text="Гаммирование. Моделирование работы скремблера" />
                     <TextBlock Height="10" />
@@ -99,7 +99,7 @@
                                 </StackPanel>
                                 <TextBlock Style="{StaticResource Text}" Text="Количество раундов:"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="TextBoxRound" Text="3" Width="350"/>
+                                    <TextBox x:Name="TextBoxRound" Text="16" Width="350"/>
                                 </StackPanel>
 
                                 <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10"/>

@@ -44,8 +44,8 @@ namespace PSZI_lr1
 
                 leftPartText.Xor(sequence);
                 Console.WriteLine("leftPartTextXor = " + EncoderClass.BitArrayToBinString(leftPartText));
-                leftPartText.And(partKey);
-                Console.WriteLine("leftPartTextAnd = " + EncoderClass.BitArrayToBinString(leftPartText));
+                leftPartText.Xor(partKey);
+                Console.WriteLine("leftPartTextXor = " + EncoderClass.BitArrayToBinString(leftPartText));
                 newPartText = leftPartText;
             }
 
@@ -55,7 +55,7 @@ namespace PSZI_lr1
         public dataToEncryption Encrypte(dataToEncryption data)
         {
             BitArray firstPartText = new BitArray(data.firstPartText);
-            data.firstPartText = func(data.firstPartText, data.partKey).And(data.secondPartText);
+            data.firstPartText = func(data.firstPartText, data.partKey).Xor(data.secondPartText);
 
             data.secondPartText = firstPartText;
             return data;
