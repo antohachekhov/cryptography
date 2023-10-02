@@ -19,7 +19,7 @@ namespace PSZI_lr1
             BitArray newKey = new BitArray(length);
             int j = 0;
             for (; j < this.generalKey.Length - i && j < newKey.Length; j++)
-                newKey[newKey.Length - j - 1] = this.generalKey[this.generalKey.Length - j - i - 1];
+                newKey[j] = this.generalKey[j + i];
 
             for (int k = 0; j < newKey.Length; j++, k++)
                 newKey[j] = newKey[k];

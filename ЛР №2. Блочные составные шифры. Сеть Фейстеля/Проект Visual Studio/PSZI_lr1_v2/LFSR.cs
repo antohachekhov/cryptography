@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PSZI_lr1_v2;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,19 +20,19 @@ namespace PSZI_lr1
             {
                 bitArray[i] = getLowBitAndShift(ref shiftRegister);
             }
-            Console.WriteLine("Сгенерированная последовательность в двоичке: " + String.Join(", ", bitArray));
+            Console.WriteLine("Сгенерированная последовательность в двоичке: " + EncoderClass.BitArrayToBinString(bitArray));
             return bitArray;
         }
 
         private bool getLowBitAndShift(ref long shiftRegister)
         {
             bool lowBit = (shiftRegister & 0x1) == 1 ? true : false;
-            shiftRegister = ((shiftRegister >> 1 ^ shiftRegister) & 0x1);
             if (forKey)
-                shiftRegister = shiftRegister << 7 | shiftRegister >> 1;
+                shiftRegister = ((shiftRegister >> 1 ^ shiftRegister) & 0x1) << 7 | shiftRegister >> 1;
             else
-                shiftRegister = shiftRegister << 15 | shiftRegister >> 1;
+                shiftRegister = ((shiftRegister >> 14 ^ shiftRegister >> 1 ^ shiftRegister) & 0x1) << 15 | shiftRegister >> 1;
 
+            //Console.WriteLine("shiftRegister = " + shiftRegister);
             return lowBit;
         }
 

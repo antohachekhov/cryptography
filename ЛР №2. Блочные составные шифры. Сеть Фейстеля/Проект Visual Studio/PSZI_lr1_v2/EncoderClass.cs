@@ -14,9 +14,13 @@ namespace PSZI_lr1_v2
 
         public static byte[] StringToByteArray(string str)
         {
-            return enc.GetBytes(str);
-        }
+            byte[] bytes = enc.GetBytes(str);
 
+            // переворачиваем байты для того чтобы хранить их в BitArray в правильном порядке
+            bytes.Reverse();
+            return bytes;
+        }
+        
         public static string HexStringToBinString(string hexstring)
         {
             hexstring = hexstring.Replace(" ", "");
@@ -29,6 +33,8 @@ namespace PSZI_lr1_v2
 
         public static string ByteArrayToString(byte[] bytes)
         {
+            // переворачиваем байты для того чтобы хранить их в BitArray в правильном порядке
+            bytes.Reverse();
             string str = enc.GetString(bytes);
             str = str.Trim('\0');
             return str;
@@ -86,14 +92,18 @@ namespace PSZI_lr1_v2
 
         public static byte[] BitArrayToByteArray(BitArray bitArray)
         {
-            byte[] bytes = new byte[Convert.ToInt32(Math.Ceiling(bitArray.Count / 8.0))];
-            bitArray.CopyTo(bytes, 0);
+            BitArray bits = BitArrayFuctions.ReverseOnlyValuesInBytes(bitArray);
+            byte[] bytes = new byte[Convert.ToInt32(Math.Ceiling(bits.Count / 8.0))];
+            bits.CopyTo(bytes, 0);
             return bytes;
         }
 
         public static BitArray ByteArrayToBitArray(byte[] bytes)
         {
             BitArray bits = new BitArray(bytes);
+
+            bits = BitArrayFuctions.ReverseOnlyValuesInBytes(bits);
+
             return bits;
         }
 

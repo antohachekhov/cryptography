@@ -20,6 +20,32 @@ namespace PSZI_lr1
             after.CopyTo(bools, current.Count);
             return new BitArray(bools);
         }
+
+        public static BitArray ReverseAll(this BitArray current)
+        {
+            var bools = new bool[current.Count];
+            for (int i = 0; i < current.Count; i++)
+            {
+                bools[i] = current.Get(current.Count - i - 1);
+            }
+            return new BitArray(bools);
+        }
+
+        public static BitArray ReverseOnlyValuesInBytes(this BitArray current)
+        {
+            BitArray bitArray = new BitArray(0);
+            for (int i = 0; i < current.Count / 8; i++)
+            {
+                bool[] bools = new bool[8];
+                for (int j = 0; j < 8; j++)
+                {
+                    bools[j] = current.Get((i + 1) * 8 - j - 1);
+                }
+                BitArray bitArrayInByte = new BitArray(bools);
+                bitArray = BitArrayFuctions.Append(bitArray, bitArrayInByte);
+            }
+            return bitArray;
+        }
     }
 
     class Program
@@ -94,8 +120,6 @@ namespace PSZI_lr1
                 Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
 
                 data = encryptorByFeistelNetwork.Encrypte(data);
-
-
             }
 
             Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));

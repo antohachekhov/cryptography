@@ -83,7 +83,7 @@
                                 <TextBlock Style="{StaticResource Text}" Text="Ключ:"/>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBox x:Name="TextBoxKeyCC" TextChanged="TextBoxKeyCC_TextChanged" Width="350" IsEnabled="True"/>
-                                    <TextBox x:Name="TextBoxKeyCC16" TextChanged="TextBoxKeyCC16_TextChanged" Width="350" IsEnabled="True"/>
+                                    <TextBox x:Name="TextBoxKeyCC16" Width="350" IsEnabled="True"/>
                                 </StackPanel>
 
                                 <StackPanel Style="{StaticResource InputBlock}">

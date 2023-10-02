@@ -36,13 +36,17 @@ namespace PSZI_lr1
             {
                 // функция имеет вид ( ) ( ), где() – левая часть шифруемого блока,
                 // на которую посредством операции XOR была наложена 32 - битная последовательность, сгенерированная 16 разрядным скремблером вида
-                BitArray leftPartText = new BitArray(partKey.Length);
-                for (int i = 0; i < partKey.Length && i < partText.Length; i++)
-                    leftPartText[i] = partText[i];
+                BitArray leftPartText = new BitArray(partText);
                 LFSR lfsr = new LFSR(false);
                 BitArray sequence = lfsr.generatePRV(partKey.Length, 100);
+
+                Console.WriteLine("sequence = " + EncoderClass.BitArrayToBinString(sequence));
+
                 leftPartText.Xor(sequence);
-                newPartText = new BitArray(leftPartText);
+                Console.WriteLine("leftPartTextXor = " + EncoderClass.BitArrayToBinString(leftPartText));
+                leftPartText.And(partKey);
+                Console.WriteLine("leftPartTextAnd = " + EncoderClass.BitArrayToBinString(leftPartText));
+                newPartText = leftPartText;
             }
 
             return newPartText;

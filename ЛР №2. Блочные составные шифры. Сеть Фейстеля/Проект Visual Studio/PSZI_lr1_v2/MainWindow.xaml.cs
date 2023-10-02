@@ -88,6 +88,8 @@ namespace PSZI_lr1_v2
         // Изменение оригинального текста 
         private void TextBoxOriginalTextContentCC_TextChanged(object sender, RoutedEventArgs e)
         {
+            if (TextBoxOriginalTextContentCC.Text == "")
+                return;
             string text = TextBoxOriginalTextContentCC.Text;
             program.originalText = EncoderClass.StringToBitArray(text);
             Program.writeToFile("originalText.txt", text);
@@ -95,6 +97,8 @@ namespace PSZI_lr1_v2
 
         private void TextBoxOriginalTextContentCC16_TextChanged(object sender, RoutedEventArgs e)
         {
+            if (TextBoxOriginalTextContentCC16.Text == "")
+                return;
             string text = TextBoxOriginalTextContentCC16.Text;
             string binString = EncoderClass.HexStringToBinString(text);
             program.originalText = EncoderClass.BinStringToBitArray(binString);
@@ -104,19 +108,22 @@ namespace PSZI_lr1_v2
         // Изменение ключа
         private void TextBoxKeyCC_TextChanged(object sender, RoutedEventArgs e)
         {
+            if (TextBoxKeyCC.Text == "")
+                return;
             string key = TextBoxKeyCC.Text;
             program.key = EncoderClass.StringToBitArray(key);
-            Program.writeToFile("key.txt", key);
-            //TextBoxKeyCC.TextChanged = false;
+            //Program.writeToFile("key.txt", key);
             writeKeyToWindow();
         }
 
         private void TextBoxKeyCC16_TextChanged(object sender, RoutedEventArgs e)
         {
+            if (TextBoxKeyCC16.Text == "")
+                return;
             string key = TextBoxKeyCC16.Text;
             string binString = EncoderClass.HexStringToBinString(key);
             program.key = EncoderClass.BinStringToBitArray(binString);
-            Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
+            //Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
             writeKeyToWindow();
         }
 
