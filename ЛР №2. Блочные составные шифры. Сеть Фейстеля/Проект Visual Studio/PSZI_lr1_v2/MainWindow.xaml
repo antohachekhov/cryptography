@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PSZI_lr1_v2"
         mc:Ignorable="d"
-        Title="LR1_Encrypt" Height="782.5" Width="798.5">
+        Title="LR1_Encrypt" Height="1105" Width="798.5">
     <Window.Resources>
         <Style x:Key="Title" TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
@@ -45,7 +45,7 @@
     </Window.Resources>
 
     <Grid Margin="0,0,0.2,40.4">
-        <ScrollViewer Margin="0,10,-0.2,0" Height="696" VerticalAlignment="Top">
+        <ScrollViewer Margin="0,10,-0.2,0" Height="1014" VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel Margin="5">
                     <TextBlock Style="{StaticResource Title}" Text="Гаммирование. Моделирование работы скремблера" />
@@ -104,6 +104,7 @@
 
                                 <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10"/>
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,10"/>
+
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -112,7 +113,7 @@
                         <Button x:Name="ButtonCipherText" Click="ButtonCipherText_Click">Зашифровать</Button>
                         <Button x:Name="ButtonCipherText_Copy" Click="ButtonDecipherText_Click" Content="Дешифровать"/>
                     </StackPanel>
-                    
+
 
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}" Text="Зашифрованный текст:"/>
@@ -124,8 +125,13 @@
                     <Grid>
                         <Border BorderThickness="2" BorderBrush="#E667AF">
                             <StackPanel Style="{StaticResource InputBlock}" Margin="5.4,1,5,-1.8" >
-                                <TextBlock Style="{StaticResource Title}" Text="Исследование лавинного эффекта" Margin="240,0,228.8,0" Width="300" HorizontalAlignment="Center"/>
-                                <TextBlock Height="10" />
+                                <TextBlock Style="{StaticResource Title}" Text="Исследование лавинного эффекта" Width="300" HorizontalAlignment="Center"/>
+
+                                <StackPanel Style="{StaticResource InputBlock}">
+                                    <TextBlock Style="{StaticResource Text}" Text="Где:"/>
+                                    <CheckBox x:Name="CheckBoxKey" Checked="ChooseKey" Content="б) ключ"/>
+                                    <CheckBox x:Name="CheckBoxOriginalText" Checked="ChooseOriginalText" Content="а) исходный текст" IsChecked="True"/>
+                                </StackPanel>
                                 <TextBlock Style="{StaticResource Text}" Text="Номер изменяемого бита (от 1 до 64):"/>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBox x:Name="TextBoxChangeBit" Text="1" Width="350" TextChanged="TextBoxChangeBit_TextChanged"/>
@@ -139,7 +145,7 @@
 
                         </Border>
                     </Grid>
-                    
+
                 </StackPanel>
 
                 <StackPanel Height="30"></StackPanel>

@@ -21,6 +21,11 @@ namespace PSZI_lr1_v2
         two
     }
 
+    enum ModeChooseAvalanche
+    {
+        originalText,
+        key
+    }
 
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
@@ -30,13 +35,14 @@ namespace PSZI_lr1_v2
         Program program = null;
         ModeGenKey chooseModToGenKey = ModeGenKey.one;
         ModeGenFunc chooseModToFunc = ModeGenFunc.one;
-        bool flagText = false;
+        ModeChooseAvalanche chooseAvalanche = ModeChooseAvalanche.originalText;
 
         public MainWindow()
         {
             InitializeComponent();
             CheckBoxKeyN1.IsChecked = true;
             CheckBoxOF1.IsChecked = true;
+            CheckBoxOriginalText.IsChecked = true;
             program = new Program();
         }
 
@@ -151,7 +157,6 @@ namespace PSZI_lr1_v2
                 program.ReadOriginalText(openFileDialog.FileName);
                 writeOriginToWindow();
             }
-            flagText = true;
         }
 
         // Открытие файла с ключом по ссылке
@@ -212,14 +217,14 @@ namespace PSZI_lr1_v2
 
 
         // Подача бита от 1 до 64
-        public void TextBoxChangeBit_TextChanged (object sender, RoutedEventArgs e)
+        public void TextBoxChangeBit_TextChanged(object sender, RoutedEventArgs e)
         {
             decimal d;
             if (decimal.TryParse(TextBoxChangeBit.Text, out d))
             {
                 if (d > 0 && d < 65)
                 {
-                    
+
                 }
                 else
                 {
@@ -227,7 +232,7 @@ namespace PSZI_lr1_v2
                     throw new Exception();
 
                 }
-                
+
             }
             else
             {
@@ -237,7 +242,7 @@ namespace PSZI_lr1_v2
             }
         }
 
-        public void ButtonSearch_Click (object sender, RoutedEventArgs e)
+        public void ButtonSearch_Click(object sender, RoutedEventArgs e)
         {
             decimal countRounds;
             int[] a;
@@ -246,7 +251,7 @@ namespace PSZI_lr1_v2
                 program.countRounds = (int)countRounds;
                 program.GenerateKey(chooseModToGenKey);
                 program.GenerateEncryptor(chooseModToFunc);
-                a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text));
+                a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text), chooseAvalanche, chooseModToGenKey);
                 TextBoxExitCC.Text = String.Join(" ", a);
             }
             else
@@ -259,7 +264,7 @@ namespace PSZI_lr1_v2
             string fileNameRounds = @".\rounds.txt";
             string fileNameCount = @".\countChanges.txt";
 
-            int[] rounds = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
+            int[] rounds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
             using (var sr = new StreamWriter(fileNameRounds))
             {
@@ -317,6 +322,19 @@ namespace PSZI_lr1_v2
         {
             writeOriginToWindow();
             TextBoxOriginalTextContentCC16.TextChanged -= TextBoxOriginalTextContentCC16_TextChanged;
+        }
+
+        private void ChooseOriginalText(object sender, RoutedEventArgs e)
+        {
+            
+            chooseAvalanche = ModeChooseAvalanche.originalText;
+            CheckBoxKey.IsChecked = false;
+        }
+
+        private void ChooseKey(object sender, RoutedEventArgs e)
+        {
+            CheckBoxOriginalText.IsChecked = false;
+            chooseAvalanche = ModeChooseAvalanche.key;
         }
     }
 }
