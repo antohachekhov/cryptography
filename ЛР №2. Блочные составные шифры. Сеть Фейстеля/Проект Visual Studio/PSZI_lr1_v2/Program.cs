@@ -56,6 +56,7 @@ namespace PSZI_lr1
         public GeneratorKey generatorKey;
         public EncryptorByFeistelNetwork encryptorByFeistelNetwork;
         public int countRounds;
+        public int lengthBlock = 64;
 
         const string fileNameStartText = "originalText.txt";
         const string fileNameCipherText = "cipherText.txt";
@@ -93,40 +94,7 @@ namespace PSZI_lr1
             encryptorByFeistelNetwork = new EncryptorByFeistelNetwork(command);
         }
 
-        public void Encryption()
-        {
-            int lenghtOfBlock = originalText.Length / 2;
-            BitArray firstBlockOfText = new BitArray(lenghtOfBlock);
-            BitArray secondBlockOfText = new BitArray(lenghtOfBlock);
 
-            if (lenghtOfBlock + lenghtOfBlock != originalText.Length)
-                MessageBox.Show("Длины не совпадают! Никита был не прав, а Саша неправильно перевела текст", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
-
-            for (int j = 0; j < lenghtOfBlock; j++)
-                firstBlockOfText[j] = originalText[j];
-
-            for (int j = 0; j < lenghtOfBlock; j++)
-                secondBlockOfText[j] = originalText[lenghtOfBlock + j];
-
-            int i = 0;
-            BitArray partKey = generatorKey.GenerateKey(0);
-
-            dataToEncryption data = new dataToEncryption(firstBlockOfText, secondBlockOfText, partKey);
-
-            for (; i < countRounds; i++, data.partKey = generatorKey.GenerateKey(i))
-            {
-                Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
-                Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
-                Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
-
-                data = encryptorByFeistelNetwork.Encrypte(data);
-            }
-
-            Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
-            Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
-            Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
-            cipherText = BitArrayFuctions.Append(data.firstPartText, data.secondPartText);
-        }
 
         public static string readFromFile(string fileName)
         {
@@ -164,6 +132,66 @@ namespace PSZI_lr1
                 Console.WriteLine("В файл " + e.Message.ToString() + " невозможно записать данные");
             }
         }
+
+
+        public BitArray[,] DividingTextIntoBlocks()
+        {
+
+            BitArray[,] originalTextBlocks = new BitArray[originalText.Length / lengthBlock, 2];
+
+            // Разделение текста на блоки по 64 бита
+            for (int i = 0; i < originalText.Length / lengthBlock; i++)
+            {
+                BitArray bitArray32 = new BitArray(lengthBlock / 2);
+
+                // Подсчет левой части
+                for (int j = 0; j < lengthBlock / 2; j++)
+                    bitArray32.Set(j, i * lengthBlock + j < originalText.Length ? originalText.Get(i * lengthBlock + j) : false);
+                originalTextBlocks[i, 0] = new BitArray(bitArray32);
+
+                // Подсчет правой части
+                for (int j = lengthBlock / 2; j < lengthBlock; j++)
+                    bitArray32.Set(j - lengthBlock / 2, i * lengthBlock + j < originalText.Length ? originalText.Get(i * lengthBlock + j) : false);
+                originalTextBlocks[i, 1] = new BitArray(bitArray32);
+
+            }
+
+            return originalTextBlocks;
+        }
+
+        public void Encryption()
+        {
+
+            BitArray[,] originalTextBlocks = DividingTextIntoBlocks();
+            cipherText = new BitArray(0);
+
+            // Шифруем каждый блок
+            for (int iBlock = 0; iBlock < originalTextBlocks.GetLength(0); iBlock++)
+            {
+                int i = 0;
+                BitArray partKey = generatorKey.GenerateKey(0);
+
+                dataToEncryption data = new dataToEncryption(originalTextBlocks[iBlock, 0], originalTextBlocks[iBlock, 1], partKey);
+
+                for (; i < countRounds; i++, data.partKey = generatorKey.GenerateKey(i))
+                {
+                    Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
+                    Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
+                    Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
+
+                    data = encryptorByFeistelNetwork.Encrypte(data);
+                }
+
+                Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
+                Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
+                Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
+                cipherText = BitArrayFuctions.Append(cipherText, data.firstPartText);
+                cipherText = BitArrayFuctions.Append(cipherText, data.secondPartText);
+
+            }
+        }
+
+
 
         public int countChangedBits(BitArray one, BitArray two)
         {
@@ -210,7 +238,7 @@ namespace PSZI_lr1
                 secondBlockOfTextTrue[j] = originalTextTrue[lenghtOfBlock + j];
                 secondBlockOfTextFalse[j] = originalTextFalse[lenghtOfBlock + j];
             }
-                
+
 
 
 
@@ -242,6 +270,37 @@ namespace PSZI_lr1
             }
 
             return countChangedBitsArray;
+        }
+
+        internal void Decryption()
+        {
+            BitArray[,] originalTextBlocks = DividingTextIntoBlocks();
+            cipherText = new BitArray(0);
+
+            // Шифруем каждый блок
+            for (int iBlock = 0; iBlock < originalTextBlocks.GetLength(0); iBlock++)
+            {
+                int i = 0;
+                BitArray partKey = generatorKey.GenerateKey(0);
+
+                dataToEncryption data = new dataToEncryption(originalTextBlocks[iBlock, 0], originalTextBlocks[iBlock, 1], partKey);
+
+                for (; i < countRounds; i++, data.partKey = generatorKey.GenerateKey(i))
+                {
+                    Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
+                    Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
+                    Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
+
+                    data = encryptorByFeistelNetwork.Decrypte(data);
+                }
+
+                Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
+                Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
+                Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
+                cipherText = BitArrayFuctions.Append(cipherText, data.firstPartText);
+                cipherText = BitArrayFuctions.Append(cipherText, data.secondPartText);
+
+            }
         }
     }
 }

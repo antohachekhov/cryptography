@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:PSZI_lr1_v2"
         mc:Ignorable="d"
-        Title="LR1_Encrypt" Height="1000" Width="798.5">
+        Title="LR1_Encrypt" Height="782.5" Width="798.5">
     <Window.Resources>
         <Style x:Key="Title" TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
@@ -108,12 +108,16 @@
                         </Border>
                     </Grid>
 
-                    <Button x:Name="ButtonCipherText" Click="ButtonCipherText_Click">Зашифровать</Button>
+                    <StackPanel Orientation="Horizontal">
+                        <Button x:Name="ButtonCipherText" Click="ButtonCipherText_Click">Зашифровать</Button>
+                        <Button x:Name="ButtonCipherText_Copy" Click="ButtonDecipherText_Click" Content="Дешифровать"/>
+                    </StackPanel>
+                    
 
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}" Text="Зашифрованный текст:"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="TextBoxCipherTextCC" Width="350" Margin="10" TextChanged="TextBoxCipherTextCC_TextChanged"></TextBox>
+                            <TextBox x:Name="TextBoxCipherTextCC" Width="350" Margin="10"></TextBox>
                             <TextBox x:Name="TextBoxCipherTextCC16" IsReadOnly="True" Width="350" Margin="10"></TextBox>
                         </StackPanel>
                     </StackPanel>
@@ -135,6 +139,7 @@
 
                         </Border>
                     </Grid>
+                    
                 </StackPanel>
 
                 <StackPanel Height="30"></StackPanel>

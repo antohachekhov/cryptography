@@ -65,5 +65,14 @@ namespace PSZI_lr1
         {
             this.command = command;
         }
+
+        internal dataToEncryption Decrypte(dataToEncryption data)
+        {
+            BitArray secondPartText = new BitArray(data.secondPartText);
+            data.secondPartText = func(data.secondPartText, data.partKey).Xor(data.firstPartText);
+
+            data.firstPartText = secondPartText;
+            return data;
+        }
     }
 }

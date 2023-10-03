@@ -188,6 +188,29 @@ namespace PSZI_lr1_v2
             }
         }
 
+
+        // Шифрование
+        private void ButtonDecipherText_Click(object sender, RoutedEventArgs e)
+        {
+            decimal d;
+            if (decimal.TryParse(TextBoxRound.Text, out d))
+            {
+                program.countRounds = (int)d;
+                program.GenerateKey(chooseModToGenKey);
+                program.GenerateEncryptor(chooseModToFunc);
+                program.Decryption();
+                Program.writeToFile("originalText.txt", EncoderClass.BitArrayToString(program.cipherText));
+                writeCipherToWindow();
+            }
+            else
+            {
+                //invalid
+                MessageBox.Show("Please enter a valid number of rounds");
+                return;
+            }
+        }
+
+
         // Подача бита от 1 до 64
         public void TextBoxChangeBit_TextChanged (object sender, RoutedEventArgs e)
         {
@@ -253,10 +276,6 @@ namespace PSZI_lr1_v2
 
         }
 
-        /*public static void TextBoxExitCC_TextChanged()
-        {
-
-        }*/
 
         // Запись ключа в текстовые окна
         public void writeKeyToWindow()
