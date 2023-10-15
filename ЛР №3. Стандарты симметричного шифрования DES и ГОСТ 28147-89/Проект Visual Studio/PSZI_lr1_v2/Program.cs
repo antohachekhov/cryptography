@@ -93,7 +93,13 @@ namespace PSZI_lr1_v2
             //encryptorByFeistelNetwork = new EncryptorByFeistelNetwork(command);
         }
 
+        public string[] FillKeys()
+        {
+            for (int i = 0; i < 16; i++)
+                belowKeys[i] = EncoderClass.BitArrayToString(generatorKey.GenerateKey(i));
 
+            return belowKeys;
+        }
 
         public static string readFromFile(string fileName)
         {
