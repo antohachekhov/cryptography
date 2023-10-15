@@ -8,6 +8,7 @@ namespace PSZI_lr1_v2
         GeneratorKey generatorKey;
         EncryptorByFeistelNetwork encryptorByFeistelNetwork;
         int originalTextLength = 64;
+        Program program = new Program();
 
         public EncryptByDES(GeneratorKey generatorKey)
         {
@@ -79,6 +80,7 @@ namespace PSZI_lr1_v2
 
             for (int i = 0; i < 16; i++, data.partKey = generatorKey.GenerateKey(i))
             {
+                program.belowKeys[i] = EncoderClass.BitArrayToString(data.partKey);
                 // Сеть Фейсбула
                 data = encryptorByFeistelNetwork.Encrypte(data);
             }

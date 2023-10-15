@@ -269,6 +269,7 @@ namespace PSZI_lr1_v2
         {
             if (StackPanelBelowKeys.Visibility == Visibility.Collapsed)
             {
+                
                 StackPanelBelowKeys.Visibility = Visibility.Visible;
                 ButtonShowBelowKeys.Content = "Закрыть подключи";
                 int j = 0;
