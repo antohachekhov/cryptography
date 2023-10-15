@@ -1,8 +1,7 @@
-﻿using PSZI_lr1_v2;
-using System;
+﻿using System;
 using System.Collections;
 
-namespace PSZI_lr1
+namespace PSZI_lr1_v2
 {
     public struct dataToEncryption
     {
@@ -19,9 +18,9 @@ namespace PSZI_lr1
     }
 
 
-    class EncryptorByFeistelNetwork
+    public class EncryptorByFeistelNetwork
     {
-
+        
         public int[,] S1 = new int[4, 16] { 
             {14, 4, 13, 1, 2, 15, 11, 8, 3, 10, 6, 12, 5, 9, 0, 7 },
             {0, 15, 7, 4, 14, 2, 13, 1, 10, 6, 12, 11, 9, 5, 3, 8 },
@@ -76,11 +75,11 @@ namespace PSZI_lr1
         /// </summary>
         /// <param name="seq">32-битная последовательность</param>
         /// <returns>48-битная последовательность</returns>
-        BitArray E(BitArray seq)
+        public BitArray E(BitArray seq)
         {
             BitArray result = new BitArray(48);
-            result[0] = seq[31];
-            for(int i = 1, indexFrom = 0; i < 47; i++)
+            result[0] = seq[seq.Length - 1];
+            for(int i = 1, indexFrom = 0; i < result.Length - 1; i++, indexFrom++)
             {
                 if(i % 6 == 0)
                 {
@@ -88,30 +87,30 @@ namespace PSZI_lr1
                 }
                 result[i] = seq[indexFrom];
             }
-            result[47] = seq[0];
+            result[result.Length - 1] = seq[0];
             return result;
         }
 
 
-        BitArray S(int[,] tableS, BitArray B)
+        public BitArray S(int[,] tableS, BitArray B)
         {
-            BitArray strBit = new BitArray(new bool[] { B[0], B[5] });
+            BitArray strBit = new BitArray(new bool[] { false, false, false, false, false, false, B[0], B[5] });
             int str = (int) EncoderClass.ByteArrayToLong(EncoderClass.BitArrayToByteArray(strBit));
-            BitArray colBit = new BitArray(new bool[] { B[1], B[2], B[3], B[4] });
-            int col = (int)EncoderClass.ByteArrayToLong(EncoderClass.BitArrayToByteArray(colBit));
+            BitArray colBit = new BitArray(new bool[] { false, false, false, false, B[1], B[2], B[3], B[4] });
+            int col = (int) EncoderClass.ByteArrayToLong(EncoderClass.BitArrayToByteArray(colBit));
             int resultInt = tableS[str, col];
-            BitArray result = new BitArray(EncoderClass.ByteArrayToBitArray(EncoderClass.LongToByteArray((long)resultInt)));
+            BitArray result = new BitArray(EncoderClass.IntToBitArrayLength4(resultInt));
             return result;
         }
 
-        BitArray P(BitArray S)
+        public BitArray P(BitArray seq)
         {
             BitArray result = new BitArray(32);
             int[] indexes = new int[32] { 16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26,
-                5, 18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25};
-            for(int i = 0; i < 32; i++)
+                5, 18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25 };
+            for(int i = 0; i < result.Length; i++)
             {
-                result[i] = S[indexes[i] - 1];
+                result[i] = seq[indexes[i] - 1];
             }
             return result;
         }
@@ -120,66 +119,34 @@ namespace PSZI_lr1
         /// <summary> 
         /// Функция шифрования
         /// </summary>
-        /// <param name="RightPart">32-битная последовательность R полученная на прошлой итерации</param>
+        /// <param name="rightPart">32-битная последовательность R полученная на прошлой итерации</param>
         /// <param name="key"> 48-битный ключ K(i), который является результатом преобразования 64-битного ключа K</param>
         /// <returns></returns>
-        BitArray func(BitArray RightPart, BitArray key)
+        public BitArray func(BitArray rightPart, BitArray key)
         {
+
             // E – расширение 32 - битной последовательности до 48 - битной
-            BitArray resE = E(RightPart);
+            BitArray resE = E(rightPart);
             resE.Xor(key);
 
-            BitArray B1 = new BitArray(6);
-            BitArray B2 = new BitArray(6);
-            BitArray B3 = new BitArray(6);
-            BitArray B4 = new BitArray(6);
-            BitArray B5 = new BitArray(6);
-            BitArray B6 = new BitArray(6);
-            BitArray B7 = new BitArray(6);
-            BitArray B8 = new BitArray(6);
+            BitArray[] B = new BitArray[8];
+
             int indexInResE = 0;
-            for(int i = 0; i < 6; i++, indexInResE++)
+            for (int i = 0; i < B.Length; i++)
             {
-                B1[i] = resE[indexInResE];
-            }
-            for (int i = 0; i < 6; i++, indexInResE++)
-            {
-                B2[i] = resE[indexInResE];
-            }
-            for (int i = 0; i < 6; i++, indexInResE++)
-            {
-                B3[i] = resE[indexInResE];
-            }
-            for (int i = 0; i < 6; i++, indexInResE++)
-            {
-                B4[i] = resE[indexInResE];
-            }
-            for (int i = 0; i < 6; i++, indexInResE++)
-            {
-                B5[i] = resE[indexInResE];
-            }
-            for (int i = 0; i < 6; i++, indexInResE++)
-            {
-                B6[i] = resE[indexInResE];
-            }
-            for (int i = 0; i < 6; i++, indexInResE++)
-            {
-                B7[i] = resE[indexInResE];
-            }
-            for (int i = 0; i < 6; i++, indexInResE++)
-            {
-                B8[i] = resE[indexInResE];
+                B[i] = new BitArray(6);
+                for (int j = 0; j < 6; j++, indexInResE++) B[i][j] = resE[indexInResE];
             }
 
 
-            BitArray resS = new BitArray(S(S1, B1));
-            resS = BitArrayFunctions.Append(resS, S(S2, B2));
-            resS = BitArrayFunctions.Append(resS, S(S3, B3));
-            resS = BitArrayFunctions.Append(resS, S(S4, B4));
-            resS = BitArrayFunctions.Append(resS, S(S5, B5));
-            resS = BitArrayFunctions.Append(resS, S(S6, B6));
-            resS = BitArrayFunctions.Append(resS, S(S7, B7));
-            resS = BitArrayFunctions.Append(resS, S(S8, B8));
+            BitArray resS = new BitArray(S(S1, B[0]));
+            resS = BitArrayFunctions.Append(resS, S(S2, B[1]));
+            resS = BitArrayFunctions.Append(resS, S(S3, B[2]));
+            resS = BitArrayFunctions.Append(resS, S(S4, B[3]));
+            resS = BitArrayFunctions.Append(resS, S(S5, B[4]));
+            resS = BitArrayFunctions.Append(resS, S(S6, B[5]));
+            resS = BitArrayFunctions.Append(resS, S(S7, B[6]));
+            resS = BitArrayFunctions.Append(resS, S(S8, B[7]));
 
             return P(resS);
         }
@@ -197,7 +164,7 @@ namespace PSZI_lr1
         {
         }
 
-        internal dataToEncryption Encrypte(dataToEncryption data)
+        public dataToEncryption Encrypte(dataToEncryption data)
         {
             BitArray secondPartText = new BitArray(data.secondPartText);
             data.secondPartText = func(data.secondPartText, data.partKey).Xor(data.firstPartText);

@@ -3,19 +3,20 @@ using System.Collections;
 
 namespace PSZI_lr1_v2
 {
-    class EncryptByDES
+    public class EncryptByDES
     {
         GeneratorKey generatorKey;
         EncryptorByFeistelNetwork encryptorByFeistelNetwork;
         int originalTextLength = 64;
-        Program program = new Program();
+        int countRounds = 16;
 
         public EncryptByDES(GeneratorKey generatorKey)
         {
             this.generatorKey = generatorKey;
+            encryptorByFeistelNetwork = new EncryptorByFeistelNetwork();
         }
 
-        int[,] IP = {
+        public int[,] IP = {
             {58, 50, 42, 34, 26, 18, 10, 02 },
             {60, 52, 44, 36, 28, 20, 12, 04 },
             {62, 54, 46, 38, 30, 22, 14, 06 },
@@ -26,7 +27,7 @@ namespace PSZI_lr1_v2
             {63, 55, 47, 39, 31, 23, 15, 07 }
         };
 
-        int[,] IP_1 = {
+        public int[,] IP_1 = {
             {40, 08, 48, 16, 56, 24, 64, 32 },
             {39, 07, 47, 15, 55, 23, 63, 31 },
             {38, 06, 46, 14, 54, 22, 62, 30 },
@@ -39,16 +40,14 @@ namespace PSZI_lr1_v2
 
         public void RearrangementIP(ref BitArray text, int[,] IPtemp)
         {
-            BitArray rearrangementText = new BitArray(originalTextLength);
+            BitArray rearrangementText = new BitArray(text);
             int countIPcolumns = IPtemp.GetLength(1);
-            for (int i = 0; i < originalTextLength; i++)
+            for (int i = 0; i < text.Length; i++)
             {
                 int IG = i / countIPcolumns;
                 int JG = i % countIPcolumns;
-                rearrangementText[i] = text[IPtemp[IG, JG]];
+                text[i] = rearrangementText[IPtemp[IG, JG] - 1];
             }
-
-            text = new BitArray(rearrangementText);
         }
 
         public BitArray[] DivideTextIntoTwoParts(BitArray bitArray)
@@ -73,18 +72,14 @@ namespace PSZI_lr1_v2
             RearrangementIP(ref originalText, IP);
 
             BitArray[] parts = DivideTextIntoTwoParts(originalText);
+            int i = 0;
+            dataToEncryption data = new dataToEncryption(parts[0], parts[1], generatorKey.GenerateKey(i));
 
-
-
-            dataToEncryption data = new dataToEncryption(parts[0], parts[1], generatorKey.GenerateKey(0));
-
-            for (int i = 0; i < 16; i++, data.partKey = generatorKey.GenerateKey(i))
+            for (;i < countRounds; i++, data.partKey = generatorKey.GenerateKey(i))
             {
-                program.belowKeys[i] = EncoderClass.BitArrayToString(data.partKey);
                 // Сеть Фейсбула
                 data = encryptorByFeistelNetwork.Encrypte(data);
             }
-
 
             BitArray cipherText = new BitArray(0);
             cipherText.Append(data.secondPartText);
@@ -99,21 +94,13 @@ namespace PSZI_lr1_v2
             // IP
             RearrangementIP(ref cipherText, IP);
 
-
             // Подготовка данных для раундов
-            BitArray firstPartText = new BitArray(originalTextLength / 2);
-            BitArray secondPartText = new BitArray(originalTextLength / 2);
-
-            for (int i = 0; i < originalTextLength / 2; i++)
-            {
-                firstPartText[i] = cipherText[i];  // R(16)
-                secondPartText[i] = cipherText[i + originalTextLength / 2]; // L(16)
-            }
+            BitArray[] parts = DivideTextIntoTwoParts(cipherText);
 
 
-            dataToEncryption data = new dataToEncryption(firstPartText, secondPartText, generatorKey.GenerateKey(15));
+            dataToEncryption data = new dataToEncryption(parts[0], parts[1], generatorKey.GenerateKey(15));
 
-            for (int i = 15; i >= 0; i--, data.partKey = generatorKey.GenerateKey(i))
+            for (int i = countRounds - 1; i >= 0; i--, data.partKey = generatorKey.GenerateKey(i))
             {
                 // Сеть Фейсбула
                 data = encryptorByFeistelNetwork.Decrypte(data);

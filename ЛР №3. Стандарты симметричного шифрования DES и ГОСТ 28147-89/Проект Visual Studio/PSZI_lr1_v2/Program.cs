@@ -9,7 +9,7 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using System.Windows;
 
-namespace PSZI_lr1
+namespace PSZI_lr1_v2
 {
     public static class BitArrayFunctions
     {

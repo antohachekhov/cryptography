@@ -118,6 +118,21 @@ namespace PSZI_lr1_v2
             return bits;
         }
 
+        public static BitArray IntToBitArrayLength4(int value)
+        {
+            BitArray bits = new BitArray(4);
+
+            for(int i = bits.Length - 1; i >=0 ; i--)
+            {
+                bits[i] = ((int)(value / Math.Pow(2,i)) == 1) ? true : false;
+
+                double v = value / Math.Pow(2, i);
+                value -= (int)((int)v * Math.Pow(2, i));
+            }
+
+            
+            return bits.ReverseAll(); ;
+        }
 
     }
 }

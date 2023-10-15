@@ -1,13 +1,12 @@
-﻿using PSZI_lr1_v2;
-using System;
+﻿using System;
 using System.Collections;
 using System.Linq;
 
 using System.Windows;
 
-namespace PSZI_lr1
+namespace PSZI_lr1_v2
 {
-    class GeneratorKey
+    public class GeneratorKey
     {
         public const int keyLength = 56;
         const int byteLength = 8;
