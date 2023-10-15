@@ -66,6 +66,7 @@
     </Compile>
     <Compile Include="CipherXOR.cs" />
     <Compile Include="EncoderClass.cs" />
+    <Compile Include="EncryptByDES.cs" />
     <Compile Include="EncryptByFeistelNetwork.cs" />
     <Compile Include="GeneratorKey.cs" />
     <Compile Include="LFSR.cs" />

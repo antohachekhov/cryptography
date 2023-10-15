@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="LR3" Height="1105" Width="798.5">
+        Title="LR3" Height="1183" Width="798.5">
     <Window.Resources>
         <Style x:Key="Title" TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
@@ -44,7 +44,7 @@
     </Window.Resources>
 
     <Grid Margin="0,0,0.2,40.4">
-        <ScrollViewer Margin="0,10,-0.2,0" Height="1014" VerticalAlignment="Top">
+        <ScrollViewer Margin="0,10,-0.2,0" Height="1093" VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel Margin="5">
                     <TextBlock Style="{StaticResource Title}" Text="Стандарты симметричного шифрования. DES." />
@@ -87,80 +87,21 @@
 
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                     <Button>Сгенерировать подключи</Button>
-                                    <Button x:Name="ButtonShowBelowKeys" Click="ButtonShowBelowKeys_Click">Просмотреть подключи</Button>
+                                    <Button x:Name="ButtonShowBelowKeys" Click="ButtonShowBelowKeys_Click">Посмотреть подключи</Button>
                                 </StackPanel>
 
-                                
-                                <StackPanel x:Name="StackPanelBelowKeys" Orientation="Horizontal" HorizontalAlignment="Center" Visibility="Collapsed">
+
+                                <StackPanel x:Name="StackPanelBelowKeys" Orientation="Horizontal" HorizontalAlignment="Left" Visibility="Collapsed">
                                     <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="50, 0">
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                    </StackPanel>
-                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="50, 0">
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
-                                        </StackPanel>
-                                        <StackPanel  Style="{StaticResource InputBlock}"  Orientation="Horizontal" HorizontalAlignment="Center">
-                                            <TextBlock Style="{StaticResource Text}" Margin="10, 0">1</TextBlock>
-                                            <TextBlock  Style="{StaticResource Text}"  Margin="10, 0">Подключ 1</TextBlock>
+                                        <StackPanel Orientation="Horizontal">
+                                            <ListBox x:Name="LB1" Height="180" Width="350"/>
+                                            <ListBox x:Name="LB2" Height="180" Width="350"/>
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
+                                
+                                
+
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -186,7 +127,7 @@
                         </StackPanel>
                     </StackPanel>
                     <Grid>
-                        <Border BorderThickness="2" BorderBrush="#E667AF">
+                        <Border BorderThickness="2" BorderBrush="#E667AF" Margin="0,0,-0.4,51.2">
                             <StackPanel Style="{StaticResource InputBlock}" Margin="5.4,1,5,-1.8" >
                                 <TextBlock Style="{StaticResource Title}" Text="Исследование лавинного эффекта" Width="300" HorizontalAlignment="Center"/>
 
@@ -200,9 +141,17 @@
                                     <TextBox x:Name="TextBoxChangeBit" Text="1" Width="350" TextChanged="TextBoxChangeBit_TextChanged"/>
                                     <Button x:Name="ButtonSearch" Click="ButtonSearch_Click">Исследовать</Button>
                                 </StackPanel>
-                                <StackPanel Style="{StaticResource InputBlock}">
+                                <StackPanel Style="{StaticResource InputBlock}" Height="374">
                                     <TextBlock Style="{StaticResource Text}" Text="Вывод:"/>
-                                    <TextBox x:Name="TextBoxExitCC" Width="700" Margin="20"></TextBox>
+                                    <TextBlock Height="10" />
+                                    <TextBlock Style="{StaticResource Text}" Text="Среднее число бит выхода, изменяющихся при изменении одного бита входного сектора:"/>
+                                    <TextBox x:Name="TextBoxMeanBit" Width="700" Margin="20"></TextBox>
+                                    <TextBlock Style="{StaticResource Text}" Text="Степень полноты преобразования:"/>
+                                    <TextBox x:Name="TextBoxStFull" Width="700" Margin="20"></TextBox>
+                                    <TextBlock Style="{StaticResource Text}" Text="Степень лавинного эффектра:"/>
+                                    <TextBox x:Name="TextBoxStLavEff" Width="700" Margin="20"></TextBox>
+                                    <TextBlock Style="{StaticResource Text}" Text="Степень соответствия строгому лавинному критерию:"/>
+                                    <TextBox x:Name="TextBoxStStrong" Width="700" Margin="20"></TextBox>
                                 </StackPanel>
                             </StackPanel>
 

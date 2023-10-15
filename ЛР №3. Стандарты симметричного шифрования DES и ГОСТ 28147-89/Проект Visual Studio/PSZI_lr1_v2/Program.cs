@@ -54,9 +54,10 @@ namespace PSZI_lr1
         public BitArray key;
         public BitArray cipherText;
         public GeneratorKey generatorKey;
-        //public EncryptorByFeistelNetwork encryptorByFeistelNetwork;
+        public EncryptByDES encryptorByDES;
         public int countRounds;
         public int lengthBlock = 64;
+        public BitArray() underKeys;
 
         const string fileNameStartText = "originalText.txt";
         const string fileNameCipherText = "cipherText.txt";
@@ -132,26 +133,21 @@ namespace PSZI_lr1
         }
 
 
-        public BitArray[,] DividingTextIntoBlocks(BitArray text)
+        public BitArray[] DividingTextIntoBlocks(BitArray text)
         {
 
-            BitArray[,] originalTextBlocks = new BitArray[text.Length / lengthBlock, 2];
+            BitArray[] originalTextBlocks = new BitArray[text.Length / lengthBlock];
 
             // Разделение текста на блоки по 64 бита
             for (int i = 0; i < text.Length / lengthBlock; i++)
             {
-                BitArray bitArray32 = new BitArray(lengthBlock / 2);
+                BitArray bitArray64 = new BitArray(lengthBlock);
 
                 // Подсчет левой части
-                for (int j = 0; j < lengthBlock / 2; j++)
-                    bitArray32.Set(j, i * lengthBlock + j < text.Length ? text.Get(i * lengthBlock + j) : false);
-                originalTextBlocks[i, 0] = new BitArray(bitArray32);
+                for (int j = 0; j < lengthBlock; j++)
+                    bitArray64[j] = text[i * lengthBlock + j];
 
-                // Подсчет правой части
-                for (int j = lengthBlock / 2; j < lengthBlock; j++)
-                    bitArray32.Set(j - lengthBlock / 2, i * lengthBlock + j < text.Length ? text.Get(i * lengthBlock + j) : false);
-                originalTextBlocks[i, 1] = new BitArray(bitArray32);
-
+                originalTextBlocks[i] = new BitArray(bitArray64);
             }
 
             return originalTextBlocks;
@@ -159,165 +155,86 @@ namespace PSZI_lr1
 
         public void Encryption()
         {
-            throw new NotImplementedException();
-            //BitArray[,] originalTextBlocks = DividingTextIntoBlocks(originalText);
-            //cipherText = new BitArray(0);
+            BitArray[] originalTextBlocks = DividingTextIntoBlocks(originalText);
+            BitArray cipherText = new BitArray(0);
 
-            //// Шифруем каждый блок
-            //for (int iBlock = 0; iBlock < originalTextBlocks.GetLength(0); iBlock++)
-            //{
-            //    int i = 0;
-            //    BitArray partKey = generatorKey.GenerateKey(0);
-
-            //    dataToEncryption data = new dataToEncryption(originalTextBlocks[iBlock, 0], originalTextBlocks[iBlock, 1], partKey);
-
-            //    for (; i < countRounds; i++, data.partKey = generatorKey.GenerateKey(i))
-            //    {
-            //        Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
-            //        Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
-            //        Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
-
-            //        data = encryptorByFeistelNetwork.Encrypte(data);
-            //    }
-
-            //    Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
-            //    Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
-            //    Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
-            //    cipherText = BitArrayFunctions.Append(cipherText, data.firstPartText);
-            //    cipherText = BitArrayFunctions.Append(cipherText, data.secondPartText);
-
-            //}
-        }
-
-        public int countChangedBits(BitArray one, BitArray two)
-        {
-            BitArray bitChangeArray = new BitArray(one);
-            bitChangeArray.Xor(two);
-
-            int count = 0;
-
-            for (int i = 0; i < bitChangeArray.Count; i++)
+            // Шифруем каждый блок
+            for (int iBlock = 0; iBlock < originalTextBlocks.Length; iBlock++)
             {
-                if (bitChangeArray.Get(i))
-                    count++;
+                BitArrayFunctions.Append(cipherText, encryptorByDES.Encrypte(originalTextBlocks[iBlock]));
             }
 
-            return count;
-
+            this.cipherText = cipherText;
         }
+
+
 
 
         public int[] searchAvalancheEffect(int index, ModeChooseAvalanche chooseAvalanche)
         {
 
-            throw new NotImplementedException();
-            //int[] countChangedBitsArray;
-            //if (chooseAvalanche == ModeChooseAvalanche.originalText)
-            //{
-            //    BitArray[,] originalTextBlocksFalse;
-            //    BitArray[,] originalTextBlocksTrue;
-            //    BitArray originalTextFalse = new BitArray(this.originalText);
-            //    BitArray originalTextTrue = new BitArray(this.originalText);
-            //    originalTextFalse.Set(index, false);
-            //    originalTextTrue.Set(index, true);
+            int[] countChangedBitsArray;
+            if (chooseAvalanche == ModeChooseAvalanche.originalText)
+            {
+                originalTextFalse.Set(index, false);
+                originalTextTrue.Set(index, true);
 
-            //    originalTextBlocksFalse = DividingTextIntoBlocks(originalTextFalse);
-            //    originalTextBlocksTrue = DividingTextIntoBlocks(originalTextTrue);
+                BitArray keyFalse = new BitArray(key);
+                BitArray keyTrue = new BitArray(key);
+            }
+            else
+            {
 
-            //    int i = 0;
-            //    BitArray partKey = generatorKey.GenerateKey(i);
-
-            //    dataToEncryption dataFalse = new dataToEncryption(originalTextBlocksFalse[0,0], originalTextBlocksFalse[0, 1], partKey);
-            //    dataToEncryption dataTrue = new dataToEncryption(originalTextBlocksTrue[0, 0], originalTextBlocksTrue[0, 1], partKey);
-
-            //    countChangedBitsArray = new int[countRounds];
-            //    for (; i < countRounds; i++, dataFalse.partKey = generatorKey.GenerateKey(i), dataTrue.partKey = generatorKey.GenerateKey(i))
-            //    {
-            //        dataFalse = encryptorByFeistelNetwork.Encrypte(dataFalse);
-            //        dataTrue = encryptorByFeistelNetwork.Encrypte(dataTrue);
-            //        BitArray cipherTextFalse = BitArrayFunctions.Append(dataFalse.firstPartText, dataFalse.secondPartText);
-            //        BitArray cipherTextTrue = BitArrayFunctions.Append(dataTrue.firstPartText, dataTrue.secondPartText);
-
-            //        Console.WriteLine("cipherTextFalse = " + EncoderClass.BitArraytoHexString(cipherTextFalse));
-            //        Console.WriteLine("cipherTextTrue = " + EncoderClass.BitArraytoHexString(cipherTextTrue));
-            //        Console.WriteLine("partKey = " + EncoderClass.BitArraytoHexString(dataTrue.partKey));
-
-            //        countChangedBitsArray[i] = countChangedBits(cipherTextFalse, cipherTextTrue);
-            //    }
-            //}
-            //else
-            //{
-            //    BitArray[,] originalTextBlocks = DividingTextIntoBlocks(originalText);
-
-            //    BitArray keyFalse = new BitArray(key);
-            //    BitArray keyTrue = new BitArray(key);
-            //    keyFalse.Set(index, false);
-            //    keyTrue.Set(index, true);
+                BitArray keyFalse = new BitArray(key);
+                BitArray keyTrue = new BitArray(key);
+                keyFalse.Set(index, false);
+                keyTrue.Set(index, true);
 
 
-            //    GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
-            //    GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
+                GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
+                GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
 
 
-            //    int i = 0;
-            //    BitArray partKeyFalse = generatorFalse.GenerateKey(i);
-            //    BitArray partKeyTrue = generatorTrue.GenerateKey(i);
+                int i = 0;
+                BitArray partKeyFalse = generatorFalse.GenerateKey(i);
+                BitArray partKeyTrue = generatorTrue.GenerateKey(i);
 
-            //    dataToEncryption dataFalse = new dataToEncryption(originalTextBlocks[0, 0], originalTextBlocks[0, 1], partKeyFalse);
-            //    dataToEncryption dataTrue = new dataToEncryption(originalTextBlocks[0, 0], originalTextBlocks[0, 1], partKeyTrue);
+                dataToEncryption dataFalse = new dataToEncryption(originalTextBlocks[0, 0], originalTextBlocks[0, 1], partKeyFalse);
+                dataToEncryption dataTrue = new dataToEncryption(originalTextBlocks[0, 0], originalTextBlocks[0, 1], partKeyTrue);
 
-            //    countChangedBitsArray = new int[countRounds];
-            //    for (; i < countRounds; i++, dataFalse.partKey = generatorFalse.GenerateKey(i), dataTrue.partKey = generatorTrue.GenerateKey(i))
-            //    {
-            //        dataFalse = encryptorByFeistelNetwork.Encrypte(dataFalse);
-            //        dataTrue = encryptorByFeistelNetwork.Encrypte(dataTrue);
-            //        BitArray cipherTextFalse = BitArrayFunctions.Append(dataFalse.firstPartText, dataFalse.secondPartText);
-            //        BitArray cipherTextTrue = BitArrayFunctions.Append(dataTrue.firstPartText, dataTrue.secondPartText);
+                countChangedBitsArray = new int[countRounds];
+                for (; i < countRounds; i++, dataFalse.partKey = generatorFalse.GenerateKey(i), dataTrue.partKey = generatorTrue.GenerateKey(i))
+                {
+                    dataFalse = encryptorByFeistelNetwork.Encrypte(dataFalse);
+                    dataTrue = encryptorByFeistelNetwork.Encrypte(dataTrue);
+                    BitArray cipherTextFalse = BitArrayFunctions.Append(dataFalse.firstPartText, dataFalse.secondPartText);
+                    BitArray cipherTextTrue = BitArrayFunctions.Append(dataTrue.firstPartText, dataTrue.secondPartText);
 
-            //        Console.WriteLine("cipherTextFalse = " + EncoderClass.BitArraytoHexString(cipherTextFalse));
-            //        Console.WriteLine("cipherTextTrue = " + EncoderClass.BitArraytoHexString(cipherTextTrue));
-            //        Console.WriteLine("partKey = " + EncoderClass.BitArraytoHexString(dataTrue.partKey));
+                    Console.WriteLine("cipherTextFalse = " + EncoderClass.BitArraytoHexString(cipherTextFalse));
+                    Console.WriteLine("cipherTextTrue = " + EncoderClass.BitArraytoHexString(cipherTextTrue));
+                    Console.WriteLine("partKey = " + EncoderClass.BitArraytoHexString(dataTrue.partKey));
 
-            //        countChangedBitsArray[i] = countChangedBits(cipherTextFalse, cipherTextTrue);
-            //    }
-            //}
+                    countChangedBitsArray[i] = countChangedBits(cipherTextFalse, cipherTextTrue);
+                }
+            }
 
-            
 
-            //return countChangedBitsArray;
+
+            return countChangedBitsArray;
         }
 
         internal void Decryption()
         {
-            throw new NotImplementedException();
+            BitArray[] cipherTextBlocks = DividingTextIntoBlocks(cipherText);
+            BitArray originalText = new BitArray(0);
 
-            //BitArray[,] originalTextBlocks = DividingTextIntoBlocks(originalText);
-            //cipherText = new BitArray(0);
+            // Шифруем каждый блок
+            for (int iBlock = 0; iBlock < cipherTextBlocks.Length; iBlock++)
+            {
+                BitArrayFunctions.Append(cipherText, encryptorByDES.Decrypte(cipherTextBlocks[iBlock]));
+            }
 
-            //// Шифруем каждый блок
-            //for (int iBlock = 0; iBlock < originalTextBlocks.GetLength(0); iBlock++)
-            //{
-            //    int i = 0;
-            //    BitArray partKey = generatorKey.GenerateKey(0);
-
-            //    dataToEncryption data = new dataToEncryption(originalTextBlocks[iBlock, 0], originalTextBlocks[iBlock, 1], partKey);
-
-            //    for (; i < countRounds; i++, data.partKey = generatorKey.GenerateKey(i))
-            //    {
-            //        Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
-            //        Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
-            //        Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
-
-            //        data = encryptorByFeistelNetwork.Decrypte(data);
-            //    }
-
-            //    Console.WriteLine("Левая часть: " + EncoderClass.BitArraytoHexString(data.firstPartText));
-            //    Console.WriteLine("Правая часть: " + EncoderClass.BitArraytoHexString(data.secondPartText));
-            //    Console.WriteLine("Ключ: " + EncoderClass.BitArraytoHexString(data.partKey));
-            //    cipherText = BitArrayFunctions.Append(cipherText, data.firstPartText);
-            //    cipherText = BitArrayFunctions.Append(cipherText, data.secondPartText);
-
-            //}
+            this.originalText = originalText;
         }
     }
 }

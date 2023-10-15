@@ -2,11 +2,8 @@
 using System.Windows;
 using Microsoft.Win32;
 using PSZI_lr1;
-using System.Windows.Controls;
 using System.Diagnostics;
 using System.IO;
-using System.Text;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace PSZI_lr1_v2
 {
@@ -184,7 +181,13 @@ namespace PSZI_lr1_v2
             int[] a;
 
             a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text), chooseAvalanche);
-            TextBoxExitCC.Text = String.Join(" ", a);
+            TextBoxMeanBit.Text = "";
+            TextBoxStFull.Text = "";
+            TextBoxStLavEff.Text = "";
+            TextBoxStStrong.Text = "";
+            //Collapsed
+
+
 
             string fileNameRounds = @".\rounds.txt";
             string fileNameCount = @".\countChanges.txt";
@@ -264,15 +267,26 @@ namespace PSZI_lr1_v2
 
         private void ButtonShowBelowKeys_Click(object sender, RoutedEventArgs e)
         {
-            if(StackPanelBelowKeys.Visibility == Visibility.Collapsed)
+            if (StackPanelBelowKeys.Visibility == Visibility.Collapsed)
             {
                 StackPanelBelowKeys.Visibility = Visibility.Visible;
                 ButtonShowBelowKeys.Content = "Закрыть подключи";
+                int j = 0;
+                for (int i = 0; i < 16; i++)
+                {
+                    j = i + 1;
+                    if (i < 8)
+                        LB1.Items.Add(j + "\tэл" + j);
+                    else
+                        LB2.Items.Add(j + "\tэл" + j);
+                }
             }
             else
             {
                 StackPanelBelowKeys.Visibility = Visibility.Collapsed;
-                ButtonShowBelowKeys.Content = "Просмотреть подключи";
+                ButtonShowBelowKeys.Content = "Посмотреть подключи";
+                LB1.Items.Clear();
+                LB2.Items.Clear();
             }
         }
     }
