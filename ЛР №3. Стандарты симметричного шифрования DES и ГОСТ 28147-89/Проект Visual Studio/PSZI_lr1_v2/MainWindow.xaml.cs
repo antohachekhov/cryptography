@@ -130,7 +130,6 @@ namespace PSZI_lr1_v2
         // Шифрование
         private void ButtonCipherText_Click(object sender, RoutedEventArgs e)
         {
-
             program.Encryption();
             Program.writeToFile("cipherText.txt", EncoderClass.BitArrayToString(program.cipherText));
             writeCipherToWindow();
@@ -264,16 +263,18 @@ namespace PSZI_lr1_v2
             chooseAvalanche = ModeChooseAvalanche.key;
         }
 
+        private void ButtonGenerateBelowKeys_Click(object sender, RoutedEventArgs e)
+        {
+            program.FillKeys();
+            
+        }
+
+
         private void ButtonShowBelowKeys_Click(object sender, RoutedEventArgs e)
         {
             if (StackPanelBelowKeys.Visibility == Visibility.Collapsed)
             {
-                if (program.belowKeys == null)
-                {
-                    program.belowKeys = program.FillKeys();
-                    
-                }
-                //string[] belowKeys1 = { "1", "2", "3", " ", "", "", "", "", "", "", "", "", "13", "", "", "" };
+
                 StackPanelBelowKeys.Visibility = Visibility.Visible;
                 ButtonShowBelowKeys.Content = "Закрыть подключи";
                 int j = 0;
@@ -281,9 +282,9 @@ namespace PSZI_lr1_v2
                 {
                     j = i + 1;
                     if (i < 8)
-                        LB1.Items.Add(j + "\t" + program.belowKeys[i]);
+                        LB1.Items.Add(j + "\t" + EncoderClass.BitArraytoHexString(program.belowKeys[i]));
                     else
-                        LB2.Items.Add(j + "\t" + program.belowKeys[i]);
+                        LB2.Items.Add(j + "\t" + EncoderClass.BitArraytoHexString(program.belowKeys[i]));
                 }
             }
             else

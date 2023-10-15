@@ -57,7 +57,7 @@ namespace PSZI_lr1_v2
         public EncryptByDES encryptorByDES;
         public int countRounds;
         public int lengthBlock = 64;
-        public string[] belowKeys = new string[16];
+        public BitArray[] belowKeys;
 
         const string fileNameStartText = "originalText.txt";
         const string fileNameCipherText = "cipherText.txt";
@@ -93,12 +93,14 @@ namespace PSZI_lr1_v2
             //encryptorByFeistelNetwork = new EncryptorByFeistelNetwork(command);
         }
 
-        public string[] FillKeys()
+        public void FillKeys()
         {
-            for (int i = 0; i < 16; i++)
-                belowKeys[i] = EncoderClass.BitArrayToString(generatorKey.GenerateKey(i));
+            generatorKey = new GeneratorKey(key);
 
-            return belowKeys;
+            belowKeys = new BitArray[16];
+
+            for (int i = 0; i < 16; i++)
+                belowKeys[i] = generatorKey.GenerateKey(i);
         }
 
         public static string readFromFile(string fileName)
@@ -161,13 +163,15 @@ namespace PSZI_lr1_v2
 
         public void Encryption()
         {
+            encryptorByDES = new EncryptByDES(generatorKey);
+
             BitArray[] originalTextBlocks = DividingTextIntoBlocks(originalText);
             BitArray cipherText = new BitArray(0);
 
             // Шифруем каждый блок
             for (int iBlock = 0; iBlock < originalTextBlocks.Length; iBlock++)
             {
-                BitArrayFunctions.Append(cipherText, encryptorByDES.Encrypte(originalTextBlocks[iBlock]));
+                cipherText = BitArrayFunctions.Append(cipherText, encryptorByDES.Encrypte(originalTextBlocks[iBlock]));
             }
 
             this.cipherText = cipherText;
@@ -204,16 +208,16 @@ namespace PSZI_lr1_v2
 
         internal void Decryption()
         {
-            BitArray[] cipherTextBlocks = DividingTextIntoBlocks(cipherText);
+            BitArray[] cipherTextBlocks = DividingTextIntoBlocks(this.originalText);
             BitArray originalText = new BitArray(0);
 
             // Шифруем каждый блок
             for (int iBlock = 0; iBlock < cipherTextBlocks.Length; iBlock++)
             {
-                BitArrayFunctions.Append(cipherText, encryptorByDES.Decrypte(cipherTextBlocks[iBlock]));
+                originalText = BitArrayFunctions.Append(originalText, encryptorByDES.Decrypte(cipherTextBlocks[iBlock]));
             }
 
-            this.originalText = originalText;
+            this.cipherText = originalText;
         }
     }
 }

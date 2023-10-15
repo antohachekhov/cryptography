@@ -24,7 +24,7 @@ namespace PSZI_lr1_v2
             { 21, 13, 05, 28, 20, 12, 04 }
         };
 
-        int[] C_0, D_0;
+        BitArray C_0, D_0;
 
         int[] countShiftMatrix = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
 
@@ -75,18 +75,47 @@ namespace PSZI_lr1_v2
             cicleLeftShift(Ci, countSumShift);
             cicleLeftShift(Di, countSumShift);
 
-            BitArrayFunctions.Append(Ci, Di);
+            Ci = BitArrayFunctions.Append(Ci, Di);
 
 
-            BitArray belowKey = new BitArray(keyLength);
-            for (int j = 0; j < keyLength; j++)
+            BitArray belowKey = new BitArray(H.Length);
+            for (int j = 0; j < H.Length; j++)
             {
                 int iG = j / H.GetLength(1);
                 int jG = j % H.GetLength(1);
-                belowKey[j] = Ci[H[iG, jG]];
+                belowKey[j] = Ci[H[iG, jG] - 1];
             }
 
             return belowKey;
+        }
+
+        public static BitArray ExtendedKey(BitArray key)
+        {
+            BitArray extendedKey = new BitArray(0);
+
+            bool[] byteKey = new bool[byteLength];
+
+            for (int i = 0, j = 0; i < key.Length; i++, j++)
+            {
+                byteKey[j] = key[i];
+
+                // Когда заполнены 7 бит байта
+                if (j == byteLength - 2)
+                {
+                    // Заполнение последнего бита байта
+                    int countOnes = byteKey.Count(x => x == true);
+                    if (countOnes % 2 == 0)
+                    {
+                        byteKey[byteLength - 1] = !byteKey[byteLength - 1];
+                    }
+
+                    // Добавление байта в расширенный ключ
+                    extendedKey = BitArrayFunctions.Append(extendedKey, new BitArray(byteKey));
+                    j = -1;
+                }
+            }
+
+            return extendedKey;
         }
 
         public GeneratorKey(BitArray generalKey)
@@ -99,49 +128,25 @@ namespace PSZI_lr1_v2
             }
 
             Console.WriteLine("Расширение ключа...");
-            BitArray extendedKey = new BitArray(0);
-
-            bool[] byteKey = new bool[byteLength];
-
-            for(int i =0; i < generalKey.Length; i++)
-            {
-                byteKey[i] = generalKey[i];
-
-                // Когда заполнены 7 бит байта
-                if(i % (byteLength - 2) == 0)
-                {
-                    // Заполнение последнего бита байта
-                    int countOnes = byteKey.Count(x => x == true);
-                    if(countOnes % 2 == 0)
-                    {
-                        byteKey[byteLength - 1] = !byteKey[byteLength - 1];
-                    }
-
-                    // Добавление байта в расширенный ключ
-                    BitArrayFunctions.Append(extendedKey, new BitArray(byteKey));
-                }
-            }
+            BitArray extendedKey = ExtendedKey(generalKey);
 
             Console.WriteLine("Вычисление C_0 и D_0");
             // Генерация C_0 и D_0 
-            int lengthCAndD = keyLength / 2;
-            BitArray C_0 = new BitArray(lengthCAndD);
-            BitArray D_0 = new BitArray(lengthCAndD);
+            int lengthCAndD = extendedKey.Length / 2;
+            C_0 = new BitArray(lengthCAndD);
+            D_0 = new BitArray(lengthCAndD);
             int countColumnsG = G.GetLength(1);
-            for (int i = 0; i < lengthCAndD; i++)
+            for (int i = 0; i < G.Length / 2; i++)
             {
-
                 int iG = i / countColumnsG;
                 int jG = i % countColumnsG;
 
-                bool elC_0 = generalKey.Get(G[iG, jG]);
-                C_0.Set(i, elC_0);
+                C_0[i] = extendedKey[G[iG, jG] - 1];
 
 
-                bool elD_0 = generalKey.Get(
-                    G[iG + lengthCAndD / countColumnsG,
-                      jG + lengthCAndD % countColumnsG]);
-                D_0.Set(i, elD_0);
+                int iG2 = iG + G.GetLength(0) / 2;
+                int jG2 = jG;
+                D_0[i] = extendedKey[G[iG2, jG2] - 1];
             }
         }
 

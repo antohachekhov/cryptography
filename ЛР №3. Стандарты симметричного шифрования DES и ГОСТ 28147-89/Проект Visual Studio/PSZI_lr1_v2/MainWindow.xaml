@@ -86,7 +86,7 @@
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button>Сгенерировать подключи</Button>
+                                    <Button x:Name="ButtonGenerateBelowKeys" Click="ButtonGenerateBelowKeys_Click">Сгенерировать подключи</Button>
                                     <Button x:Name="ButtonShowBelowKeys" Click="ButtonShowBelowKeys_Click">Посмотреть подключи</Button>
                                 </StackPanel>
 

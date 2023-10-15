@@ -82,8 +82,7 @@ namespace PSZI_lr1_v2
             }
 
             BitArray cipherText = new BitArray(0);
-            cipherText.Append(data.secondPartText);
-            cipherText.Append(data.firstPartText);
+            cipherText = BitArrayFunctions.Append(data.secondPartText, data.firstPartText);
             // IP^-1
             RearrangementIP(ref cipherText, IP_1);
             return cipherText;
@@ -108,8 +107,7 @@ namespace PSZI_lr1_v2
 
 
             BitArray originalText = new BitArray(0);
-            BitArrayFunctions.Append(originalText, data.secondPartText);
-            BitArrayFunctions.Append(originalText, data.firstPartText);
+            originalText = BitArrayFunctions.Append(data.secondPartText, data.firstPartText);
             // IP^-1
             RearrangementIP(ref originalText, IP_1);
             return originalText;
