@@ -93,14 +93,27 @@ namespace PSZI_lr1
         }
 
 
-        BitArray S(BitArray B)
+        BitArray S(int[,] tableS, BitArray B)
         {
-            BitArray result = new BitArray(4);
-            BitArray strBit = new BitArray(2) { B[0], B[5]};
+            BitArray strBit = new BitArray(new bool[] { B[0], B[5] });
             int str = (int) EncoderClass.ByteArrayToLong(EncoderClass.BitArrayToByteArray(strBit));
-            BitArray colBit = new BitArray(4) { B[1], B[2], B[3], B[4] };
+            BitArray colBit = new BitArray(new bool[] { B[1], B[2], B[3], B[4] });
             int col = (int)EncoderClass.ByteArrayToLong(EncoderClass.BitArrayToByteArray(colBit));
-            int resultInt = 
+            int resultInt = tableS[str, col];
+            BitArray result = new BitArray(EncoderClass.ByteArrayToBitArray(EncoderClass.LongToByteArray((long)resultInt)));
+            return result;
+        }
+
+        BitArray P(BitArray S)
+        {
+            BitArray result = new BitArray(32);
+            int[] indexes = new int[32] { 16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26,
+                5, 18, 31, 10, 2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25};
+            for(int i = 0; i < 32; i++)
+            {
+                result[i] = S[indexes[i] - 1];
+            }
+            return result;
         }
 
 
@@ -159,9 +172,19 @@ namespace PSZI_lr1
             }
 
 
+            BitArray resS = new BitArray(S(S1, B1));
+            resS = BitArrayFunctions.Append(resS, S(S2, B2));
+            resS = BitArrayFunctions.Append(resS, S(S3, B3));
+            resS = BitArrayFunctions.Append(resS, S(S4, B4));
+            resS = BitArrayFunctions.Append(resS, S(S5, B5));
+            resS = BitArrayFunctions.Append(resS, S(S6, B6));
+            resS = BitArrayFunctions.Append(resS, S(S7, B7));
+            resS = BitArrayFunctions.Append(resS, S(S8, B8));
+
+            return P(resS);
         }
 
-        public dataToEncryption Encrypte(dataToEncryption data)
+        public dataToEncryption Decrypte(dataToEncryption data)
         {
             BitArray firstPartText = new BitArray(data.firstPartText);
             data.firstPartText = func(data.firstPartText, data.partKey).Xor(data.secondPartText);
@@ -174,7 +197,7 @@ namespace PSZI_lr1
         {
         }
 
-        internal dataToEncryption Decrypte(dataToEncryption data)
+        internal dataToEncryption Encrypte(dataToEncryption data)
         {
             BitArray secondPartText = new BitArray(data.secondPartText);
             data.secondPartText = func(data.secondPartText, data.partKey).Xor(data.firstPartText);

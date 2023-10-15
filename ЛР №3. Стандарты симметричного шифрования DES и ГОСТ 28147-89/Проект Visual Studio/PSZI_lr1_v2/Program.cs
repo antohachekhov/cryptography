@@ -57,7 +57,7 @@ namespace PSZI_lr1
         public EncryptByDES encryptorByDES;
         public int countRounds;
         public int lengthBlock = 64;
-        public BitArray() underKeys;
+        public string[] belowKeys = new string[16];
 
         const string fileNameStartText = "originalText.txt";
         const string fileNameCipherText = "cipherText.txt";
@@ -173,54 +173,27 @@ namespace PSZI_lr1
         public int[] searchAvalancheEffect(int index, ModeChooseAvalanche chooseAvalanche)
         {
 
-            int[] countChangedBitsArray;
+            BitArray originalTextFalse = new BitArray(originalText);
+            BitArray originalTextTrue = new BitArray(originalText);
+
+            BitArray keyFalse = new BitArray(key);
+            BitArray keyTrue = new BitArray(key);
             if (chooseAvalanche == ModeChooseAvalanche.originalText)
             {
                 originalTextFalse.Set(index, false);
                 originalTextTrue.Set(index, true);
-
-                BitArray keyFalse = new BitArray(key);
-                BitArray keyTrue = new BitArray(key);
             }
             else
             {
-
-                BitArray keyFalse = new BitArray(key);
-                BitArray keyTrue = new BitArray(key);
                 keyFalse.Set(index, false);
                 keyTrue.Set(index, true);
-
-
-                GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
-                GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
-
-
-                int i = 0;
-                BitArray partKeyFalse = generatorFalse.GenerateKey(i);
-                BitArray partKeyTrue = generatorTrue.GenerateKey(i);
-
-                dataToEncryption dataFalse = new dataToEncryption(originalTextBlocks[0, 0], originalTextBlocks[0, 1], partKeyFalse);
-                dataToEncryption dataTrue = new dataToEncryption(originalTextBlocks[0, 0], originalTextBlocks[0, 1], partKeyTrue);
-
-                countChangedBitsArray = new int[countRounds];
-                for (; i < countRounds; i++, dataFalse.partKey = generatorFalse.GenerateKey(i), dataTrue.partKey = generatorTrue.GenerateKey(i))
-                {
-                    dataFalse = encryptorByFeistelNetwork.Encrypte(dataFalse);
-                    dataTrue = encryptorByFeistelNetwork.Encrypte(dataTrue);
-                    BitArray cipherTextFalse = BitArrayFunctions.Append(dataFalse.firstPartText, dataFalse.secondPartText);
-                    BitArray cipherTextTrue = BitArrayFunctions.Append(dataTrue.firstPartText, dataTrue.secondPartText);
-
-                    Console.WriteLine("cipherTextFalse = " + EncoderClass.BitArraytoHexString(cipherTextFalse));
-                    Console.WriteLine("cipherTextTrue = " + EncoderClass.BitArraytoHexString(cipherTextTrue));
-                    Console.WriteLine("partKey = " + EncoderClass.BitArraytoHexString(dataTrue.partKey));
-
-                    countChangedBitsArray[i] = countChangedBits(cipherTextFalse, cipherTextTrue);
-                }
             }
 
+            GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
+            GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
 
 
-            return countChangedBitsArray;
+            return encryptorByDES.searchAvalancheEffect(originalTextTrue, originalTextFalse, generatorTrue, generatorFalse);
         }
 
         internal void Decryption()

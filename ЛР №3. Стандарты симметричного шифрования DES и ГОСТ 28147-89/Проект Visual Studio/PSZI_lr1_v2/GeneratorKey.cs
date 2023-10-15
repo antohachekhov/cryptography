@@ -87,7 +87,7 @@ namespace PSZI_lr1
                 belowKey[j] = Ci[H[iG, jG]];
             }
 
-
+            
             return belowKey;
         }
 
