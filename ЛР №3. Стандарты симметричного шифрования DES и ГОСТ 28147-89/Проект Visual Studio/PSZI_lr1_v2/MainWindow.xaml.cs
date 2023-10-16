@@ -132,6 +132,7 @@ namespace PSZI_lr1_v2
             program.Encryption();
             Program.writeToFile("cipherText.txt", EncoderClass.BitArrayToString(program.cipherText));
             writeCipherToWindow();
+            timeOfEncoding.Text = program.timeOfEncoding.ToString() + " мс";
         }
 
 
@@ -179,6 +180,17 @@ namespace PSZI_lr1_v2
             BitArray Xfalse = new BitArray(Xs[0]);
             BitArray Xtrue = new BitArray(Xs[0]);
 
+            if (Xs[0][index] == false)
+            {
+                labelFalse.Text = "False *";
+                labelTrue.Text = "True";
+            }
+            else
+            {
+                labelFalse.Text = "False";
+                labelTrue.Text = "True *";
+            }
+
             BitArray keyFalse = new BitArray(GeneratorKey.ExtendedKey(program.key));
             BitArray keyTrue = new BitArray(GeneratorKey.ExtendedKey(program.key));
             if (chooseAvalanche == ModeChooseAvalanche.originalText)
@@ -191,6 +203,8 @@ namespace PSZI_lr1_v2
                 keyFalse[index] = false;
                 keyTrue[index] = true;
             }
+
+            
             
             int[,] MDepFalse = program.matrixDependence(Xfalse, keyFalse);
             int[,] MDisFalse = program.matrixDistances(Xfalse, keyFalse);

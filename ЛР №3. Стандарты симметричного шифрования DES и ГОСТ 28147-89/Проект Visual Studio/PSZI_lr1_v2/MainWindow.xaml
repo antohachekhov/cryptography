@@ -131,7 +131,7 @@
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}" Text="Время шифрования:"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox IsReadOnly="True" Width="350" Margin="10"></TextBox>
+                            <TextBox x:Name="timeOfEncoding" IsReadOnly="True" Width="350" Margin="10"></TextBox>
                         </StackPanel>
                     </StackPanel>
                     <Grid>
@@ -158,8 +158,8 @@
                                             <ColumnDefinition></ColumnDefinition>
                                             <ColumnDefinition></ColumnDefinition>
                                         </Grid.ColumnDefinitions>
-										<TextBlock HorizontalAlignment="Center" Grid.Column="0" Style="{StaticResource Text}" Text="False"/>
-                                        <TextBlock HorizontalAlignment="Center" Grid.Column="1" Style="{StaticResource Text}" Text="True"/>
+										<TextBlock x:Name="labelFalse" HorizontalAlignment="Center" Grid.Column="0" Style="{StaticResource Text}" Text="False"/>
+                                        <TextBlock x:Name="labelTrue" HorizontalAlignment="Center" Grid.Column="1" Style="{StaticResource Text}" Text="True"/>
 									</Grid>
 									<TextBlock Style="{StaticResource Text}" Text="Среднее число бит выхода, изменяющихся при изменении одного бита входного сектора:"/>
 									<StackPanel Orientation="Horizontal">

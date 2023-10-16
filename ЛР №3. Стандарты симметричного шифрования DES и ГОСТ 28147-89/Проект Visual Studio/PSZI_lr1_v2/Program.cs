@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using System.Collections;
 using System.Windows;
+using System.Diagnostics;
 
 namespace PSZI_lr1_v2
 {
@@ -58,6 +59,7 @@ namespace PSZI_lr1_v2
         public int countRounds;
         public int lengthBlock = 64;
         public BitArray[] belowKeys;
+        public long timeOfEncoding;
 
         const string fileNameStartText = "originalText.txt";
         const string fileNameCipherText = "cipherText.txt";
@@ -165,6 +167,10 @@ namespace PSZI_lr1_v2
         {
             encryptorByDES = new EncryptByDES(generatorKey);
 
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
+
             BitArray[] originalTextBlocks = DividingTextIntoBlocks(originalText);
             BitArray cipherText = new BitArray(0);
 
@@ -173,6 +179,10 @@ namespace PSZI_lr1_v2
             {
                 cipherText = BitArrayFunctions.Append(cipherText, encryptorByDES.Encrypte(originalTextBlocks[iBlock]));
             }
+
+            //останавливаем счётчик
+            stopwatch.Stop();
+            timeOfEncoding = stopwatch.ElapsedMilliseconds;
 
             this.cipherText = cipherText;
         }
@@ -222,6 +232,7 @@ namespace PSZI_lr1_v2
         // Матрица зависимостей
         public int[,] matrixDependence(BitArray X, BitArray key)
         {
+            Console.WriteLine(EncoderClass.BitArrayToBinString(X));
             // Создадим класс EncryptorByFeistelNetwork для доступа к func
             EncryptorByFeistelNetwork encryptorFeistel = new EncryptorByFeistelNetwork();
             BitArray Y = encryptorFeistel.func(X, key);
@@ -248,6 +259,8 @@ namespace PSZI_lr1_v2
                         MDep[i, j] = 0;
                 }
             }
+
+            Console.WriteLine(EncoderClass.BitArrayToBinString(Y));
 
             return MDep;
         }
