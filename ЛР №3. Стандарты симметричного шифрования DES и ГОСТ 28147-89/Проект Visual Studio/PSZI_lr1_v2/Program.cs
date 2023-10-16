@@ -177,8 +177,166 @@ namespace PSZI_lr1_v2
             this.cipherText = cipherText;
         }
 
+        // Количество ненулевых элементов в множестве
+        public int Hemming(BitArray x)
+        {
+            int count = 0;
+            for (int i = 0; i < x.Length; i++) if (x[i] == true) count++;
+            return count;
+        }
+
+        // Матрица расстояний
+        public int[,] matrixDistances(BitArray X, BitArray key)
+        {
+            // Создадим класс EncryptorByFeistelNetwork для доступа к func
+            EncryptorByFeistelNetwork encryptorFeistel = new EncryptorByFeistelNetwork();
+            BitArray Y = encryptorFeistel.func(X, key);
+
+            int n = X.Length;
+            int m = Y.Length;
+            int[,] MDist = new int[n, m];
+
+            for(int i = 0; i < n; i++)
+            {
+                // Считаем Xi
+                BitArray Xi = new BitArray(X);
+                Xi[i] = X[i] != true;
+
+                BitArray Yi = encryptorFeistel.func(Xi, key);
+
+                for (int j = 0; j < m; j++)
+                {
+                    BitArray YiXorY = new BitArray(Yi);
+                    YiXorY.Xor(Y);
+                    if (Hemming(YiXorY) - 1 == j) 
+                        MDist[i, j] = 1;
+                    else
+                        MDist[i, j] = 0;
+                }
+            }
+
+            return MDist;
+        }
 
 
+        // Матрица зависимостей
+        public int[,] matrixDependence(BitArray X, BitArray key)
+        {
+            // Создадим класс EncryptorByFeistelNetwork для доступа к func
+            EncryptorByFeistelNetwork encryptorFeistel = new EncryptorByFeistelNetwork();
+            BitArray Y = encryptorFeistel.func(X, key);
+
+            int n = X.Length;
+            int m = Y.Length;
+
+            // Матрица зависимостей
+            int[,] MDep = new int[n, m];
+
+            for (int i = 0; i < n; i++)
+            {
+                // Считаем Xi
+                BitArray Xi = new BitArray(X);
+                Xi[i] = (X[i] == true) ? false : true;
+
+                BitArray Yi = encryptorFeistel.func(Xi, key);
+
+                for (int j = 0; j < m; j++)
+                {
+                    if (Yi[j] != Y[j])
+                        MDep[i, j] = 1;
+                    else
+                        MDep[i, j] = 0;
+                }
+            }
+
+            return MDep;
+        }
+
+        public double criteria1(int[,] MDist)
+        {
+            double result = 0.0;
+            int n = MDist.GetLength(0);
+            int m = MDist.GetLength(1);
+            int sizeU = DividingTextIntoBlocks(originalText).Length;
+            for(int i = 0; i < n; i++)
+            {
+                for(int j = 0; j < m; j++)
+                {
+                    result += (j + 1) * MDist[i, j];
+                }
+            }
+            result /= n * sizeU;
+            Console.WriteLine("d1 = " + result.ToString());
+            return result;
+        }
+
+        public double criteria2(int[,] MDep)
+        {
+            double d = 0.0;
+            int n = MDep.GetLength(0);
+            int m = MDep.GetLength(1);
+
+            double k = 0;
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    if (MDep[i, j] == 0) k++;
+                }
+            }
+
+            d = 1 - k  /  (n * m);
+
+            Console.WriteLine("d2 = " + d.ToString());
+
+            return d;
+        }
+
+        public double criteria3(int[,] MDist)
+        {
+            double result = 0.0;
+            int n = MDist.GetLength(0);
+            int m = MDist.GetLength(1);
+            int sizeU = DividingTextIntoBlocks(originalText).Length;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    result += 2 * (j + 1) * MDist[i, j] - m;
+                }
+
+                result = Math.Abs(result);
+            }
+            result *= sizeU / (n * m);
+            result = 1.0 - result;
+
+            Console.WriteLine("d3 = " + result.ToString());
+            return result;
+        }
+
+        public double criteria4(int[,] MDep)
+        {
+            double d = 0.0;
+            int n = MDep.GetLength(0);
+            int m = MDep.GetLength(1);
+
+            double k = 0;
+            int sizeU = DividingTextIntoBlocks(originalText).Length;
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    k += (2 * MDep[i,j] / sizeU) - 1.0;
+                }
+            }
+
+            d = 1 - k / (n * m);
+
+            Console.WriteLine("d4 = " + d.ToString());
+
+            return d;
+        }
 
         public int[] searchAvalancheEffect(int index, ModeChooseAvalanche chooseAvalanche)
         {

@@ -176,18 +176,25 @@ namespace PSZI_lr1_v2
         public void ButtonSearch_Click(object sender, RoutedEventArgs e)
         {
 
-            int[] a;
+            //int[] a = null;
 
-            a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text), chooseAvalanche);
-            TextBoxMeanBit.Text = "";
-            TextBoxStFull.Text = "";
-            TextBoxStLavEff.Text = "";
-            TextBoxStStrong.Text = "";
+            //a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text), chooseAvalanche);
+
+            /*BitArray X = EncoderClass.StringToBitArray(TextBoxOriginalTextContentCC.Text);
+            BitArray key = EncoderClass.StringToBitArray(TextBoxOriginalTextContentCC.Text);*/
+
+            int[,] MDep = program.matrixDependence(program.originalText, program.key);
+            int[,] MDis = program.matrixDependence(program.originalText, program.key);
+
+            TextBoxMeanBit.Text = program.criteria1(MDis).ToString();
+            TextBoxStFull.Text = program.criteria2(MDep).ToString();
+            TextBoxStLavEff.Text = program.criteria3(MDis).ToString();
+            TextBoxStStrong.Text = program.criteria4(MDep).ToString();
             //Collapsed
 
 
 
-            string fileNameRounds = @".\rounds.txt";
+            /*string fileNameRounds = @".\rounds.txt";
             string fileNameCount = @".\countChanges.txt";
 
             int[] rounds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
@@ -199,10 +206,10 @@ namespace PSZI_lr1_v2
 
             using (var sr = new StreamWriter(fileNameCount))
             {
-                sr.Write(String.Join("\n", a));
+                // sr.Write(String.Join("\n", a));
             }
 
-            Process.Start("..\\..\\..\\..\\main.exe");
+            Process.Start("..\\..\\..\\..\\main.exe");*/
 
 
         }
