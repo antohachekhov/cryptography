@@ -206,8 +206,18 @@ namespace PSZI_lr1_v2
 
             
             
-            int[,] MDepFalse = program.matrixDependence(Xfalse, keyFalse);
-            int[,] MDisFalse = program.matrixDistances(Xfalse, keyFalse);
+            int[,] MDepFalse = program.matrixDependence(Xfalse, program.key);
+            int[,] MDisFalse = program.matrixDistances(Xfalse, program.key);
+
+            for(int i =0; i < MDisFalse.GetLength(0); i++)
+            {
+                Console.WriteLine("{" + "\t");
+                for (int j = 0; j < MDisFalse.GetLength(1); j++)
+                {
+                    Console.Write(MDisFalse[i, j] + "\t");
+                }
+                Console.Write("}" + "\t");
+            }
 
             TextBoxMeanBitFalse.Text = program.criteria1(MDisFalse).ToString();
             TextBoxStFullFalse.Text = program.criteria2(MDepFalse).ToString();
@@ -216,8 +226,8 @@ namespace PSZI_lr1_v2
 
             
             
-            int[,] MDepTrue = program.matrixDependence(Xtrue, keyTrue);
-            int[,] MDisTrue = program.matrixDistances(Xtrue, keyTrue);
+            int[,] MDepTrue = program.matrixDependence(Xtrue, program.key);
+            int[,] MDisTrue = program.matrixDistances(Xtrue, program.key);
 
             TextBoxMeanBitTrue.Text = program.criteria1(MDisTrue).ToString();
             TextBoxStFullTrue.Text = program.criteria2(MDepTrue).ToString();

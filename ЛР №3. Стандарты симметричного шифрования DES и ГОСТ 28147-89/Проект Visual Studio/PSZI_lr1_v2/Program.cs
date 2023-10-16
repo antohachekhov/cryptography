@@ -199,11 +199,14 @@ namespace PSZI_lr1_v2
         public int[,] matrixDistances(BitArray X, BitArray key)
         {
             // Создадим класс EncryptorByFeistelNetwork для доступа к func
-            EncryptorByFeistelNetwork encryptorFeistel = new EncryptorByFeistelNetwork();
-            BitArray Y = encryptorFeistel.func(X, key);
+            EncryptByDES encryptByDes2 = new EncryptByDES(new GeneratorKey(key));
+            BitArray Y = encryptByDes2.Encrypte(X);
 
             int n = X.Length;
             int m = Y.Length;
+
+            List<BitArray>[,] listY = new List<BitArray>[n, m];
+
             int[,] MDist = new int[n, m];
 
             for(int i = 0; i < n; i++)
@@ -212,16 +215,14 @@ namespace PSZI_lr1_v2
                 BitArray Xi = new BitArray(X);
                 Xi[i] = X[i] != true;
 
-                BitArray Yi = encryptorFeistel.func(Xi, key);
+                BitArray Yi = encryptByDes2.Encrypte(Xi);
 
                 for (int j = 0; j < m; j++)
                 {
                     BitArray YiXorY = new BitArray(Yi);
                     YiXorY.Xor(Y);
-                    if (Hemming(YiXorY) - 1 == j) 
+                    if (Hemming(YiXorY) == j + 1)
                         MDist[i, j] = 1;
-                    else
-                        MDist[i, j] = 0;
                 }
             }
 
@@ -234,8 +235,8 @@ namespace PSZI_lr1_v2
         {
             Console.WriteLine(EncoderClass.BitArrayToBinString(X));
             // Создадим класс EncryptorByFeistelNetwork для доступа к func
-            EncryptorByFeistelNetwork encryptorFeistel = new EncryptorByFeistelNetwork();
-            BitArray Y = encryptorFeistel.func(X, key);
+            EncryptByDES encryptByDes2 = new EncryptByDES(new GeneratorKey(key));
+            BitArray Y = encryptByDes2.Encrypte(X);
 
             int n = X.Length;
             int m = Y.Length;
@@ -249,14 +250,12 @@ namespace PSZI_lr1_v2
                 BitArray Xi = new BitArray(X);
                 Xi[i] = (X[i] == true) ? false : true;
 
-                BitArray Yi = encryptorFeistel.func(Xi, key);
+                BitArray Yi = encryptByDes2.Encrypte(Xi);
 
                 for (int j = 0; j < m; j++)
                 {
                     if (Yi[j] != Y[j])
                         MDep[i, j] = 1;
-                    else
-                        MDep[i, j] = 0;
                 }
             }
 
@@ -273,12 +272,14 @@ namespace PSZI_lr1_v2
             int sizeU = DividingTextIntoBlocks(originalText).Length;
             for(int i = 0; i < n; i++)
             {
+                double result2 = 0.0;
                 for(int j = 0; j < m; j++)
                 {
-                    result += (j + 1) * MDist[i, j];
+                    result2 += (j + 1) * MDist[i, j];
                 }
+                result += result2 / sizeU;
             }
-            result /= n * sizeU;
+            result /= n;
             Console.WriteLine("d1 = " + result.ToString());
             return result;
         }
@@ -299,7 +300,7 @@ namespace PSZI_lr1_v2
                 }
             }
 
-            d = 1 - k  /  (n * m);
+            d = 1 - (k / (n * m));
 
             Console.WriteLine("d2 = " + d.ToString());
 
@@ -342,6 +343,8 @@ namespace PSZI_lr1_v2
                 {
                     k += (2 * MDep[i,j] / sizeU) - 1.0;
                 }
+
+                k = Math.Abs(k);
             }
 
             d = 1 - k / (n * m);
