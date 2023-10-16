@@ -44,7 +44,7 @@
     </Window.Resources>
 
     <Grid>
-        <ScrollViewer Margin="0,10,0,0" Height="759" VerticalAlignment="Top">
+        <ScrollViewer Margin="0,10,0,0" Height="800" VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel Margin="5">
                     <TextBlock Style="{StaticResource Title}" Text="Стандарты симметричного шифрования. DES." />
@@ -152,14 +152,35 @@
                                 <StackPanel Style="{StaticResource InputBlock}" Height="374">
                                     <TextBlock Style="{StaticResource Text}" Text="Вывод:"/>
                                     <TextBlock Height="10" />
-                                    <TextBlock Style="{StaticResource Text}" Text="Среднее число бит выхода, изменяющихся при изменении одного бита входного сектора:"/>
-                                    <TextBox x:Name="TextBoxMeanBit" Width="700" Margin="20"></TextBox>
-                                    <TextBlock Style="{StaticResource Text}" Text="Степень полноты преобразования:"/>
-                                    <TextBox x:Name="TextBoxStFull" Width="700" Margin="20"></TextBox>
-                                    <TextBlock Style="{StaticResource Text}" Text="Степень лавинного эффектра:"/>
-                                    <TextBox x:Name="TextBoxStLavEff" Width="700" Margin="20"></TextBox>
-                                    <TextBlock Style="{StaticResource Text}" Text="Степень соответствия строгому лавинному критерию:"/>
-                                    <TextBox x:Name="TextBoxStStrong" Width="700" Margin="20"></TextBox>
+
+									<Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition></ColumnDefinition>
+                                            <ColumnDefinition></ColumnDefinition>
+                                        </Grid.ColumnDefinitions>
+										<TextBlock HorizontalAlignment="Center" Grid.Column="0" Style="{StaticResource Text}" Text="False"/>
+                                        <TextBlock HorizontalAlignment="Center" Grid.Column="1" Style="{StaticResource Text}" Text="True"/>
+									</Grid>
+									<TextBlock Style="{StaticResource Text}" Text="Среднее число бит выхода, изменяющихся при изменении одного бита входного сектора:"/>
+									<StackPanel Orientation="Horizontal">
+										<TextBox x:Name="TextBoxMeanBitFalse" Width="300" Margin="20"></TextBox>
+										<TextBox x:Name="TextBoxMeanBitTrue" Width="300" Margin="20"></TextBox>
+									</StackPanel>
+									<TextBlock Style="{StaticResource Text}" Text="Степень полноты преобразования:"/>
+									<StackPanel Orientation="Horizontal">
+										<TextBox x:Name="TextBoxStFullFalse" Width="300" Margin="20"></TextBox>
+										<TextBox x:Name="TextBoxStFullTrue" Width="300" Margin="20"></TextBox>
+									</StackPanel>
+									<TextBlock Style="{StaticResource Text}" Text="Степень лавинного эффекта:"/>
+									<StackPanel Orientation="Horizontal">
+										<TextBox x:Name="TextBoxStLavEffFalse" Width="300" Margin="20"></TextBox>
+										<TextBox x:Name="TextBoxStLavEffTrue" Width="300" Margin="20"></TextBox>
+									</StackPanel>
+									<TextBlock Style="{StaticResource Text}" Text="Степень соответствия строгому лавинному критерию:"/>
+									<StackPanel Orientation="Horizontal">
+										<TextBox x:Name="TextBoxStStrongFalse" Width="300" Margin="20"></TextBox>
+										<TextBox x:Name="TextBoxStStrongTrue" Width="300" Margin="20"></TextBox>
+									</StackPanel>
                                 </StackPanel>
                             </StackPanel>
 

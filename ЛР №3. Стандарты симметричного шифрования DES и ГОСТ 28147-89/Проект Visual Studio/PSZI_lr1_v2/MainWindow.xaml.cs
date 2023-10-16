@@ -174,19 +174,44 @@ namespace PSZI_lr1_v2
 
         public void ButtonSearch_Click(object sender, RoutedEventArgs e)
         {
+            int index = Convert.ToInt32(TextBoxChangeBit.Text) - 1;
             BitArray[] Xs = program.DividingTextIntoBlocks(program.originalText);
+            BitArray Xfalse = new BitArray(Xs[0]);
+            BitArray Xtrue = new BitArray(Xs[0]);
 
-            BitArray X = Xs[0];
+            BitArray keyFalse = new BitArray(GeneratorKey.ExtendedKey(program.key));
+            BitArray keyTrue = new BitArray(GeneratorKey.ExtendedKey(program.key));
+            if (chooseAvalanche == ModeChooseAvalanche.originalText)
+            {
+                Xfalse[index] = false;
+                Xtrue[index] = true;
+            }
+            else
+            {
+                keyFalse[index] = false;
+                keyTrue[index] = true;
+            }
             
-            int[,] MDep = program.matrixDependence(X, GeneratorKey.ExtendedKey(program.key));
-            int[,] MDis = program.matrixDistances(X, GeneratorKey.ExtendedKey(program.key));
+            int[,] MDepFalse = program.matrixDependence(Xfalse, keyFalse);
+            int[,] MDisFalse = program.matrixDistances(Xfalse, keyFalse);
 
-            TextBoxMeanBit.Text = program.criteria1(MDis).ToString();
-            TextBoxStFull.Text = program.criteria2(MDep).ToString();
-            TextBoxStLavEff.Text = program.criteria3(MDis).ToString();
-            TextBoxStStrong.Text = program.criteria4(MDep).ToString();
+            TextBoxMeanBitFalse.Text = program.criteria1(MDisFalse).ToString();
+            TextBoxStFullFalse.Text = program.criteria2(MDepFalse).ToString();
+            TextBoxStLavEffFalse.Text = program.criteria3(MDisFalse).ToString();
+            TextBoxStStrongFalse.Text = program.criteria4(MDepFalse).ToString();
 
-            int[] countBits = program.searchAvalancheEffect(X, Convert.ToInt32(TextBoxChangeBit.Text), chooseAvalanche);
+            
+            
+            int[,] MDepTrue = program.matrixDependence(Xtrue, keyTrue);
+            int[,] MDisTrue = program.matrixDistances(Xtrue, keyTrue);
+
+            TextBoxMeanBitTrue.Text = program.criteria1(MDisTrue).ToString();
+            TextBoxStFullTrue.Text = program.criteria2(MDepTrue).ToString();
+            TextBoxStLavEffTrue.Text = program.criteria3(MDisTrue).ToString();
+            TextBoxStStrongTrue.Text = program.criteria4(MDepTrue).ToString();
+
+            int[] countBits = program.searchAvalancheEffect(Xfalse, index, chooseAvalanche);
+
             string fileNameRounds = @".\rounds.txt";
             string fileNameCount = @".\countChanges.txt";
 
