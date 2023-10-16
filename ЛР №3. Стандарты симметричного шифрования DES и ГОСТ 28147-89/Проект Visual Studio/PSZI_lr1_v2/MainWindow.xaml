@@ -60,8 +60,12 @@
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}" Text="Исходный текст:"/>
                         <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="TextBoxOriginalTextContentCC" GotFocus="TextBoxOriginalTextContentCC_GotFocus" LostFocus="TextBoxOriginalTextContentCC_LostFocus" Width="350"></TextBox>
-                            <TextBox x:Name="TextBoxOriginalTextContentCC16" GotFocus="TextBoxOriginalTextContentCC16_GotFocus" LostFocus="TextBoxOriginalTextContentCC16_LostFocus" Width="350" IsEnabled="True"/>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC" 
+                                     GotFocus="TextBoxOriginalTextContentCC_GotFocus" 
+                                     LostFocus="TextBoxOriginalTextContentCC_LostFocus" Width="350"></TextBox>
+                            <TextBox x:Name="TextBoxOriginalTextContentCC16" 
+                                     GotFocus="TextBoxOriginalTextContentCC16_GotFocus" 
+                                     LostFocus="TextBoxOriginalTextContentCC16_LostFocus" Width="350" IsEnabled="True"/>
                         </StackPanel>
                     </StackPanel>
 
@@ -81,8 +85,12 @@
 
                                 <TextBlock Style="{StaticResource Text}" Text="Ключ:"/>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="TextBoxKeyCC" TextChanged="TextBoxKeyCC_TextChanged" Width="350" IsEnabled="True"/>
-                                    <TextBox x:Name="TextBoxKeyCC16" Width="350" IsEnabled="True"/>
+                                    <TextBox x:Name="TextBoxKeyCC"
+                                     GotFocus="TextBoxKeyCC_GotFocus" 
+                                     LostFocus="TextBoxKeyCC_LostFocus" Width="350" IsEnabled="True"/>
+                                    <TextBox x:Name="TextBoxKeyCC16"
+                                     GotFocus="TextBoxKeyCC16_GotFocus" 
+                                     LostFocus="TextBoxKeyCC16_LostFocus" Width="350" IsEnabled="True"/>
                                 </StackPanel>
 
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
@@ -99,8 +107,8 @@
                                         </StackPanel>
                                     </StackPanel>
                                 </StackPanel>
-                                
-                                
+
+
 
                             </StackPanel>
                         </Border>

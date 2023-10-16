@@ -13,7 +13,7 @@ namespace PSZI_lr1_v2
 
 
         // Количество чисел - 56
-        int[,] G = {
+        static int[,] G = {
             { 57, 49, 41, 33, 25, 17, 09 },
             { 01, 58, 50, 42, 34, 26, 18 },
             { 10, 02, 59, 51, 43, 35, 27 },
@@ -24,7 +24,7 @@ namespace PSZI_lr1_v2
             { 21, 13, 05, 28, 20, 12, 04 }
         };
 
-        BitArray C_0, D_0;
+        public BitArray C_0, D_0;
 
         int[] countShiftMatrix = { 1, 1, 2, 2, 2, 2, 2, 2, 1, 2, 2, 2, 2, 2, 2, 1 };
 
@@ -35,7 +35,7 @@ namespace PSZI_lr1_v2
         };
 
 
-        void cicleLeftShift(BitArray bitArray, int countShift)
+        public void cicleLeftShift(ref BitArray bitArray, int countShift)
         {
             BitArray firstBits = new BitArray(countShift);
 
@@ -72,8 +72,8 @@ namespace PSZI_lr1_v2
             BitArray Ci = new BitArray(C_0);
             BitArray Di = new BitArray(D_0);
 
-            cicleLeftShift(Ci, countSumShift);
-            cicleLeftShift(Di, countSumShift);
+            cicleLeftShift(ref Ci, countSumShift);
+            cicleLeftShift(ref Di, countSumShift);
 
             Ci = BitArrayFunctions.Append(Ci, Di);
 
@@ -118,13 +118,35 @@ namespace PSZI_lr1_v2
             return extendedKey;
         }
 
+        public static void DivideKeyToC0AndD0(GeneratorKey generatorKey, BitArray key)
+        {
+            int lengthCAndD = G.Length / 2;
+            generatorKey.C_0 = new BitArray(lengthCAndD);
+            generatorKey.D_0 = new BitArray(lengthCAndD);
+
+            int countColumnsG = G.GetLength(1);
+            int countRowsG = G.GetLength(0);
+            for (int i = 0; i < lengthCAndD; i++)
+            {
+                int iG = i / countColumnsG;
+                int jG = i % countColumnsG;
+
+                generatorKey.C_0[i] = key[G[iG, jG] - 1];
+
+
+                int iG2 = iG + countRowsG / 2;
+                int jG2 = jG;
+                generatorKey.D_0[i] = key[G[iG2, jG2] - 1];
+            }
+        }
+
         public GeneratorKey(BitArray generalKey)
         {
 
             if (generalKey.Length != keyLength)
             {
-                MessageBox.Show("Начальный ключ должен состоять из 7 байт (56 бит)");
-                throw new Exception("");
+                //MessageBox.Show("Начальный ключ должен состоять из 7 байт (56 бит)");
+                
             }
 
             Console.WriteLine("Расширение ключа...");
@@ -132,22 +154,7 @@ namespace PSZI_lr1_v2
 
             Console.WriteLine("Вычисление C_0 и D_0");
             // Генерация C_0 и D_0 
-            int lengthCAndD = extendedKey.Length / 2;
-            C_0 = new BitArray(lengthCAndD);
-            D_0 = new BitArray(lengthCAndD);
-            int countColumnsG = G.GetLength(1);
-            for (int i = 0; i < G.Length / 2; i++)
-            {
-                int iG = i / countColumnsG;
-                int jG = i % countColumnsG;
-
-                C_0[i] = extendedKey[G[iG, jG] - 1];
-
-
-                int iG2 = iG + G.GetLength(0) / 2;
-                int jG2 = jG;
-                D_0[i] = extendedKey[G[iG2, jG2] - 1];
-            }
+            DivideKeyToC0AndD0(this, extendedKey);
         }
 
 
