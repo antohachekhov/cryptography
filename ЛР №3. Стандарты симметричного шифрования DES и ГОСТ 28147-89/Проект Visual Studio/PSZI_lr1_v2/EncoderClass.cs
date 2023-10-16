@@ -6,7 +6,7 @@ using PSZI_lr1;
 
 namespace PSZI_lr1_v2
 {
-    class EncoderClass
+    public class EncoderClass
     {
         public static Encoding enc = Encoding.ASCII;
         public static int byteCountLong = 8;

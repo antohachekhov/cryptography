@@ -138,6 +138,99 @@ namespace TestProject1
         }
 
 
+        [Test]
+        public void ExtendedKeyOdd()
+        {
+            bool[] keyBool = { true, true, true, true, true, true, true};
+
+            BitArray key = new BitArray(keyBool);
+
+            BitArray expected = new BitArray(new bool[] { true, true, true, true, true, true, true, false });
+
+            BitArray newKey = GeneratorKey.ExtendedKey(key);
+            CollectionAssert.AreEqual(expected, newKey);
+        }
+
+        [Test]
+        public void ExtendedKeyEven()
+        {
+            bool[] keyBool = { true, true, true, true, true, true, false };
+
+            BitArray key = new BitArray(keyBool);
+
+            BitArray expected = new BitArray(new bool[] { true, true, true, true, true, true, false, true });
+
+            BitArray newKey = GeneratorKey.ExtendedKey(key);
+            CollectionAssert.AreEqual(expected, newKey);
+        }
+
+        [Test]
+        public void DivideKeyToC0()
+        {
+            bool[] keyBool = { true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+
+            BitArray key = new BitArray(keyBool);
+
+            BitArray expectedC0 = new BitArray(new bool[] { false, true, false, true, false, true, false,
+                                                            true, false, true, false, true, false, true,
+                                                            false, true, false, true, false, true, false,
+                                                            true, false, true, false, true, false, true});
+
+            GeneratorKey generatorKey = new GeneratorKey(new BitArray(56));
+            GeneratorKey.DivideKeyToC0AndD0(generatorKey, key);
+            CollectionAssert.AreEqual(expectedC0, generatorKey.C_0);
+        }
+
+        [Test]
+        public void DivideKeyToD0()
+        {
+            bool[] keyBool = { true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+
+            BitArray key = new BitArray(keyBool);
+
+            BitArray expectedD0 = new BitArray(new bool[] { false, true, false, true, false, true, false,
+                                                            true, false, true, false, true, false, true,
+                                                            false, true, false, true, false, true, false,
+                                                            true, false, true, false, true, false, true});
+            GeneratorKey generatorKey = new GeneratorKey(new BitArray(56));
+            GeneratorKey.DivideKeyToC0AndD0(generatorKey, key);
+            CollectionAssert.AreEqual(expectedD0, generatorKey.D_0);
+        }
+
+        [Test]
+        public void cicleLeftShift()
+        {
+            bool[] CBool = { true, true, true, true, true, true, true, true,
+                             false, false, false, false, false ,false , false, false,
+                             true, true, true, true, true, true, true, true,
+                             false, false, false, false};
+
+            BitArray C = new BitArray(CBool);
+
+            BitArray expectedC = new BitArray(new bool[] 
+            { true, true, true, true, true, true, true,
+              false, false, false, false, false ,false , false, false,
+              true, true, true, true, true, true, true, true,
+              false, false, false, false, true});
+            GeneratorKey generatorKey = new GeneratorKey(new BitArray(56));
+            generatorKey.cicleLeftShift(ref C, 1);
+            CollectionAssert.AreEqual(expectedC, C);
+        }
+
 
         [Test]
         public void E()

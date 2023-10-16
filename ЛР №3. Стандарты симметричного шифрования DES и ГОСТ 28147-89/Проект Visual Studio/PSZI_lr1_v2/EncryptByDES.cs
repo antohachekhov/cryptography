@@ -97,7 +97,7 @@ namespace PSZI_lr1_v2
             BitArray[] parts = DivideTextIntoTwoParts(cipherText);
 
 
-            dataToEncryption data = new dataToEncryption(parts[0], parts[1], generatorKey.GenerateKey(15));
+            dataToEncryption data = new dataToEncryption(parts[1], parts[0], generatorKey.GenerateKey(15));
 
             for (int i = countRounds - 1; i >= 0; i--, data.partKey = generatorKey.GenerateKey(i))
             {
@@ -107,7 +107,7 @@ namespace PSZI_lr1_v2
 
 
             BitArray originalText = new BitArray(0);
-            originalText = BitArrayFunctions.Append(data.secondPartText, data.firstPartText);
+            originalText = BitArrayFunctions.Append(data.firstPartText, data.secondPartText);
             // IP^-1
             RearrangementIP(ref originalText, IP_1);
             return originalText;

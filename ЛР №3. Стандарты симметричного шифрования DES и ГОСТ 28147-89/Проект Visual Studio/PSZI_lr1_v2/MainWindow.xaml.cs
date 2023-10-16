@@ -79,7 +79,6 @@ namespace PSZI_lr1_v2
             string key = TextBoxKeyCC.Text;
             program.key = EncoderClass.StringToBitArray(key);
             Program.writeToFile("key.txt", key);
-            writeKeyToWindow();
         }
 
         private void TextBoxKeyCC16_TextChanged(object sender, RoutedEventArgs e)
@@ -90,7 +89,6 @@ namespace PSZI_lr1_v2
             string binString = EncoderClass.HexStringToBinString(key);
             program.key = EncoderClass.BinStringToBitArray(binString);
             Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
-            writeKeyToWindow();
         }
 
         // Изменение шифротекста
@@ -267,6 +265,7 @@ namespace PSZI_lr1_v2
 
         private void ButtonGenerateBelowKeys_Click(object sender, RoutedEventArgs e)
         {
+
             program.FillKeys();
             
         }
@@ -296,6 +295,27 @@ namespace PSZI_lr1_v2
                 LB1.Items.Clear();
                 LB2.Items.Clear();
             }
+        }
+
+        private void TextBoxKeyCC_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBoxKeyCC.TextChanged += TextBoxKeyCC_TextChanged;
+        }
+
+        private void TextBoxKeyCC_LostFocus(object sender, RoutedEventArgs e)
+        {
+            writeKeyToWindow();
+            TextBoxKeyCC.TextChanged -= TextBoxKeyCC_TextChanged;
+        }
+        private void TextBoxKeyCC16_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBoxKeyCC16.TextChanged += TextBoxKeyCC16_TextChanged;
+        }
+
+        private void TextBoxKeyCC16_LostFocus(object sender, RoutedEventArgs e)
+        {
+            writeKeyToWindow();
+            TextBoxKeyCC16.TextChanged -= TextBoxKeyCC16_TextChanged;
         }
     }
 }
