@@ -338,11 +338,12 @@ namespace PSZI_lr1_v2
             return d;
         }
 
-        public int[] searchAvalancheEffect(int index, ModeChooseAvalanche chooseAvalanche)
+        public int[] searchAvalancheEffect(BitArray X, int index, ModeChooseAvalanche chooseAvalanche)
         {
+            encryptorByDES = new EncryptByDES(generatorKey);
 
-            BitArray originalTextFalse = new BitArray(originalText);
-            BitArray originalTextTrue = new BitArray(originalText);
+            BitArray originalTextFalse = new BitArray(X);
+            BitArray originalTextTrue = new BitArray(X);
 
             BitArray keyFalse = new BitArray(key);
             BitArray keyTrue = new BitArray(key);

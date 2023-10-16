@@ -4,6 +4,7 @@ using Microsoft.Win32;
 using PSZI_lr1;
 using System.Diagnostics;
 using System.IO;
+using System.Collections;
 
 namespace PSZI_lr1_v2
 {
@@ -175,26 +176,20 @@ namespace PSZI_lr1_v2
 
         public void ButtonSearch_Click(object sender, RoutedEventArgs e)
         {
+            BitArray[] Xs = program.DividingTextIntoBlocks(program.originalText);
 
-            //int[] a = null;
-
-            //a = program.searchAvalancheEffect(Convert.ToInt32(TextBoxChangeBit.Text), chooseAvalanche);
-
-            /*BitArray X = EncoderClass.StringToBitArray(TextBoxOriginalTextContentCC.Text);
-            BitArray key = EncoderClass.StringToBitArray(TextBoxOriginalTextContentCC.Text);*/
-
-            int[,] MDep = program.matrixDependence(program.originalText, program.key);
-            int[,] MDis = program.matrixDependence(program.originalText, program.key);
+            BitArray X = Xs[0];
+            
+            int[,] MDep = program.matrixDependence(X, GeneratorKey.ExtendedKey(program.key));
+            int[,] MDis = program.matrixDistances(X, GeneratorKey.ExtendedKey(program.key));
 
             TextBoxMeanBit.Text = program.criteria1(MDis).ToString();
             TextBoxStFull.Text = program.criteria2(MDep).ToString();
             TextBoxStLavEff.Text = program.criteria3(MDis).ToString();
             TextBoxStStrong.Text = program.criteria4(MDep).ToString();
-            //Collapsed
 
-
-
-            /*string fileNameRounds = @".\rounds.txt";
+            int[] countBits = program.searchAvalancheEffect(X, Convert.ToInt32(TextBoxChangeBit.Text), chooseAvalanche);
+            string fileNameRounds = @".\rounds.txt";
             string fileNameCount = @".\countChanges.txt";
 
             int[] rounds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
@@ -206,10 +201,10 @@ namespace PSZI_lr1_v2
 
             using (var sr = new StreamWriter(fileNameCount))
             {
-                // sr.Write(String.Join("\n", a));
+                sr.Write(String.Join("\n", countBits));
             }
 
-            Process.Start("..\\..\\..\\..\\main.exe");*/
+            Process.Start("..\\..\\..\\..\\main.exe");
 
 
         }

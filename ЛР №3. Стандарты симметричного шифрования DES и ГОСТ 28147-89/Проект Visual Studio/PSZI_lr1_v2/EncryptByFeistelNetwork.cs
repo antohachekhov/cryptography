@@ -124,9 +124,12 @@ namespace PSZI_lr1_v2
         /// <returns></returns>
         public BitArray func(BitArray rightPart, BitArray key)
         {
-
+            BitArray resE;
             // E – расширение 32 - битной последовательности до 48 - битной
-            BitArray resE = E(rightPart);
+            if (rightPart.Length != key.Length)
+                resE = E(rightPart);
+            else
+                resE = new BitArray(rightPart);
             resE.Xor(key);
 
             BitArray[] B = new BitArray[8];
