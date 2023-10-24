@@ -1,0 +1,41 @@
+﻿<Window x:Class="PSZI_lr1_v2.Window1"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:PSZI_lr1_v2"
+        mc:Ignorable="d"
+        Title="Window1" Height="450" Width="800">
+    <Grid>
+        <StackPanel Style="{StaticResource InputBlock}" Height="303" Margin="0,10,-0.4,10">
+            <TextBlock Style="{StaticResource Title}"  Text="Исследования скремблеров"/>
+
+            <TextBlock Style="{StaticResource Text}" Text="Выберите скремблер:"/>
+            <StackPanel>
+                <CheckBox>x^10+x^5+x^4+x^2+1</CheckBox>
+                <CheckBox>x^10+x^7+1</CheckBox>
+            </StackPanel>
+
+            <StackPanel Style="{StaticResource InputBlock}">
+                <TextBlock Style="{StaticResource Text}" Text="Введите начальное значение ключа:"/>
+                <StackPanel Orientation="Horizontal">
+                    <TextBox x:Name="TextBoxBeginKeyCC" IsReadOnly="False" Width="230" Margin="10"></TextBox>
+                    <TextBox x:Name="TextBoxBeginKeyCC2" IsReadOnly="False" Width="230" Height="20" Margin="10"></TextBox>
+                    <TextBox x:Name="TextBoxBeginKeyCC16" IsReadOnly="False" Width="230" Margin="10"></TextBox>
+                </StackPanel>
+            </StackPanel>
+
+
+            <Button>Исследовать скремблер</Button>
+
+            <StackPanel Style="{StaticResource InputBlock}">
+                <TextBlock Style="{StaticResource Text}" Text="Период скремблера:"/>
+                <TextBox x:Name="TextBoxTScr" IsReadOnly="True"></TextBox>
+            </StackPanel>
+            <StackPanel Style="{StaticResource InputBlock}">
+                <TextBlock Style="{StaticResource Text}" Text="Критерий X^2:"/>
+                <TextBox></TextBox>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+</Window>
