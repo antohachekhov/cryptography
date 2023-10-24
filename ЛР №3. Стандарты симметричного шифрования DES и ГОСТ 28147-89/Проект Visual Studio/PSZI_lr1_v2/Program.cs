@@ -9,6 +9,8 @@ using System.Text.RegularExpressions;
 using System.Collections;
 using System.Windows;
 using System.Diagnostics;
+using System.Security.Cryptography;
+
 
 namespace PSZI_lr1_v2
 {
@@ -260,6 +262,74 @@ namespace PSZI_lr1_v2
             }
 
             Console.WriteLine(EncoderClass.BitArrayToBinString(Y));
+
+            return MDep;
+        }
+
+        // Матрица расстояний c входным Зашифрованным текстом
+        public int[,] matrixDistances(BitArray X, BitArray key, BitArray Y)
+        {
+            // Создадим класс EncryptorByFeistelNetwork для доступа к func
+            EncryptByDES encryptByDes2 = new EncryptByDES(new GeneratorKey(key));
+
+            int n = X.Length;
+            int m = Y.Length;
+
+            List<BitArray>[,] listY = new List<BitArray>[n, m];
+
+            int[,] MDist = new int[n, m];
+
+            for (int i = 0; i < n; i++)
+            {
+                // Считаем Xi
+                BitArray Xi = new BitArray(X);
+                Xi[i] = X[i] != true;
+
+                BitArray Yi = encryptByDes2.Encrypte(Xi); // ПРОБЛЕМА!!! ---------------------------------------------------
+
+                for (int j = 0; j < m; j++)
+                {
+                    BitArray YiXorY = new BitArray(Yi);
+                    YiXorY.Xor(Y);
+                    if (Hemming(YiXorY) == j + 1)
+                        MDist[i, j] = 1;
+                }
+            }
+
+            return MDist;
+        }
+
+
+        // Матрица зависимостей с входным Зашифрованным текстом
+        public int[,] matrixDependence(BitArray X, BitArray key, BitArray Y)
+        {
+            //Console.WriteLine(EncoderClass.BitArrayToBinString(X));
+
+            // Создадим класс EncryptorByFeistelNetwork для доступа к func
+            EncryptByDES encryptByDes2 = new EncryptByDES(new GeneratorKey(key));
+
+            int n = X.Length;
+            int m = Y.Length;
+
+            // Матрица зависимостей
+            int[,] MDep = new int[n, m];
+
+            for (int i = 0; i < n; i++)
+            {
+                // Считаем Xi
+                BitArray Xi = new BitArray(X);
+                Xi[i] = (X[i] == true) ? false : true;
+
+                BitArray Yi = encryptByDes2.Encrypte(Xi); // ПРОБЛЕМА!!! ---------------------------------------------------
+
+                for (int j = 0; j < m; j++)
+                {
+                    if (Yi[j] != Y[j])
+                        MDep[i, j] = 1;
+                }
+            }
+
+            // Console.WriteLine(EncoderClass.BitArrayToBinString(Y));
 
             return MDep;
         }

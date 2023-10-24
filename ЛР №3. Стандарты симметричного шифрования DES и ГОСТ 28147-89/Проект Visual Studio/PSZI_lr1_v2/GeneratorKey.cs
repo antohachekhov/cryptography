@@ -150,7 +150,9 @@ namespace PSZI_lr1_v2
             }
 
             Console.WriteLine("Расширение ключа...");
-            BitArray extendedKey = ExtendedKey(generalKey);
+            BitArray extendedKey = new BitArray(generalKey);
+            if(extendedKey.Length != 64)
+                extendedKey = ExtendedKey(generalKey);
 
             Console.WriteLine("Вычисление C_0 и D_0");
             // Генерация C_0 и D_0 

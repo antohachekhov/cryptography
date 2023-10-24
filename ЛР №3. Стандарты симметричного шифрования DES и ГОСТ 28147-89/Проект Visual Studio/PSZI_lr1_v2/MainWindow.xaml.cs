@@ -180,36 +180,57 @@ namespace PSZI_lr1_v2
             BitArray Xfalse = new BitArray(Xs[0]);
             BitArray Xtrue = new BitArray(Xs[0]);
 
-            if (Xs[0][index] == false)
-            {
-                labelFalse.Text = "False *";
-                labelTrue.Text = "True";
-            }
-            else
-            {
-                labelFalse.Text = "False";
-                labelTrue.Text = "True *";
-            }
-
             BitArray keyFalse = new BitArray(GeneratorKey.ExtendedKey(program.key));
             BitArray keyTrue = new BitArray(GeneratorKey.ExtendedKey(program.key));
+
+            int[,] MDepFalse;
+            int[,] MDisFalse;
+
+            int[,] MDepTrue;
+            int[,] MDisTrue;
+
             if (chooseAvalanche == ModeChooseAvalanche.originalText)
             {
                 Xfalse[index] = false;
                 Xtrue[index] = true;
+
+
+                if (Xs[0][index] == false)
+                {
+                    labelFalse.Text = "False *";
+                    labelTrue.Text = "True";
+                }
+                else
+                {
+                    labelFalse.Text = "False";
+                    labelTrue.Text = "True *";
+                }
             }
             else
             {
                 keyFalse[index] = false;
                 keyTrue[index] = true;
+
+                if (program.key[index] == false)
+                {
+                    labelFalse.Text = "False *";
+                    labelTrue.Text = "True";
+                }
+                else
+                {
+                    labelFalse.Text = "False";
+                    labelTrue.Text = "True *";
+                }
             }
 
-            
-            
-            int[,] MDepFalse = program.matrixDependence(Xfalse, program.key);
-            int[,] MDisFalse = program.matrixDistances(Xfalse, program.key);
+            MDepFalse = program.matrixDependence(Xfalse, keyFalse);
+            MDisFalse = program.matrixDistances(Xfalse, keyFalse);
 
-            for(int i =0; i < MDisFalse.GetLength(0); i++)
+            MDepTrue = program.matrixDependence(Xtrue, keyTrue);
+            MDisTrue = program.matrixDistances(Xtrue, keyTrue);
+
+
+            for (int i =0; i < MDisFalse.GetLength(0); i++)
             {
                 Console.WriteLine("{" + "\t");
                 for (int j = 0; j < MDisFalse.GetLength(1); j++)
@@ -224,15 +245,12 @@ namespace PSZI_lr1_v2
             TextBoxStLavEffFalse.Text = program.criteria3(MDisFalse).ToString();
             TextBoxStStrongFalse.Text = program.criteria4(MDepFalse).ToString();
 
-            
-            
-            int[,] MDepTrue = program.matrixDependence(Xtrue, program.key);
-            int[,] MDisTrue = program.matrixDistances(Xtrue, program.key);
-
             TextBoxMeanBitTrue.Text = program.criteria1(MDisTrue).ToString();
             TextBoxStFullTrue.Text = program.criteria2(MDepTrue).ToString();
             TextBoxStLavEffTrue.Text = program.criteria3(MDisTrue).ToString();
             TextBoxStStrongTrue.Text = program.criteria4(MDepTrue).ToString();
+
+
 
             int[] countBits = program.searchAvalancheEffect(Xfalse, index, chooseAvalanche);
 
