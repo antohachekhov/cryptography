@@ -48,6 +48,8 @@ namespace PSZI_lr1_v2
     {
         public BitArray originalText;
         public BitArray key1, key2, key3;
+        public BitArray key;
+        public BitArray vi;
         public BitArray cipherText;
         public BitArray InitializationVector;
         public GeneratorKey generatorKey;
@@ -71,6 +73,13 @@ namespace PSZI_lr1_v2
             BitArray key = EncoderClass.StringToBitArray(readFromFile(filename));
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
             return key;
+        }
+
+        public void ReadVI(string filename)
+        {
+            Console.WriteLine("Читаем вектор инициализации из файла...");
+            vi = EncoderClass.StringToBitArray(readFromFile(filename));
+            Console.WriteLine("Вектор инициализации = " + "\'" + vi + "\'");
         }
 
         // Определение обьекта, который будет генерировать ключи

@@ -43,8 +43,8 @@
         </Style>
     </Window.Resources>
 
-    <Grid>
-        <ScrollViewer Margin="0,10,0,0" Height="800" VerticalAlignment="Top">
+    <Grid Margin="0,0,0,-226.6">
+        <ScrollViewer Margin="0,10,0,-325" Height="1312" VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel Margin="5">
                     <TextBlock Style="{StaticResource Title}" Text="Стандарты симметричного шифрования. DES." />
@@ -83,6 +83,12 @@
                                     <Button x:Name="ButtonOpenKey" Content="Выбрать файл" HorizontalAlignment="Right" Width="200" VerticalAlignment="Center" MinHeight="20" Height="22" HorizontalContentAlignment="Center" Padding="0,0,0,0" Click="ButtonOpenKey_Click"/>
                                 </StackPanel>
 
+                                <TextBlock Style="{StaticResource Text}" Text="Введите путь к файлу, в котором расположен вектор инициализации."/>
+                                <StackPanel Height="29" UseLayoutRounding="False" Orientation="Horizontal" HorizontalAlignment="Left">
+                                    <TextBox x:Name="FilenameVI" Width="520" VerticalAlignment="Center" UseLayoutRounding="False" Height="20" MaxWidth="520" MaxHeight="20" Margin="10,4.4"/>
+                                    <Button x:Name="ButtonOpenVI" Content="Выбрать файл" HorizontalAlignment="Right" Width="200" VerticalAlignment="Center" MinHeight="20" Height="22" HorizontalContentAlignment="Center" Padding="0,0,0,0" Click="ButtonOpenVI_Click"/>
+                                </StackPanel>
+
                                 <TextBlock Style="{StaticResource Text}" Text="Ключ:"/>
                                 <StackPanel Orientation="Horizontal">
                                     <TextBox x:Name="TextBoxKeyCC"
@@ -93,9 +99,20 @@
                                      LostFocus="TextBoxKeyCC16_LostFocus" Width="350" IsEnabled="True"/>
                                 </StackPanel>
 
+                                <TextBlock Style="{StaticResource Text}" Text="Вектор инициализации:"/>
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBox x:Name="TextBoxVICC"
+                                     GotFocus="TextBoxVICC_GotFocus" 
+                                     LostFocus="TextBoxVICC_LostFocus" Width="350" IsEnabled="True"/>
+                                    <TextBox x:Name="TextBoxVICC16"
+                                     GotFocus="TextBoxVICC16_GotFocus" 
+                                     LostFocus="TextBoxVICC16_LostFocus" Width="350" IsEnabled="True"/>
+                                </StackPanel>
+
                                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button x:Name="ButtonGenerateBelowKeys" Click="ButtonGenerateBelowKeys_Click">Сгенерировать подключи</Button>
-                                    <Button x:Name="ButtonShowBelowKeys" Click="ButtonShowBelowKeys_Click">Посмотреть подключи</Button>
+                                    <Button x:Name="ButtonGenerateKey" Click="ButtonGenerateKey_Click" Width="250">Сгенерировать ключ</Button>
+                                    <Button x:Name="ButtonGenerateBelowKeys" Click="ButtonGenerateBelowKeys_Click" Width="250">Сгенерировать подключи</Button>
+                                    <Button x:Name="ButtonShowBelowKeys" Click="ButtonShowBelowKeys_Click" Width="250">Посмотреть подключи</Button>
                                 </StackPanel>
 
 
@@ -135,14 +152,16 @@
                         </StackPanel>
                     </StackPanel>
                     <Grid>
-                        <Border BorderThickness="2" BorderBrush="#E667AF" Margin="0,0,-0.4,51.2">
+                        <Border BorderThickness="2" BorderBrush="#E667AF" Margin="0,0,-0.4,43.8">
                             <StackPanel Style="{StaticResource InputBlock}" Margin="5.4,1,5,-1.8" >
                                 <TextBlock Style="{StaticResource Title}" Text="Исследование лавинного эффекта" Width="300" HorizontalAlignment="Center"/>
 
                                 <StackPanel Style="{StaticResource InputBlock}">
                                     <TextBlock Style="{StaticResource Text}" Text="Где:"/>
-                                    <CheckBox x:Name="CheckBoxKey" Checked="ChooseKey" Content="б) ключ"/>
                                     <CheckBox x:Name="CheckBoxOriginalText" Checked="ChooseOriginalText" Content="а) исходный текст" IsChecked="True"/>
+                                    <CheckBox x:Name="CheckBoxKey" Checked="ChooseKey" Content="б) ключ"/>
+                                    <CheckBox x:Name="CheckBoxVI" Checked="ChooseVI" Content="в) вектор инициализации"/>
+                                    <CheckBox x:Name="CheckBoxCipherText" Checked="ChooseCipherText" Content="г) зашифрованный текст"/>
                                 </StackPanel>
                                 <TextBlock Style="{StaticResource Text}" Text="Номер изменяемого бита (от 1 до 64):"/>
                                 <StackPanel Orientation="Horizontal">
@@ -152,35 +171,26 @@
                                 <StackPanel Style="{StaticResource InputBlock}" Height="374">
                                     <TextBlock Style="{StaticResource Text}" Text="Вывод:"/>
                                     <TextBlock Height="10" />
-
-									<Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition></ColumnDefinition>
-                                            <ColumnDefinition></ColumnDefinition>
-                                        </Grid.ColumnDefinitions>
-										<TextBlock x:Name="labelFalse" HorizontalAlignment="Center" Grid.Column="0" Style="{StaticResource Text}" Text="False"/>
-                                        <TextBlock x:Name="labelTrue" HorizontalAlignment="Center" Grid.Column="1" Style="{StaticResource Text}" Text="True"/>
-									</Grid>
-									<TextBlock Style="{StaticResource Text}" Text="Среднее число бит выхода, изменяющихся при изменении одного бита входного сектора:"/>
-									<StackPanel Orientation="Horizontal">
-										<TextBox x:Name="TextBoxMeanBitFalse" Width="300" Margin="20"></TextBox>
-										<TextBox x:Name="TextBoxMeanBitTrue" Width="300" Margin="20"></TextBox>
-									</StackPanel>
-									<TextBlock Style="{StaticResource Text}" Text="Степень полноты преобразования:"/>
-									<StackPanel Orientation="Horizontal">
-										<TextBox x:Name="TextBoxStFullFalse" Width="300" Margin="20"></TextBox>
-										<TextBox x:Name="TextBoxStFullTrue" Width="300" Margin="20"></TextBox>
-									</StackPanel>
-									<TextBlock Style="{StaticResource Text}" Text="Степень лавинного эффекта:"/>
-									<StackPanel Orientation="Horizontal">
-										<TextBox x:Name="TextBoxStLavEffFalse" Width="300" Margin="20"></TextBox>
-										<TextBox x:Name="TextBoxStLavEffTrue" Width="300" Margin="20"></TextBox>
-									</StackPanel>
-									<TextBlock Style="{StaticResource Text}" Text="Степень соответствия строгому лавинному критерию:"/>
-									<StackPanel Orientation="Horizontal">
-										<TextBox x:Name="TextBoxStStrongFalse" Width="300" Margin="20"></TextBox>
-										<TextBox x:Name="TextBoxStStrongTrue" Width="300" Margin="20"></TextBox>
-									</StackPanel>
+                                    <TextBlock Style="{StaticResource Text}" Text="Среднее число бит выхода, изменяющихся при изменении одного бита входного сектора:"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox x:Name="TextBoxMeanBitFalse" Width="300" Margin="20"></TextBox>
+                                        <TextBox x:Name="TextBoxMeanBitTrue" Width="300" Margin="20"></TextBox>
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource Text}" Text="Степень полноты преобразования:"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox x:Name="TextBoxStFullFalse" Width="300" Margin="20"></TextBox>
+                                        <TextBox x:Name="TextBoxStFullTrue" Width="300" Margin="20"></TextBox>
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource Text}" Text="Степень лавинного эффекта:"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox x:Name="TextBoxStLavEffFalse" Width="300" Margin="20"></TextBox>
+                                        <TextBox x:Name="TextBoxStLavEffTrue" Width="300" Margin="20"></TextBox>
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource Text}" Text="Степень соответствия строгому лавинному критерию:"/>
+                                    <StackPanel Orientation="Horizontal">
+                                        <TextBox x:Name="TextBoxStStrongFalse" Width="300" Margin="20"></TextBox>
+                                        <TextBox x:Name="TextBoxStStrongTrue" Width="300" Margin="20"></TextBox>
+                                    </StackPanel>
                                 </StackPanel>
                             </StackPanel>
 
