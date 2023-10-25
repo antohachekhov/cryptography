@@ -12,7 +12,9 @@ namespace PSZI_lr1_v2
     enum ModeChooseAvalanche
     {
         originalText,
-        key
+        key,
+        vi, 
+        cipherText
     }
 
     /// <summary>
@@ -48,6 +50,18 @@ namespace PSZI_lr1_v2
             {
                 program.ReadKey(openFileDialog.FileName);
                 writeKeyToWindow();
+            }
+        }
+
+        // Чтение вектора инициализации из файла
+        private void ButtonReadVI_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                program.ReadVI(openFileDialog.FileName);
+                writeVIToWindow();
             }
         }
 
@@ -91,6 +105,26 @@ namespace PSZI_lr1_v2
             Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
         }
 
+        // Изменение вектора инициализации
+        private void TextBoxVICC_TextChanged(object sender, RoutedEventArgs e)
+        {
+            if (TextBoxVICC.Text == "")
+                return;
+            string vi = TextBoxVICC.Text;
+            program.vi = EncoderClass.StringToBitArray(vi);
+            Program.writeToFile("vi.txt", vi);
+        }
+
+        private void TextBoxVICC16_TextChanged(object sender, RoutedEventArgs e)
+        {
+            if (TextBoxVICC16.Text == "")
+                return;
+            string vi = TextBoxVICC16.Text;
+            string binString = EncoderClass.HexStringToBinString(vi);
+            program.vi = EncoderClass.BinStringToBitArray(binString);
+            Program.writeToFile("vi.txt", EncoderClass.BitArrayToString(program.vi));
+        }
+
         // Изменение шифротекста
         private void TextBoxCipherTextCC_TextChanged(object sender, RoutedEventArgs e)
         {
@@ -123,6 +157,19 @@ namespace PSZI_lr1_v2
                 FilenameKey.Text = openFileDialog.FileName;
                 program.ReadKey(openFileDialog.FileName);
                 writeKeyToWindow();
+            }
+        }
+
+        // Открытие файла с вектором инициализации по ссылке
+        private void ButtonOpenVI_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                FilenameVI.Text = openFileDialog.FileName;
+                program.ReadVI(openFileDialog.FileName);
+                writeVIToWindow();
             }
         }
 
@@ -191,36 +238,19 @@ namespace PSZI_lr1_v2
 
             if (chooseAvalanche == ModeChooseAvalanche.originalText)
             {
-                Xfalse[index] = false;
-                Xtrue[index] = true;
 
-
-                if (Xs[0][index] == false)
-                {
-                    labelFalse.Text = "False *";
-                    labelTrue.Text = "True";
-                }
-                else
-                {
-                    labelFalse.Text = "False";
-                    labelTrue.Text = "True *";
-                }
             }
-            else
+            else if (chooseAvalanche == ModeChooseAvalanche.key)
             {
-                keyFalse[index] = false;
-                keyTrue[index] = true;
 
-                if (program.key[index] == false)
-                {
-                    labelFalse.Text = "False *";
-                    labelTrue.Text = "True";
-                }
-                else
-                {
-                    labelFalse.Text = "False";
-                    labelTrue.Text = "True *";
-                }
+            }
+            else if (chooseAvalanche == ModeChooseAvalanche.vi)
+            {
+
+            }
+            else if (chooseAvalanche == ModeChooseAvalanche.cipherText)
+            {
+
             }
 
             MDepFalse = program.matrixDependence(Xfalse, keyFalse);
@@ -282,6 +312,13 @@ namespace PSZI_lr1_v2
             TextBoxKeyCC16.Text = EncoderClass.BitArraytoHexString(program.key);
         }
 
+        // Запись вектор инициализации в текстовые окна
+        public void writeVIToWindow()
+        {
+            TextBoxVICC.Text = EncoderClass.BitArrayToString(program.vi);
+            TextBoxVICC16.Text = EncoderClass.BitArraytoHexString(program.vi);
+        }
+
         // Запись текста в тектовые окна
         public void writeOriginToWindow()
         {
@@ -322,12 +359,32 @@ namespace PSZI_lr1_v2
 
             chooseAvalanche = ModeChooseAvalanche.originalText;
             CheckBoxKey.IsChecked = false;
+            CheckBoxVI.IsChecked = false;
+            CheckBoxCipherText.IsChecked = false;
         }
 
         private void ChooseKey(object sender, RoutedEventArgs e)
         {
             CheckBoxOriginalText.IsChecked = false;
             chooseAvalanche = ModeChooseAvalanche.key;
+            CheckBoxVI.IsChecked = false;
+            CheckBoxCipherText.IsChecked = false;
+        }
+
+        private void ChooseVI(object sender, RoutedEventArgs e)
+        {
+            CheckBoxOriginalText.IsChecked = false;
+            CheckBoxKey.IsChecked = false;
+            chooseAvalanche = ModeChooseAvalanche.vi;
+            CheckBoxCipherText.IsChecked = false;
+        }
+
+        private void ChooseCipherText(object sender, RoutedEventArgs e)
+        {
+            CheckBoxOriginalText.IsChecked = false;
+            CheckBoxKey.IsChecked = false;
+            CheckBoxVI.IsChecked = false;
+            chooseAvalanche = ModeChooseAvalanche.cipherText;
         }
 
         private void ButtonGenerateBelowKeys_Click(object sender, RoutedEventArgs e)
@@ -383,6 +440,33 @@ namespace PSZI_lr1_v2
         {
             writeKeyToWindow();
             TextBoxKeyCC16.TextChanged -= TextBoxKeyCC16_TextChanged;
+        }
+
+        // вектор инициализации
+        private void TextBoxVICC_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBoxVICC.TextChanged += TextBoxVICC_TextChanged;
+        }
+
+        private void TextBoxVICC_LostFocus(object sender, RoutedEventArgs e)
+        {
+            writeVIToWindow();
+            TextBoxVICC.TextChanged -= TextBoxVICC_TextChanged;
+        }
+        private void TextBoxVICC16_GotFocus(object sender, RoutedEventArgs e)
+        {
+            TextBoxVICC16.TextChanged += TextBoxVICC16_TextChanged;
+        }
+
+        private void TextBoxVICC16_LostFocus(object sender, RoutedEventArgs e)
+        {
+            writeVIToWindow();
+            TextBoxVICC16.TextChanged -= TextBoxVICC16_TextChanged;
+        }
+
+        private void ButtonGenerateKey_Click(object sender, RoutedEventArgs e)
+        {
+            // генерация ключа рандом
         }
     }
 }
