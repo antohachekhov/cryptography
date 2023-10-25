@@ -81,6 +81,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="PCBC.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

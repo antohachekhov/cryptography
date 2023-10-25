@@ -46,7 +46,7 @@ namespace PSZI_lr1_v2
             openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                program.ReadKey(openFileDialog.FileName);
+                program.key1 = program.ReadKey(openFileDialog.FileName);
                 writeKeyToWindow();
             }
         }
@@ -77,7 +77,7 @@ namespace PSZI_lr1_v2
             if (TextBoxKeyCC.Text == "")
                 return;
             string key = TextBoxKeyCC.Text;
-            program.key = EncoderClass.StringToBitArray(key);
+            program.key1 = EncoderClass.StringToBitArray(key);
             Program.writeToFile("key.txt", key);
         }
 
@@ -87,8 +87,8 @@ namespace PSZI_lr1_v2
                 return;
             string key = TextBoxKeyCC16.Text;
             string binString = EncoderClass.HexStringToBinString(key);
-            program.key = EncoderClass.BinStringToBitArray(binString);
-            Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key));
+            program.key1 = EncoderClass.BinStringToBitArray(binString);
+            Program.writeToFile("key.txt", EncoderClass.BitArrayToString(program.key1));
         }
 
         // Изменение шифротекста
@@ -180,8 +180,8 @@ namespace PSZI_lr1_v2
             BitArray Xfalse = new BitArray(Xs[0]);
             BitArray Xtrue = new BitArray(Xs[0]);
 
-            BitArray keyFalse = new BitArray(GeneratorKey.ExtendedKey(program.key));
-            BitArray keyTrue = new BitArray(GeneratorKey.ExtendedKey(program.key));
+            BitArray keyFalse = new BitArray(GeneratorKey.ExtendedKey(program.key1));
+            BitArray keyTrue = new BitArray(GeneratorKey.ExtendedKey(program.key1));
 
             int[,] MDepFalse;
             int[,] MDisFalse;
@@ -211,7 +211,7 @@ namespace PSZI_lr1_v2
                 keyFalse[index] = false;
                 keyTrue[index] = true;
 
-                if (program.key[index] == false)
+                if (program.key1[index] == false)
                 {
                     labelFalse.Text = "False *";
                     labelTrue.Text = "True";
@@ -252,7 +252,7 @@ namespace PSZI_lr1_v2
 
 
 
-            int[] countBits = program.searchAvalancheEffect(Xfalse, index, chooseAvalanche);
+            int[] countBits = { };//program.searchAvalancheEffect(Xfalse, index, chooseAvalanche);
 
             string fileNameRounds = @".\rounds.txt";
             string fileNameCount = @".\countChanges.txt";
@@ -278,8 +278,8 @@ namespace PSZI_lr1_v2
         // Запись ключа в текстовые окна
         public void writeKeyToWindow()
         {
-            TextBoxKeyCC.Text = EncoderClass.BitArrayToString(program.key);
-            TextBoxKeyCC16.Text = EncoderClass.BitArraytoHexString(program.key);
+            TextBoxKeyCC.Text = EncoderClass.BitArrayToString(program.key1);
+            TextBoxKeyCC16.Text = EncoderClass.BitArraytoHexString(program.key1);
         }
 
         // Запись текста в тектовые окна
@@ -333,7 +333,7 @@ namespace PSZI_lr1_v2
         private void ButtonGenerateBelowKeys_Click(object sender, RoutedEventArgs e)
         {
 
-            program.FillKeys();
+            //program.FillKeys();
             
         }
 

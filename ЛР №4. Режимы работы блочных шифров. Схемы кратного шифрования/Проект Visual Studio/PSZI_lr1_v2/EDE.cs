@@ -7,17 +7,29 @@ using System.Threading.Tasks;
 
 namespace PSZI_lr1_v2
 {
-    internal class EDE
+    public class EDE
     {
-        static BitArray encrypt(BitArray inputText, BitArray key1, BitArray key2, BitArray key3)
+        public static BitArray Encrypte(BitArray inputText, GeneratorKey key1, GeneratorKey key2, GeneratorKey key3)
         {
-            EncryptByDES des1 = new EncryptByDES(new GeneratorKey(key1));
-            EncryptByDES des2 = new EncryptByDES(new GeneratorKey(key2));
-            EncryptByDES des3 = new EncryptByDES(new GeneratorKey(key3));
+            EncryptByDES des1 = new EncryptByDES(key1);
+            EncryptByDES des2 = new EncryptByDES(key2);
+            EncryptByDES des3 = new EncryptByDES(key3);
 
             BitArray tempResult = des1.Encrypte(inputText);
             tempResult = des2.Decrypte(tempResult);
             tempResult = des3.Encrypte(tempResult);
+            return tempResult;
+        }
+
+        public static BitArray Decrypte(BitArray inputCipherText, GeneratorKey key1, GeneratorKey key2, GeneratorKey key3)
+        {
+            EncryptByDES des1 = new EncryptByDES(key3);
+            EncryptByDES des2 = new EncryptByDES(key2);
+            EncryptByDES des3 = new EncryptByDES(key1);
+
+            BitArray tempResult = des1.Decrypte(inputCipherText);
+            tempResult = des2.Encrypte(tempResult);
+            tempResult = des3.Decrypte(tempResult);
             return tempResult;
         }
     }

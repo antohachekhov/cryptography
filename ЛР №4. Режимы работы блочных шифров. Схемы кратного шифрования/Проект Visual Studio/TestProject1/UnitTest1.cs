@@ -49,7 +49,7 @@ namespace TestProject1
             encryptByDES.RearrangementIP(ref text, IP);
 
             CollectionAssert.AreEqual(new BitArray(expectedBool), text);
-         
+
         }
 
         [Test]
@@ -137,11 +137,220 @@ namespace TestProject1
             CollectionAssert.AreEqual(text, originalText);
         }
 
+        [Test]
+        public void PCBCEncrypteWithDecrypte()
+        {
+            BitArray key = new BitArray(GeneratorKey.keyLength);
+            GeneratorKey generatorKey = new GeneratorKey(key);
+            GeneratorKey[] generatorKeys = { generatorKey, generatorKey, generatorKey };
+
+
+
+            bool[] textBool = { true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+            BitArray text = new BitArray(textBool);
+
+            BitArray IV = new BitArray(textBool.Length);
+            PCBC encryptByPCBC = new PCBC(generatorKeys, IV);
+
+
+
+            BitArray cipherText = encryptByPCBC.Encrypte(null, text, null);
+            BitArray originalText = encryptByPCBC.Decrypte(null, cipherText, null);
+            CollectionAssert.AreEqual(text, originalText);
+        }
+
+        [Test]
+        public void PCBCEncrypteWithIVOrNull()
+        {
+            BitArray key = new BitArray(GeneratorKey.keyLength);
+            GeneratorKey generatorKey = new GeneratorKey(key);
+            GeneratorKey[] generatorKeys = { generatorKey, generatorKey, generatorKey };
+
+
+
+            bool[] textBool = { true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+            BitArray text = new BitArray(textBool);
+
+            BitArray IV = new BitArray(textBool.Length);
+            PCBC encryptByPCBC = new PCBC(generatorKeys, IV);
+
+
+
+            BitArray cipherText = encryptByPCBC.Encrypte(null, text, IV);
+            BitArray cipherText2 = encryptByPCBC.Encrypte(null, text, null);
+            CollectionAssert.AreEqual(cipherText, cipherText2);
+        }
+
+        [Test]
+        public void DividingIntoBlocksWithoutPadding()
+        {
+            Program program = new Program();
+
+
+            bool[] textBool = { true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true};
+            BitArray text = new BitArray(textBool);
+
+            bool[] expectedBlock1 = {true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+
+            bool[] expectedBlock2 = {
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true};
+
+            BitArray[] expectedBlocks = new BitArray[2] { new BitArray(expectedBlock1), new BitArray(expectedBlock2) };
+
+            
+            CollectionAssert.AreEqual(expectedBlocks, program.DividingTextIntoBlocks(text));
+        }
+
+        [Test]
+        public void DividingIntoBlocksWithPadding()
+        {
+            Program program = new Program();
+
+
+            bool[] textBool = { true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+            BitArray text = new BitArray(textBool);
+
+            bool[] expectedBlock1 = {true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+
+            bool[] expectedBlock2 = {
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                false, false, false, false, false ,false , false, false};
+
+            BitArray[] expectedBlocks = new BitArray[2] { new BitArray(expectedBlock1), new BitArray(expectedBlock2) };
+
+
+            CollectionAssert.AreEqual(expectedBlocks, program.DividingTextIntoBlocks(text));
+        }
+
+        [Test]
+        public void EDEEncrypteWithDecrypte()
+        {
+            BitArray key = new BitArray(GeneratorKey.keyLength);
+            GeneratorKey generatorKey = new GeneratorKey(key);
+            GeneratorKey[] generatorKeys = { generatorKey, generatorKey, generatorKey };
+
+            bool[] textBool = { true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+            BitArray text = new BitArray(textBool);
+
+            BitArray cipherText = EDE.Encrypte(text, generatorKeys[0], generatorKeys[1], generatorKeys[2]);
+            BitArray originalText = EDE.Decrypte(cipherText, generatorKeys[0], generatorKeys[1], generatorKeys[2]);
+
+            CollectionAssert.AreEqual(text, originalText);
+        }
+
+        [Test]
+        public void ProgramEncrypteWithDecrypte()
+        {
+            BitArray key = new BitArray(GeneratorKey.keyLength);
+            bool[] textBool = { true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false,
+                                true, true, true, true, true, true, true, true,
+                                false, false, false, false, false ,false , false, false};
+            BitArray text = new BitArray(textBool);
+
+            Program program = new Program();
+            program.key1 = key;
+            program.key2 = key;
+            program.key3 = key;
+            program.originalText = text;
+            program.InitializationVector = new BitArray(textBool.Length);
+            program.GenerateKey();
+            program.GenerateEncryptor();    
+            program.Encryption();
+
+
+            BitArray cipherText = program.cipherText;
+            program.originalText = cipherText;
+            program.Decryption();
+            CollectionAssert.AreEqual(text, program.cipherText);
+        }
+
 
         [Test]
         public void ExtendedKeyOdd()
         {
-            bool[] keyBool = { true, true, true, true, true, true, true};
+            bool[] keyBool = { true, true, true, true, true, true, true };
 
             BitArray key = new BitArray(keyBool);
 
@@ -221,7 +430,7 @@ namespace TestProject1
 
             BitArray C = new BitArray(CBool);
 
-            BitArray expectedC = new BitArray(new bool[] 
+            BitArray expectedC = new BitArray(new bool[]
             { true, true, true, true, true, true, true,
               false, false, false, false, false ,false , false, false,
               true, true, true, true, true, true, true, true,
@@ -265,7 +474,7 @@ namespace TestProject1
         {
             EncryptorByFeistelNetwork encryptorByFeistelNetwork = new EncryptorByFeistelNetwork();
 
-            bool[] BBool = {  true, true, true, true, true, true};
+            bool[] BBool = { true, true, true, true, true, true };
 
             BitArray B = new BitArray(BBool);
 
@@ -326,7 +535,7 @@ namespace TestProject1
         [Test]
         public void Rearrangement_P_2()
         {
-            
+
 
             bool[] textBool = { true, true, true, true, true, true, true, true,
                                 false, false, false, false, false ,false , false, false,
@@ -399,7 +608,7 @@ namespace TestProject1
 
             dataToEncryption expectedResult = new dataToEncryption(rightPart, newText, key);
 
-            
+
             dataToEncryption result = encryptorByFeistelNetwork.Encrypte(data);
 
             CollectionAssert.AreEqual(expectedResult.firstPartText, result.firstPartText);

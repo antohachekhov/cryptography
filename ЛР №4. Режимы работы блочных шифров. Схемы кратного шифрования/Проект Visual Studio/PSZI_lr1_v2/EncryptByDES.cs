@@ -68,10 +68,11 @@ namespace PSZI_lr1_v2
 
         public BitArray Encrypte(BitArray originalText)
         {
+            BitArray newOriginalText = new BitArray(originalText);
             // IP
-            RearrangementIP(ref originalText, IP);
+            RearrangementIP(ref newOriginalText, IP);
 
-            BitArray[] parts = DivideTextIntoTwoParts(originalText);
+            BitArray[] parts = DivideTextIntoTwoParts(newOriginalText);
             int i = 0;
             dataToEncryption data = new dataToEncryption(parts[0], parts[1], generatorKey.GenerateKey(i));
 
@@ -90,11 +91,12 @@ namespace PSZI_lr1_v2
 
         public BitArray Decrypte(BitArray cipherText)
         {
+            BitArray newCipherText = new BitArray(cipherText);
             // IP
-            RearrangementIP(ref cipherText, IP);
+            RearrangementIP(ref newCipherText, IP);
 
             // Подготовка данных для раундов
-            BitArray[] parts = DivideTextIntoTwoParts(cipherText);
+            BitArray[] parts = DivideTextIntoTwoParts(newCipherText);
 
 
             dataToEncryption data = new dataToEncryption(parts[1], parts[0], generatorKey.GenerateKey(15));

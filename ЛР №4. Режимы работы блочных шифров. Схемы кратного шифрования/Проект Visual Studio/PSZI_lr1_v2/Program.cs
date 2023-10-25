@@ -1,15 +1,8 @@
-﻿using PSZI_lr1_v2;
-using System;
-using System.Diagnostics.Eventing.Reader;
+﻿using System;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Collections.Generic;
-using System.Text.RegularExpressions;
 using System.Collections;
-using System.Windows;
 using System.Diagnostics;
-using System.Security.Cryptography;
 
 
 namespace PSZI_lr1_v2
@@ -51,23 +44,18 @@ namespace PSZI_lr1_v2
         }
     }
 
-    class Program
+    public class Program
     {
         public BitArray originalText;
-        public BitArray key;
+        public BitArray key1, key2, key3;
         public BitArray cipherText;
+        public BitArray InitializationVector;
         public GeneratorKey generatorKey;
-        public EncryptByDES encryptorByDES;
-        public int countRounds;
+        public GeneratorKey[] generatorKeys;
+        public PCBC encryptorByPCBC;
         public int lengthBlock = 64;
         public BitArray[] belowKeys;
         public long timeOfEncoding;
-
-        const string fileNameStartText = "originalText.txt";
-        const string fileNameCipherText = "cipherText.txt";
-        const string fileNameKey = "key.txt";
-        const string fileNameStartShiftRegister = "startShiftRegister.txt";
-
 
         // Чтение текста из файла
         public void ReadOriginalText(string filename)
@@ -77,35 +65,40 @@ namespace PSZI_lr1_v2
             Console.WriteLine("Текст = " + "\'" + originalText + "\'");
         }
 
-        public void ReadKey(string filename)
+        public BitArray ReadKey(string filename)
         {
             Console.WriteLine("Читаем ключ из файла...");
-            key = EncoderClass.StringToBitArray(readFromFile(filename));
+            BitArray key = EncoderClass.StringToBitArray(readFromFile(filename));
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
+            return key;
         }
 
         // Определение обьекта, который будет генерировать ключи
         public void GenerateKey()
         {
-            generatorKey = new GeneratorKey(key);
+            GeneratorKey generatorKey1 = new GeneratorKey(key1);
+            GeneratorKey generatorKey2 = new GeneratorKey(key2);
+            GeneratorKey generatorKey3 = new GeneratorKey(key3);
+
+            generatorKeys = new GeneratorKey[3] { generatorKey1, generatorKey2, generatorKey3 };
         }
 
 
         // Определение обьекта, который будет шифровать
         public void GenerateEncryptor()
         {
-            //encryptorByFeistelNetwork = new EncryptorByFeistelNetwork(command);
+            encryptorByPCBC = new PCBC(generatorKeys, InitializationVector);
         }
 
-        public void FillKeys()
-        {
-            generatorKey = new GeneratorKey(key);
+        //public void FillKeys()
+        //{
+        //    generatorKey = new GeneratorKey(key);
 
-            belowKeys = new BitArray[16];
+        //    belowKeys = new BitArray[16];
 
-            for (int i = 0; i < 16; i++)
-                belowKeys[i] = generatorKey.GenerateKey(i);
-        }
+        //    for (int i = 0; i < 16; i++)
+        //        belowKeys[i] = generatorKey.GenerateKey(i);
+        //}
 
         public static string readFromFile(string fileName)
         {
@@ -144,11 +137,19 @@ namespace PSZI_lr1_v2
             }
         }
 
+        public BitArray GetPadding(int length)
+        {
+            return new BitArray(length);
+        }
 
         public BitArray[] DividingTextIntoBlocks(BitArray text)
         {
+            int countBlocks = text.Length / lengthBlock;
 
-            BitArray[] originalTextBlocks = new BitArray[text.Length / lengthBlock];
+            if (text.Length % lengthBlock != 0)
+                countBlocks++;
+
+            BitArray[] originalTextBlocks = new BitArray[countBlocks];
 
             // Разделение текста на блоки по 64 бита
             for (int i = 0; i < text.Length / lengthBlock; i++)
@@ -162,24 +163,38 @@ namespace PSZI_lr1_v2
                 originalTextBlocks[i] = new BitArray(bitArray64);
             }
 
+            // Добавление padding
+            if(text.Length % lengthBlock != 0)
+            {
+                int lengthMiniBlock = text.Length % lengthBlock;
+                BitArray bitArray64 = new BitArray(lengthMiniBlock);
+                for (int j = 0; j < lengthMiniBlock; j++)
+                    bitArray64[j] = text[text.Length - lengthMiniBlock + j];
+
+                bitArray64 = BitArrayFunctions.Append(bitArray64, GetPadding(lengthBlock - lengthMiniBlock));
+                originalTextBlocks[countBlocks - 1] = new BitArray(bitArray64);
+            }
+
             return originalTextBlocks;
         }
 
         public void Encryption()
         {
-            encryptorByDES = new EncryptByDES(generatorKey);
-
             Stopwatch stopwatch = new Stopwatch();
             //засекаем время начала операции
             stopwatch.Start();
 
             BitArray[] originalTextBlocks = DividingTextIntoBlocks(originalText);
             BitArray cipherText = new BitArray(0);
+            BitArray cipherTextLastBlock = encryptorByPCBC.Encrypte(null, originalTextBlocks[0], null);
 
             // Шифруем каждый блок
-            for (int iBlock = 0; iBlock < originalTextBlocks.Length; iBlock++)
+            cipherText = BitArrayFunctions.Append(cipherText, cipherTextLastBlock);
+
+            for (int iBlock = 1; iBlock < originalTextBlocks.Length; iBlock++)
             {
-                cipherText = BitArrayFunctions.Append(cipherText, encryptorByDES.Encrypte(originalTextBlocks[iBlock]));
+                cipherTextLastBlock = encryptorByPCBC.Encrypte(originalTextBlocks[iBlock - 1], originalTextBlocks[iBlock], cipherTextLastBlock);
+                cipherText = BitArrayFunctions.Append(cipherText, cipherTextLastBlock);
             }
 
             //останавливаем счётчик
@@ -262,74 +277,6 @@ namespace PSZI_lr1_v2
             }
 
             Console.WriteLine(EncoderClass.BitArrayToBinString(Y));
-
-            return MDep;
-        }
-
-        // Матрица расстояний c входным Зашифрованным текстом
-        public int[,] matrixDistances(BitArray X, BitArray key, BitArray Y)
-        {
-            // Создадим класс EncryptorByFeistelNetwork для доступа к func
-            EncryptByDES encryptByDes2 = new EncryptByDES(new GeneratorKey(key));
-
-            int n = X.Length;
-            int m = Y.Length;
-
-            List<BitArray>[,] listY = new List<BitArray>[n, m];
-
-            int[,] MDist = new int[n, m];
-
-            for (int i = 0; i < n; i++)
-            {
-                // Считаем Xi
-                BitArray Xi = new BitArray(X);
-                Xi[i] = X[i] != true;
-
-                BitArray Yi = encryptByDes2.Encrypte(Xi); // ПРОБЛЕМА!!! ---------------------------------------------------
-
-                for (int j = 0; j < m; j++)
-                {
-                    BitArray YiXorY = new BitArray(Yi);
-                    YiXorY.Xor(Y);
-                    if (Hemming(YiXorY) == j + 1)
-                        MDist[i, j] = 1;
-                }
-            }
-
-            return MDist;
-        }
-
-
-        // Матрица зависимостей с входным Зашифрованным текстом
-        public int[,] matrixDependence(BitArray X, BitArray key, BitArray Y)
-        {
-            //Console.WriteLine(EncoderClass.BitArrayToBinString(X));
-
-            // Создадим класс EncryptorByFeistelNetwork для доступа к func
-            EncryptByDES encryptByDes2 = new EncryptByDES(new GeneratorKey(key));
-
-            int n = X.Length;
-            int m = Y.Length;
-
-            // Матрица зависимостей
-            int[,] MDep = new int[n, m];
-
-            for (int i = 0; i < n; i++)
-            {
-                // Считаем Xi
-                BitArray Xi = new BitArray(X);
-                Xi[i] = (X[i] == true) ? false : true;
-
-                BitArray Yi = encryptByDes2.Encrypte(Xi); // ПРОБЛЕМА!!! ---------------------------------------------------
-
-                for (int j = 0; j < m; j++)
-                {
-                    if (Yi[j] != Y[j])
-                        MDep[i, j] = 1;
-                }
-            }
-
-            // Console.WriteLine(EncoderClass.BitArrayToBinString(Y));
 
             return MDep;
         }
@@ -424,42 +371,44 @@ namespace PSZI_lr1_v2
             return d;
         }
 
-        public int[] searchAvalancheEffect(BitArray X, int index, ModeChooseAvalanche chooseAvalanche)
-        {
-            encryptorByDES = new EncryptByDES(generatorKey);
+        //public int[] searchAvalancheEffect(BitArray X, int index, ModeChooseAvalanche chooseAvalanche)
+        //{
+        //    encryptorByDES = new EncryptByDES(generatorKey);
 
-            BitArray originalTextFalse = new BitArray(X);
-            BitArray originalTextTrue = new BitArray(X);
+        //    BitArray originalTextFalse = new BitArray(X);
+        //    BitArray originalTextTrue = new BitArray(X);
 
-            BitArray keyFalse = new BitArray(key);
-            BitArray keyTrue = new BitArray(key);
-            if (chooseAvalanche == ModeChooseAvalanche.originalText)
-            {
-                originalTextFalse.Set(index, false);
-                originalTextTrue.Set(index, true);
-            }
-            else
-            {
-                keyFalse.Set(index, false);
-                keyTrue.Set(index, true);
-            }
+        //    BitArray keyFalse = new BitArray(key);
+        //    BitArray keyTrue = new BitArray(key);
+        //    if (chooseAvalanche == ModeChooseAvalanche.originalText)
+        //    {
+        //        originalTextFalse.Set(index, false);
+        //        originalTextTrue.Set(index, true);
+        //    }
+        //    else
+        //    {
+        //        keyFalse.Set(index, false);
+        //        keyTrue.Set(index, true);
+        //    }
 
-            GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
-            GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
+        //    GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
+        //    GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
 
 
-            return encryptorByDES.searchAvalancheEffect(originalTextTrue, originalTextFalse, generatorTrue, generatorFalse);
-        }
+        //    return encryptorByDES.searchAvalancheEffect(originalTextTrue, originalTextFalse, generatorTrue, generatorFalse);
+        //}
 
-        internal void Decryption()
+        public void Decryption()
         {
             BitArray[] cipherTextBlocks = DividingTextIntoBlocks(this.originalText);
             BitArray originalText = new BitArray(0);
-
+            BitArray originalTextLastBlock = encryptorByPCBC.Decrypte(null, cipherTextBlocks[0], null);
+            originalText = BitArrayFunctions.Append(originalText, originalTextLastBlock);
             // Шифруем каждый блок
-            for (int iBlock = 0; iBlock < cipherTextBlocks.Length; iBlock++)
+            for (int iBlock = 1; iBlock < cipherTextBlocks.Length; iBlock++)
             {
-                originalText = BitArrayFunctions.Append(originalText, encryptorByDES.Decrypte(cipherTextBlocks[iBlock]));
+                originalTextLastBlock = encryptorByPCBC.Decrypte(cipherTextBlocks[iBlock - 1], cipherTextBlocks[iBlock], originalTextLastBlock);
+                originalText = BitArrayFunctions.Append(originalText, originalTextLastBlock);
             }
 
             this.cipherText = originalText;
