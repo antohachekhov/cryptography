@@ -13,7 +13,7 @@ namespace PSZI_lr1_v2
     {
         originalText,
         key,
-        vi, 
+        iv, 
         cipherText
     }
 
@@ -54,14 +54,14 @@ namespace PSZI_lr1_v2
         }
 
         // Чтение вектора инициализации из файла
-        private void ButtonReadVI_Click(object sender, RoutedEventArgs e)
+        private void ButtonReadIV_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                program.ReadVI(openFileDialog.FileName);
-                writeVIToWindow();
+                program.ReadIV(openFileDialog.FileName);
+                writeIVToWindow();
             }
         }
 
@@ -106,23 +106,23 @@ namespace PSZI_lr1_v2
         }
 
         // Изменение вектора инициализации
-        private void TextBoxVICC_TextChanged(object sender, RoutedEventArgs e)
+        private void TextBoxIVCC_TextChanged(object sender, RoutedEventArgs e)
         {
-            if (TextBoxVICC.Text == "")
+            if (TextBoxIVCC.Text == "")
                 return;
-            string vi = TextBoxVICC.Text;
-            program.vi = EncoderClass.StringToBitArray(vi);
-            Program.writeToFile("vi.txt", vi);
+            string iv = TextBoxIVCC.Text;
+            program.iv = EncoderClass.StringToBitArray(iv);
+            Program.writeToFile("iv.txt", iv);
         }
 
-        private void TextBoxVICC16_TextChanged(object sender, RoutedEventArgs e)
+        private void TextBoxIVCC16_TextChanged(object sender, RoutedEventArgs e)
         {
-            if (TextBoxVICC16.Text == "")
+            if (TextBoxIVCC16.Text == "")
                 return;
-            string vi = TextBoxVICC16.Text;
-            string binString = EncoderClass.HexStringToBinString(vi);
-            program.vi = EncoderClass.BinStringToBitArray(binString);
-            Program.writeToFile("vi.txt", EncoderClass.BitArrayToString(program.vi));
+            string iv = TextBoxIVCC16.Text;
+            string binString = EncoderClass.HexStringToBinString(iv);
+            program.iv = EncoderClass.BinStringToBitArray(binString);
+            Program.writeToFile("iv.txt", EncoderClass.BitArrayToString(program.iv));
         }
 
         // Изменение шифротекста
@@ -161,15 +161,15 @@ namespace PSZI_lr1_v2
         }
 
         // Открытие файла с вектором инициализации по ссылке
-        private void ButtonOpenVI_Click(object sender, RoutedEventArgs e)
+        private void ButtonOpenIV_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Text files (*.txt)|*.txt|All files (*.*)|*.*";
             if (openFileDialog.ShowDialog() == true)
             {
-                FilenameVI.Text = openFileDialog.FileName;
-                program.ReadVI(openFileDialog.FileName);
-                writeVIToWindow();
+                FilenameIV.Text = openFileDialog.FileName;
+                program.ReadIV(openFileDialog.FileName);
+                writeIVToWindow();
             }
         }
 
@@ -223,80 +223,45 @@ namespace PSZI_lr1_v2
         public void ButtonSearch_Click(object sender, RoutedEventArgs e)
         {
             int index = Convert.ToInt32(TextBoxChangeBit.Text) - 1;
-            BitArray[] Xs = program.DividingTextIntoBlocks(program.originalText);
-            BitArray Xfalse = new BitArray(Xs[0]);
-            BitArray Xtrue = new BitArray(Xs[0]);
+            BitArray[] originalTextBlocks = program.DiIVdingTextIntoBlocks(program.originalText);
+            BitArray originalTextFalse = new BitArray(originalTextBlocks);
+            BitArray originalTextBlocksTrue = new BitArray(originalTextBlocks);
 
-            BitArray keyFalse = new BitArray(GeneratorKey.ExtendedKey(program.key1));
-            BitArray keyTrue = new BitArray(GeneratorKey.ExtendedKey(program.key1));
+            BitArray key1False = new BitArray(GeneratorKey.ExtendedKey(program.key1));
+            BitArray key1True = new BitArray(GeneratorKey.ExtendedKey(program.key1));
 
-            int[,] MDepFalse;
-            int[,] MDisFalse;
+            BitArray ivFalse = new BitArray(program.iv);
+            BitArray ivTrue = new BitArray(program.iv);
 
-            int[,] MDepTrue;
-            int[,] MDisTrue;
-
+            bool isEncryptOrDecryptFlag = true; // true - если шифрование, false - если дешифровка
             if (chooseAvalanche == ModeChooseAvalanche.originalText)
             {
-                Xfalse[index] = false;
-                Xtrue[index] = true;
+                isEncryptOrDecryptFlag = true;
+                originalTextFalse[index]  = false;
+                originalTextBlocksTrue[index] = true;
 
-
-                if (Xs[0][index] == false)
-                {
-                    labelFalse.Text = "False *";
-                    labelTrue.Text = "True";
-                }
-                else
-                {
-                    labelFalse.Text = "False";
-                    labelTrue.Text = "True *";
-                }
             }
-            else
+            // Изменение бита в ключе будет происходить только в первом бите
+            else if (chooseAvalanche == ModeChooseAvalanche.key)
             {
-                keyFalse[index] = false;
-                keyTrue[index] = true;
-
+                isEncryptOrDecryptFlag = true;
+                key1False[index] = false;
+                key1True[index] = true;
+            }
+            else if (chooseAvalanche == ModeChooseAvalanche.iv)
+            {
+                isEncryptOrDecryptFlag = true;
+                ivFalse[index] = false;
+                ivTrue[index] = true;
             }
             else if (chooseAvalanche == ModeChooseAvalanche.cipherText)
             {
-
+                isEncryptOrDecryptFlag = false;
+                originalTextFalse[index] = false;
+                originalTextBlocksTrue[index] = true;
             }
-
-            MDepFalse = program.matrixDependence(Xfalse, keyFalse);
-            MDisFalse = program.matrixDistances(Xfalse, keyFalse);
-
-            MDepTrue = program.matrixDependence(Xtrue, keyTrue);
-            MDisTrue = program.matrixDistances(Xtrue, keyTrue);
-
-
-            for (int i =0; i < MDisFalse.GetLength(0); i++)
-            {
-                Console.WriteLine("{" + "\t");
-                for (int j = 0; j < MDisFalse.GetLength(1); j++)
-                {
-                    Console.Write(MDisFalse[i, j] + "\t");
-                }
-                Console.Write("}" + "\t");
-            }
-
-            TextBoxMeanBitFalse.Text = program.criteria1(MDisFalse).ToString();
-            TextBoxStFullFalse.Text = program.criteria2(MDepFalse).ToString();
-            TextBoxStLavEffFalse.Text = program.criteria3(MDisFalse).ToString();
-            TextBoxStStrongFalse.Text = program.criteria4(MDepFalse).ToString();
-
-            TextBoxMeanBitTrue.Text = program.criteria1(MDisTrue).ToString();
-            TextBoxStFullTrue.Text = program.criteria2(MDepTrue).ToString();
-            TextBoxStLavEffTrue.Text = program.criteria3(MDisTrue).ToString();
-            TextBoxStStrongTrue.Text = program.criteria4(MDepTrue).ToString();
-
-
-
-            int[] countBits = { };//program.searchAvalancheEffect(Xfalse, index, chooseAvalanche);
 
             string fileNameRounds = @".\rounds.txt";
-            string fileNameCount = @".\countChanges.txt";
 
             int[] rounds = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15 };
 
@@ -305,14 +270,16 @@ namespace PSZI_lr1_v2
                 sr.Write(String.Join("\n", rounds));
             }
 
+            string fileNameCount = @".\countChanges.txt";
+            int[] countBits = program.searchAvalancheEffect(Xfalse, index, chooseAvalanche);
+
             using (var sr = new StreamWriter(fileNameCount))
             {
                 sr.Write(String.Join("\n", countBits));
             }
 
+
             Process.Start("..\\..\\..\\..\\main.exe");
-
-
         }
 
 
@@ -324,10 +291,10 @@ namespace PSZI_lr1_v2
         }
 
         // Запись вектор инициализации в текстовые окна
-        public void writeVIToWindow()
+        public void writeIVToWindow()
         {
-            TextBoxVICC.Text = EncoderClass.BitArrayToString(program.vi);
-            TextBoxVICC16.Text = EncoderClass.BitArraytoHexString(program.vi);
+            TextBoxIVCC.Text = EncoderClass.BitArrayToString(program.iv);
+            TextBoxIVCC16.Text = EncoderClass.BitArraytoHexString(program.iv);
         }
 
         // Запись текста в тектовые окна
@@ -370,7 +337,7 @@ namespace PSZI_lr1_v2
 
             chooseAvalanche = ModeChooseAvalanche.originalText;
             CheckBoxKey.IsChecked = false;
-            CheckBoxVI.IsChecked = false;
+            CheckBoxIV.IsChecked = false;
             CheckBoxCipherText.IsChecked = false;
         }
 
@@ -378,15 +345,15 @@ namespace PSZI_lr1_v2
         {
             CheckBoxOriginalText.IsChecked = false;
             chooseAvalanche = ModeChooseAvalanche.key;
-            CheckBoxVI.IsChecked = false;
+            CheckBoxIV.IsChecked = false;
             CheckBoxCipherText.IsChecked = false;
         }
 
-        private void ChooseVI(object sender, RoutedEventArgs e)
+        private void ChooseIV(object sender, RoutedEventArgs e)
         {
             CheckBoxOriginalText.IsChecked = false;
             CheckBoxKey.IsChecked = false;
-            chooseAvalanche = ModeChooseAvalanche.vi;
+            chooseAvalanche = ModeChooseAvalanche.iv;
             CheckBoxCipherText.IsChecked = false;
         }
 
@@ -394,7 +361,7 @@ namespace PSZI_lr1_v2
         {
             CheckBoxOriginalText.IsChecked = false;
             CheckBoxKey.IsChecked = false;
-            CheckBoxVI.IsChecked = false;
+            CheckBoxIV.IsChecked = false;
             chooseAvalanche = ModeChooseAvalanche.cipherText;
         }
 
@@ -454,25 +421,25 @@ namespace PSZI_lr1_v2
         }
 
         // вектор инициализации
-        private void TextBoxVICC_GotFocus(object sender, RoutedEventArgs e)
+        private void TextBoxIVCC_GotFocus(object sender, RoutedEventArgs e)
         {
-            TextBoxVICC.TextChanged += TextBoxVICC_TextChanged;
+            TextBoxIVCC.TextChanged += TextBoxIVCC_TextChanged;
         }
 
-        private void TextBoxVICC_LostFocus(object sender, RoutedEventArgs e)
+        private void TextBoxIVCC_LostFocus(object sender, RoutedEventArgs e)
         {
-            writeVIToWindow();
-            TextBoxVICC.TextChanged -= TextBoxVICC_TextChanged;
+            writeIVToWindow();
+            TextBoxIVCC.TextChanged -= TextBoxIVCC_TextChanged;
         }
-        private void TextBoxVICC16_GotFocus(object sender, RoutedEventArgs e)
+        private void TextBoxIVCC16_GotFocus(object sender, RoutedEventArgs e)
         {
-            TextBoxVICC16.TextChanged += TextBoxVICC16_TextChanged;
+            TextBoxIVCC16.TextChanged += TextBoxIVCC16_TextChanged;
         }
 
-        private void TextBoxVICC16_LostFocus(object sender, RoutedEventArgs e)
+        private void TextBoxIVCC16_LostFocus(object sender, RoutedEventArgs e)
         {
-            writeVIToWindow();
-            TextBoxVICC16.TextChanged -= TextBoxVICC16_TextChanged;
+            writeIVToWindow();
+            TextBoxIVCC16.TextChanged -= TextBoxIVCC16_TextChanged;
         }
 
         private void ButtonGenerateKey_Click(object sender, RoutedEventArgs e)

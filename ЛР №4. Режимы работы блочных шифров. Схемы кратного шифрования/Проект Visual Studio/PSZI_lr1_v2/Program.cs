@@ -48,8 +48,7 @@ namespace PSZI_lr1_v2
     {
         public BitArray originalText;
         public BitArray key1, key2, key3;
-        public BitArray key;
-        public BitArray vi;
+        public BitArray iv;
         public BitArray cipherText;
         public BitArray InitializationVector;
         public GeneratorKey generatorKey;
@@ -75,11 +74,11 @@ namespace PSZI_lr1_v2
             return key;
         }
 
-        public void ReadVI(string filename)
+        public void ReadIV(string filename)
         {
             Console.WriteLine("Читаем вектор инициализации из файла...");
-            vi = EncoderClass.StringToBitArray(readFromFile(filename));
-            Console.WriteLine("Вектор инициализации = " + "\'" + vi + "\'");
+            iv = EncoderClass.StringToBitArray(readFromFile(filename));
+            Console.WriteLine("Вектор инициализации = " + "\'" + iv + "\'");
         }
 
         // Определение обьекта, который будет генерировать ключи
@@ -380,32 +379,52 @@ namespace PSZI_lr1_v2
             return d;
         }
 
-        //public int[] searchAvalancheEffect(BitArray X, int index, ModeChooseAvalanche chooseAvalanche)
-        //{
-        //    encryptorByDES = new EncryptByDES(generatorKey);
+        struct TextWithAvalanche
+        {
+            public BitArray textTrue;
+            public BitArray textFalse;
+            public int[] avalancheEffect;
+        }
 
-        //    BitArray originalTextFalse = new BitArray(X);
-        //    BitArray originalTextTrue = new BitArray(X);
+        public int[] searchAvalancheEffectForPCBC(BitArray textTrue, BitArray textFalse, BitArray keyTrue, BitArray keyFalse, BitArray ivTrue, BitArray ivFalse, bool isEncrypteOrDecrypte)
+        {
+            GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
+            GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
 
-        //    BitArray keyFalse = new BitArray(key);
-        //    BitArray keyTrue = new BitArray(key);
-        //    if (chooseAvalanche == ModeChooseAvalanche.originalText)
-        //    {
-        //        originalTextFalse.Set(index, false);
-        //        originalTextTrue.Set(index, true);
-        //    }
-        //    else
-        //    {
-        //        keyFalse.Set(index, false);
-        //        keyTrue.Set(index, true);
-        //    }
+            PCBC PCBCTrue = new PCBC({ generatorTrue, generatorTrue, generatorTrue}, ivTrue);
+            PCBC PCBCFalse = new PCBC({ generatorFalse, generatorFalse, generatorFalse }, ivFalse);
 
-        //    GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
-        //    GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
+            BitArray[] textBlocksTrue = DividingTextIntoBlocks(textTrue);
+            BitArray[] textBlocksFalse = DividingTextIntoBlocks(textFalse);
 
+            int[][] avalanchesEffects = new int[textBlocksTrue.Length];
 
-        //    return encryptorByDES.searchAvalancheEffect(originalTextTrue, originalTextFalse, generatorTrue, generatorFalse);
-        //}
+            if (isEncrypteOrDecrypte)
+            {
+                TextWithAvalanche cipherWithAvalanche = PCBC.Encrypte(PCBCTrue, PCBCFalse, null, null, textBlocksTrue[0], textBlocksFalse[0], null, null);
+                avalanchesEffects[0] = cipherWithAvalanche.avalancheEffect;
+
+                for (int iBlock = 1; iBlock < textBlocksTrue.Length; iBlock++)
+                {
+                    cipherWithAvalanche = PCBC.Encrypte(PCBCTrue, PCBCFalse, textBlocksTrue[iBlock - 1], textBlocksFalse[iBlock - 1], textBlocksTrue[iBlock],  textBlocksFalse[iBlock], cipherWithAvalanche.textTrue, cipherWithAvalanche.textFalse);
+                    avalanchesEffects[i] = cipherWithAvalanche.avalancheEffect;
+                }
+            }
+            else
+            {
+                TextWithAvalanche originalWithAvalanche = PCBC.Decrypte(PCBCTrue, PCBCFalse, null, null, textBlocksTrue[0], textBlocksFalse[0], null, null);
+                avalanchesEffects[0] = originalWithAvalanche.avalancheEffect;
+
+                for (int iBlock = 1; iBlock < textBlocksTrue.Length; iBlock++)
+                {
+                    originalWithAvalanche = PCBC.Decrypte(PCBCTrue, PCBCFalse, textBlocksTrue[iBlock - 1], textBlocksFalse[iBlock - 1], textBlocksTrue[iBlock],  textBlocksFalse[iBlock], originalWithAvalanche.textTrue, originalWithAvalanche.textFalse);
+                    avalanchesEffects[i] = originalWithAvalanche.avalancheEffect;
+                }
+            }
+            
+
+            return avalanchesEffects;
+        }
 
         public void Decryption()
         {

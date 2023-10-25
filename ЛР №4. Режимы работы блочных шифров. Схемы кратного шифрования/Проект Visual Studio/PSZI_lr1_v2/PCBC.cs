@@ -8,8 +8,8 @@ namespace PSZI_lr1_v2
 {
     public class PCBC
     {
-        GeneratorKey[] generatorKeys;
-        BitArray C0;
+        public GeneratorKey[] generatorKeys;
+        public BitArray C0;
 
         public PCBC(GeneratorKey[] generatorKeys, BitArray IV)
         {
@@ -52,7 +52,7 @@ namespace PSZI_lr1_v2
             else
                 C_i_1 = C0;
 
-            BitArray newC = new BitArray(EDE.Decrypte(tempC, generatorKeys[0], generatorKeys[1], generatorKeys[2]));
+            BitArray newC = EDE.Decrypte(tempC, generatorKeys[0], generatorKeys[1], generatorKeys[2]);
 
             newC.Xor(C_i_1);
 
@@ -64,6 +64,40 @@ namespace PSZI_lr1_v2
             return newC;
         }
 
+        public static TextWithAvalanche Decrypte(PCBC PCBCTrue, PCBC PCBCFalse,
+                                                 BitArray lastCTrue, BitArray lastCFalse,
+                                                 BitArray tempCTrue, BitArray tempCFalse,
+                                                 BitArray lastPTrue, BitArray lastPFalse)
+        {
+            BitArray C_i_1True, C_i_1False;
 
-    }
-}
+            if (lastCTrue != null)
+                C_i_1True = lastCTrue;
+            else
+                C_i_1True = PCBCTrue.C0;
+
+            if (lastCFalse != null)
+                C_i_1False = lastCFalse;
+            else
+                C_i_1False = PCBCFalse.C0;
+
+            TextWithAvalanche newCWithAvalanche = EDE.DecrypteWithAvalanche(tempCTrue, tempCFalse, PCBCTrue.generatorKeys, PCBCFalse.generatorKeys);
+
+            newCWithAvalanche.textTrue.Xor(C_i_1True);
+            newCWithAvalanche.textFalse.Xor(C_i_1False);
+
+            if (lastP != null)
+            {
+                lastPTrue.Xor(lastP);
+            }
+
+            return newC;
+        }
+
+        public static TextWithAvalanche Encrypte(PCBC pCBCTrue, PCBC pCBCFalse,
+                                                   BitArray lastPTrue, BitArray lastPFalse,
+                                                   BitArray tempPTrue, BitArray tempPFalse,
+                                                   BitArray lastCTrue, BitArray lastCFalse)
+        {
+            
+        }
