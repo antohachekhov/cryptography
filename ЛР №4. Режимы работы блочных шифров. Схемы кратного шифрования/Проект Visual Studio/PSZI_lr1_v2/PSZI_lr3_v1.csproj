@@ -65,6 +65,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CipherXOR.cs" />
+    <Compile Include="EDE.cs" />
     <Compile Include="EncoderClass.cs" />
     <Compile Include="EncryptByDES.cs" />
     <Compile Include="EncryptByFeistelNetwork.cs" />
