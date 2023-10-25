@@ -7,7 +7,6 @@ namespace PSZI_lr1_v2
     {
         GeneratorKey generatorKey;
         EncryptorByFeistelNetwork encryptorByFeistelNetwork;
-        int originalTextLength = 64;
         int countRounds = 16;
 
         public EncryptByDES(GeneratorKey generatorKey)

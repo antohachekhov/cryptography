@@ -4,13 +4,17 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="LR3" Height="800" Width="798.5">
+        Title="LR3" Height="870" Width="1200">
     <Window.Resources>
-        <Style x:Key="Title" TargetType="TextBlock">
+        <Style TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
             <Setter Property="ItemsControl.Foreground" Value="#85004B"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Title" TargetType="TextBlock"  BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="ItemsControl.FontSize" Value="16"/>
             <Setter Property="ItemsControl.HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10"/>
         </Style>
         <Style TargetType="CheckBox">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
@@ -18,161 +22,202 @@
             <Setter Property="ItemsControl.FontSize" Value="14"/>
             <Setter Property="Margin" Value="10, 6"/>
         </Style>
-        <Style x:Key="Text" TargetType="TextBlock">
-            <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
-            <Setter Property="ItemsControl.Foreground" Value="#992677"/>
+        <Style x:Key="Text" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
             <Setter Property="ItemsControl.FontSize" Value="14"/>
             <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
             <Setter Property="TextWrapping" Value="Wrap"/>
         </Style>
         <Style TargetType="TextBox">
-            <Setter Property="ItemsControl.IsEnabled" Value="True"/>
-            <Setter Property="ItemsControl.Width" Value="230"/>
             <Setter Property="ItemsControl.Margin" Value="10"/>
+            <Setter Property="Height" Value="20"/>
         </Style>
-        <Style x:Key="ButtonWithoutStyle" TargetType="Button"/>
+        <Style x:Key="InputTextBoxForFileName" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Width" Value="500"/>
+        </Style>
+        <Style x:Key="TextBoxForTexts" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Width" Value="400" />
+        </Style>
+
         <Style TargetType="Button">
             <Setter Property="Background" Value="#E6B2D6"/>
-            <Setter Property="MinHeight" Value="40"/>
             <Setter Property="FontSize" Value="14"/>
             <Setter Property="Margin" Value="10, 0"/>
             <Setter Property="Width" Value="350"/>
         </Style>
+        <Style x:Key="MiniButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Height" Value="22"/>
+            <Setter Property="MinHeight" Value="22"/>
+            <Setter Property="Width" Value="200"/>
+        </Style>
+        <Style x:Key="MaxiButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Width" Value="350"/>
+        </Style>
+
         <Style x:Key="InputBlock" TargetType="StackPanel">
             <Setter Property="Margin" Value="0,10"/>
         </Style>
     </Window.Resources>
 
-    <Grid Margin="0,0,0,-226.6">
-        <ScrollViewer Margin="0,10,0,-325" Height="1312" VerticalAlignment="Top">
+    <Grid>
+        <ScrollViewer  VerticalAlignment="Top">
             <StackPanel>
                 <StackPanel Margin="5">
-                    <TextBlock Style="{StaticResource Title}" Text="Стандарты симметричного шифрования. DES." />
-                    <TextBlock Height="10" />
+                    <TextBlock Style="{StaticResource Title}">Режимы работы блочных шифров. Схемы кратного шифрования</TextBlock>
                     <StackPanel Style="{StaticResource InputBlock}">
-                        <TextBlock Style="{StaticResource Text}" Text="Введите путь к файлу, в котором расположен текст для шифрования."/>
-                        <StackPanel Height="29" UseLayoutRounding="False" Orientation="Horizontal" HorizontalAlignment="Left">
-                            <TextBox x:Name="FilenameOriginalText" Width="520" VerticalAlignment="Center" UseLayoutRounding="False" Height="20" MaxWidth="520" MaxHeight="20"/>
-                            <Button x:Name="ButtonOpenOriginalFile" Content="Выбрать файл" HorizontalAlignment="Right" Width="200" VerticalAlignment="Center" MinHeight="20" Height="22" HorizontalContentAlignment="Center" Padding="0,0,0,0" Click="ButtonOpenOriginalFile_Click"/>
+                        <TextBlock Style="{StaticResource Text}">Введите путь к файлу, в котором расположен текст для шифрования.</TextBlock>
+                        <StackPanel x:Name="StackPanelOriginalTextEnterFile" Orientation="Horizontal">
+                            <TextBox Style="{StaticResource InputTextBoxForFileName}" />
+                            <Button Style="{StaticResource MiniButton}" 
+                                    Click="ButtonOpenFile_Click">Выбрать файл</Button>
+                        </StackPanel>
+                        <TextBlock Style="{StaticResource Text}">Исходный текст:</TextBlock>
+                        <StackPanel x:Name="StackPanelOriginalTextOutput" Orientation="Horizontal" >
+                            <TextBox Style="{StaticResource TextBoxForTexts}"
+                                     GotFocus="TextBoxCC_GotFocus" 
+                                     LostFocus="TextBoxCC_LostFocus"></TextBox>
+                            <TextBox Style="{StaticResource TextBoxForTexts}"
+                                     GotFocus="TextBoxCC16_GotFocus" 
+                                     LostFocus="TextBoxCC16_LostFocus"></TextBox>
                         </StackPanel>
                     </StackPanel>
 
-                    <StackPanel Style="{StaticResource InputBlock}">
-                        <TextBlock Style="{StaticResource Text}" Text="Исходный текст:"/>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="TextBoxOriginalTextContentCC" 
-                                     GotFocus="TextBoxOriginalTextContentCC_GotFocus" 
-                                     LostFocus="TextBoxOriginalTextContentCC_LostFocus" Width="350"></TextBox>
-                            <TextBox x:Name="TextBoxOriginalTextContentCC16" 
-                                     GotFocus="TextBoxOriginalTextContentCC16_GotFocus" 
-                                     LostFocus="TextBoxOriginalTextContentCC16_LostFocus" Width="350" IsEnabled="True"></TextBox>
-                        </StackPanel>
-                    </StackPanel>
+
 
                     <Grid>
                         <Border BorderThickness="2" BorderBrush="#E667AF">
+                            <StackPanel Margin="5" >
+                                <TextBlock Style="{StaticResource Title}">Шифрование и дешифрование</TextBlock>
 
-                            <StackPanel Style="{StaticResource InputBlock}" Margin="5,5" >
-                                <TextBlock Style="{StaticResource Title}" Text="Шифрование" />
-                                <TextBlock Height="10" />
-                                <TextBlock Style="{StaticResource Text}" Text="Введите путь к файлу, в котором расположен ключ для шифрования."/>
-                                <StackPanel Height="29" UseLayoutRounding="False" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <TextBox x:Name="FilenameKey" Width="520" VerticalAlignment="Center" UseLayoutRounding="False" Height="20" MaxWidth="520" MaxHeight="20" Margin="10,4.4"/>
-                                    <Button x:Name="ButtonOpenKey" Content="Выбрать файл" HorizontalAlignment="Right" Width="200" VerticalAlignment="Center" MinHeight="20" Height="22" HorizontalContentAlignment="Center" Padding="0,0,0,0" Click="ButtonOpenKey_Click"/>
-                                </StackPanel>
-
-                                <TextBlock Style="{StaticResource Text}" Text="Введите путь к файлу, в котором расположен вектор инициализации."/>
-                                <StackPanel Height="29" UseLayoutRounding="False" Orientation="Horizontal" HorizontalAlignment="Left">
-                                    <TextBox x:Name="FilenameIV" Width="520" VerticalAlignment="Center" UseLayoutRounding="False" Height="20" MaxWidth="520" MaxHeight="20" Margin="10,4.4"/>
-                                    <Button x:Name="ButtonOpenIV" Content="Выбрать файл" HorizontalAlignment="Right" Width="200" VerticalAlignment="Center" MinHeight="20" Height="22" HorizontalContentAlignment="Center" Padding="0,0,0,0" Click="ButtonOpenIV_Click"/>
-                                </StackPanel>
-
-                                <TextBlock Style="{StaticResource Text}" Text="Ключ:"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="TextBoxKeyCC"
-                                     GotFocus="TextBoxKeyCC_GotFocus" 
-                                     LostFocus="TextBoxKeyCC_LostFocus" Width="350" IsEnabled="True"/>
-                                    <TextBox x:Name="TextBoxKeyCC16"
-                                     GotFocus="TextBoxKeyCC16_GotFocus" 
-                                     LostFocus="TextBoxKeyCC16_LostFocus" Width="350" IsEnabled="True"/>
-                                </StackPanel>
-
-                                <TextBlock Style="{StaticResource Text}" Text="Вектор инициализации:"/>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="TextBoxIVCC"
-                                     GotFocus="TextBoxIVCC_GotFocus" 
-                                     LostFocus="TextBoxIVCC_LostFocus" Width="350" IsEnabled="True"/>
-                                    <TextBox x:Name="TextBoxIVCC16"
-                                     GotFocus="TextBoxIVCC16_GotFocus" 
-                                     LostFocus="TextBoxIVCC16_LostFocus" Width="350" IsEnabled="True"/>
-                                </StackPanel>
-
-                                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <Button x:Name="ButtonGenerateKey" Click="ButtonGenerateKey_Click" Width="250">Сгенерировать ключ</Button>
-                                    <Button x:Name="ButtonGenerateBelowKeys" Click="ButtonGenerateBelowKeys_Click" Width="250">Сгенерировать подключи</Button>
-                                    <Button x:Name="ButtonShowBelowKeys" Click="ButtonShowBelowKeys_Click" Width="250">Посмотреть подключи</Button>
-                                </StackPanel>
-
-
-                                <StackPanel x:Name="StackPanelBelowKeys" Orientation="Horizontal" HorizontalAlignment="Left" Visibility="Collapsed">
-                                    <StackPanel Orientation="Vertical" HorizontalAlignment="Center" Margin="50, 0">
-                                        <StackPanel Orientation="Horizontal">
-                                            <ListBox x:Name="LB1" Height="180" Width="350"/>
-                                            <ListBox x:Name="LB2" Height="180" Width="350"/>
-                                        </StackPanel>
+                                <StackPanel Style="{StaticResource InputBlock}">
+                                    <TextBlock Style="{StaticResource Text}">Введите путь к файлу, в котором расположен ключ 1 для шифрования.</TextBlock>
+                                    <StackPanel x:Name="StackPanelKey1EnterFile" Orientation="Horizontal">
+                                        <TextBox Style="{StaticResource InputTextBoxForFileName}"/>
+                                        <Button Style="{StaticResource MiniButton}"
+                                            Click="ButtonOpenFile_Click">Выбрать файл</Button>
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource Text}">Ключ 1</TextBlock>
+                                    <StackPanel x:Name="StackPanelKey1Output" Orientation="Horizontal" >
+                                        <TextBox Style="{StaticResource TextBoxForTexts}" 
+                                             GotFocus="TextBoxCC_GotFocus" 
+                                             LostFocus="TextBoxCC_LostFocus"/>
+                                        <TextBox Style="{StaticResource TextBoxForTexts}"
+                                            GotFocus="TextBoxCC16_GotFocus" 
+                                            LostFocus="TextBoxCC16_LostFocus"/>
+                                        <Button Style="{StaticResource MiniButton}"
+                                            Click="ButtonRandomGenerate_Click">Cлучайный ключ</Button>
                                     </StackPanel>
                                 </StackPanel>
 
+                                <StackPanel Style="{StaticResource InputBlock}">
+                                    <TextBlock Style="{StaticResource Text}">Введите путь к файлу, в котором расположен ключ 2 для шифрования.</TextBlock>
+                                    <StackPanel x:Name="StackPanelKey2EnterFile" Orientation="Horizontal">
+                                        <TextBox Style="{StaticResource InputTextBoxForFileName}"/>
+                                        <Button Style="{StaticResource MiniButton}"
+                                            Click="ButtonOpenFile_Click">Выбрать файл</Button>
 
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource Text}">Ключ 2</TextBlock>
+                                    <StackPanel x:Name="StackPanelKey2Output" Orientation="Horizontal" >
+                                        <TextBox Style="{StaticResource TextBoxForTexts}"
+                                             GotFocus="TextBoxCC_GotFocus" 
+                                             LostFocus="TextBoxCC_LostFocus"/>
+                                        <TextBox Style="{StaticResource TextBoxForTexts}"
+                                            GotFocus="TextBoxCC16_GotFocus" 
+                                            LostFocus="TextBoxCC16_LostFocus"/>
+                                        <Button Style="{StaticResource MiniButton}"
+                                            Click="ButtonRandomGenerate_Click">Cлучайный ключ</Button>
+                                    </StackPanel>
+                                </StackPanel>
+                                <StackPanel Style="{StaticResource InputBlock}">
+                                    <TextBlock Style="{StaticResource Text}">Введите путь к файлу, в котором расположен ключ 3 для шифрования.</TextBlock>
+                                    <StackPanel x:Name="StackPanelKey3EnterFile" Orientation="Horizontal">
+                                        <TextBox Style="{StaticResource InputTextBoxForFileName}"/>
+                                        <Button Style="{StaticResource MiniButton}"
+                                            Click="ButtonOpenFile_Click">Выбрать файл</Button>
 
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource Text}">Ключ 3</TextBlock>
+                                    <StackPanel x:Name="StackPanelKey3Output" Orientation="Horizontal" >
+                                        <TextBox Style="{StaticResource TextBoxForTexts}"
+                                             GotFocus="TextBoxCC_GotFocus" 
+                                             LostFocus="TextBoxCC_LostFocus"/>
+                                        <TextBox Style="{StaticResource TextBoxForTexts}"
+                                            GotFocus="TextBoxCC16_GotFocus" 
+                                            LostFocus="TextBoxCC16_LostFocus"/>
+                                        <Button Style="{StaticResource MiniButton}"
+                                            Click="ButtonRandomGenerate_Click">Cлучайный ключ</Button>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Style="{StaticResource InputBlock}">
+                                    <TextBlock Style="{StaticResource Text}">Введите путь к файлу, в котором расположен вектор инициализации.</TextBlock>
+                                    <StackPanel x:Name="StackPanelIVEnterFile" Orientation="Horizontal">
+                                        <TextBox Style="{StaticResource InputTextBoxForFileName}"/>
+                                        <Button Style="{StaticResource MiniButton}" 
+                                            Click="ButtonOpenFile_Click">Выбрать файл</Button>
+
+                                    </StackPanel>
+                                    <TextBlock Style="{StaticResource Text}" Text="Вектор инициализации:"/>
+                                    <StackPanel x:Name="StackPanelIVOutput" Orientation="Horizontal">
+                                        <TextBox Style="{StaticResource TextBoxForTexts}"
+                                             GotFocus="TextBoxCC_GotFocus" 
+                                             LostFocus="TextBoxCC_LostFocus"/>
+                                        <TextBox  Style="{StaticResource TextBoxForTexts}"
+                                             GotFocus="TextBoxCC16_GotFocus" 
+                                             LostFocus="TextBoxCC16_LostFocus"/>
+                                        <Button Style="{StaticResource MiniButton}"
+                                            Click="ButtonRandomGenerate_Click">Cлучайный IV</Button>
+                                    </StackPanel>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </Grid>
 
-                    <StackPanel Orientation="Horizontal">
-                        <Button x:Name="ButtonCipherText" Click="ButtonCipherText_Click">Зашифровать</Button>
-                        <Button x:Name="ButtonCipherText_Copy" Click="ButtonDecipherText_Click" Content="Дешифровать"/>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                        <Button x:Name="ButtonEncrypte" Style="{StaticResource MaxiButton}" Click="ButtonEncrypte_Click">Зашифровать</Button>
+                        <Button x:Name="ButtonDecrypte" Style="{StaticResource MaxiButton}" Click="ButtonDecrypte_Click">Дешифровать</Button>
                     </StackPanel>
 
 
                     <StackPanel Style="{StaticResource InputBlock}">
-                        <TextBlock Style="{StaticResource Text}" Text="Зашифрованный текст:"/>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="TextBoxCipherTextCC" Width="350" Margin="10"></TextBox>
-                            <TextBox x:Name="TextBoxCipherTextCC16" IsReadOnly="True" Width="350" Margin="10"></TextBox>
+                        <TextBlock Style="{StaticResource Text}">Полученный текст:</TextBlock>
+                        <StackPanel x:Name="StackPanelCipherTextOutput" Orientation="Horizontal">
+                            <TextBox Style="{StaticResource TextBoxForTexts}" IsReadOnly="True"></TextBox>
+                            <TextBox Style="{StaticResource TextBoxForTexts}" IsReadOnly="True"></TextBox>
                         </StackPanel>
                     </StackPanel>
 
-                    <StackPanel Style="{StaticResource InputBlock}">
-                        <TextBlock Style="{StaticResource Text}" Text="Время шифрования:"/>
-                        <StackPanel Orientation="Horizontal">
-                            <TextBox x:Name="timeOfEncoding" IsReadOnly="True" Width="350" Margin="10"></TextBox>
-                        </StackPanel>
+                    <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal">
+                        <TextBlock Style="{StaticResource Text}">Время шифрования:</TextBlock>
+                        <TextBox x:Name="timeOfEncoding" Width="350" IsReadOnly="True"></TextBox>
                     </StackPanel>
                     <Grid>
-                        <Border BorderThickness="2" BorderBrush="#E667AF" Margin="0,0,-0.4,43.8">
-                            <StackPanel Style="{StaticResource InputBlock}" Margin="5.4,1,5,-1.8" >
-                                <TextBlock Style="{StaticResource Title}" Text="Исследование лавинного эффекта" Width="300" HorizontalAlignment="Center"/>
+                        <Border BorderThickness="2" BorderBrush="#E667AF">
+                            <StackPanel Style="{StaticResource InputBlock}" Margin="5">
+                                <TextBlock Style="{StaticResource Title}">Исследование лавинного эффекта</TextBlock>
                                 <StackPanel Style="{StaticResource InputBlock}">
-                                    <TextBlock Style="{StaticResource Text}" Text="Где:"/>
-                                    <CheckBox x:Name="CheckBoxOriginalText" Checked="ChooseOriginalText" Content="а) исходный текст" IsChecked="True"/>
-                                    <CheckBox x:Name="CheckBoxKey" Checked="ChooseKey" Content="б) ключ"/>
-                                    <CheckBox x:Name="CheckBoxIV" Checked="ChooseIV" Content="в) вектор инициализации"/>
-                                    <CheckBox x:Name="CheckBoxCipherText" Checked="ChooseCipherText" Content="г) зашифрованный текст"/>
+                                    <TextBlock Style="{StaticResource Text}">Метод:</TextBlock>
+                                    <CheckBox x:Name="CheckBoxPCBC" Checked="ChoosePCBC">а) PCBC</CheckBox>
+                                    <CheckBox x:Name="CheckBoxEDE" Checked="ChooseEDE">б) EDE</CheckBox>
                                 </StackPanel>
-                                <TextBlock Style="{StaticResource Text}" Text="Номер изменяемого бита (от 1 до 64):"/>
+                                <StackPanel Style="{StaticResource InputBlock}">
+                                    <TextBlock Style="{StaticResource Text}">Где:</TextBlock>
+                                    <CheckBox x:Name="CheckBoxOriginalText" Checked="ChooseOriginalText">а) исходный текст</CheckBox>
+                                    <CheckBox x:Name="CheckBoxKey" Checked="ChooseKey">б) ключ</CheckBox>
+                                    <CheckBox x:Name="CheckBoxIV" Checked="ChooseIV">в) вектор инициализации</CheckBox>
+                                    <CheckBox x:Name="CheckBoxCipherText" Checked="ChooseCipherText">г) зашифрованный текст</CheckBox>
+                                </StackPanel>
                                 <StackPanel Orientation="Horizontal">
-                                    <TextBox x:Name="TextBoxChangeBit" Text="1" Width="350" TextChanged="TextBoxChangeBit_TextChanged"/>
-                                    <Button x:Name="ButtonSearch" Click="ButtonSearch_Click">Исследовать</Button>
+                                    <TextBlock Style="{StaticResource Text}">Номер изменяемого бита:</TextBlock>
+                                    <TextBox x:Name="TextBoxChangeBit" Width="350" TextChanged="TextBoxChangeBit_TextChanged">1</TextBox>
                                 </StackPanel>
+                                <Button x:Name="ButtonSearch" Click="ButtonSearch_Click">Исследовать</Button>
                             </StackPanel>
-
                         </Border>
                     </Grid>
-
                 </StackPanel>
-
-                <StackPanel Height="30"></StackPanel>
             </StackPanel>
         </ScrollViewer>
     </Grid>

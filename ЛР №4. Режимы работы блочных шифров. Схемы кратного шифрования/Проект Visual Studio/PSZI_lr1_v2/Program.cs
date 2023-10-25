@@ -42,6 +42,21 @@ namespace PSZI_lr1_v2
             }
             return bitArray;
         }
+
+        public static int CountXor1(BitArray first, BitArray second)
+        {
+            BitArray xor = new BitArray(first);
+            xor.Xor(second);
+
+            int count = 0;
+            for(int i =0; i < xor.Length; i++)
+            {
+                if (xor[i] == true)
+                    count++;
+            }
+
+            return count;
+        }
     }
 
     public class Program
@@ -50,36 +65,12 @@ namespace PSZI_lr1_v2
         public BitArray key1, key2, key3;
         public BitArray iv;
         public BitArray cipherText;
-        public BitArray InitializationVector;
         public GeneratorKey generatorKey;
         public GeneratorKey[] generatorKeys;
         public PCBC encryptorByPCBC;
         public int lengthBlock = 64;
         public BitArray[] belowKeys;
         public long timeOfEncoding;
-
-        // Чтение текста из файла
-        public void ReadOriginalText(string filename)
-        {
-            Console.WriteLine("Читаем текст из файла...");
-            originalText = EncoderClass.StringToBitArray(readFromFile(filename));
-            Console.WriteLine("Текст = " + "\'" + originalText + "\'");
-        }
-
-        public BitArray ReadKey(string filename)
-        {
-            Console.WriteLine("Читаем ключ из файла...");
-            BitArray key = EncoderClass.StringToBitArray(readFromFile(filename));
-            Console.WriteLine("Ключ = " + "\'" + key + "\'");
-            return key;
-        }
-
-        public void ReadIV(string filename)
-        {
-            Console.WriteLine("Читаем вектор инициализации из файла...");
-            iv = EncoderClass.StringToBitArray(readFromFile(filename));
-            Console.WriteLine("Вектор инициализации = " + "\'" + iv + "\'");
-        }
 
         // Определение обьекта, который будет генерировать ключи
         public void GenerateKey()
@@ -95,20 +86,10 @@ namespace PSZI_lr1_v2
         // Определение обьекта, который будет шифровать
         public void GenerateEncryptor()
         {
-            encryptorByPCBC = new PCBC(generatorKeys, InitializationVector);
+            encryptorByPCBC = new PCBC(generatorKeys, iv);
         }
 
-        //public void FillKeys()
-        //{
-        //    generatorKey = new GeneratorKey(key);
-
-        //    belowKeys = new BitArray[16];
-
-        //    for (int i = 0; i < 16; i++)
-        //        belowKeys[i] = generatorKey.GenerateKey(i);
-        //}
-
-        public static string readFromFile(string fileName)
+        public static string ReadFromFile(string fileName)
         {
             string text = "";
             try
@@ -188,6 +169,7 @@ namespace PSZI_lr1_v2
 
         public void Encryption()
         {
+            GenerateEncryptor();
             Stopwatch stopwatch = new Stopwatch();
             //засекаем время начала операции
             stopwatch.Start();
@@ -379,55 +361,71 @@ namespace PSZI_lr1_v2
             return d;
         }
 
-        struct TextWithAvalanche
+        public struct TextWithAvalanche
         {
             public BitArray textTrue;
             public BitArray textFalse;
             public int[] avalancheEffect;
         }
 
-        public int[] searchAvalancheEffectForPCBC(BitArray textTrue, BitArray textFalse, BitArray keyTrue, BitArray keyFalse, BitArray ivTrue, BitArray ivFalse, bool isEncrypteOrDecrypte)
+        /// <summary>
+        /// <returns>Массив, в котором хранится количество изменившихся битов для каждого блока открытого/зашифрованного текста</returns>
+        /// </summary>
+        public int[] searchAvalancheEffectForPCBC(BitArray textTrue, BitArray textFalse,
+                                                    BitArray keyTrue, BitArray keyFalse,
+                                                    BitArray ivTrue, BitArray ivFalse,
+                                                    bool isEncrypteOrDecrypte)
         {
             GeneratorKey generatorFalse = new GeneratorKey(keyFalse);
             GeneratorKey generatorTrue = new GeneratorKey(keyTrue);
 
-            PCBC PCBCTrue = new PCBC({ generatorTrue, generatorTrue, generatorTrue}, ivTrue);
-            PCBC PCBCFalse = new PCBC({ generatorFalse, generatorFalse, generatorFalse }, ivFalse);
+            PCBC PCBCTrue = new PCBC(new GeneratorKey[3]{ generatorTrue, generatorTrue, generatorTrue}, ivTrue);
+            PCBC PCBCFalse = new PCBC(new GeneratorKey[3] { generatorFalse, generatorFalse, generatorFalse }, ivFalse);
 
             BitArray[] textBlocksTrue = DividingTextIntoBlocks(textTrue);
             BitArray[] textBlocksFalse = DividingTextIntoBlocks(textFalse);
 
-            int[][] avalanchesEffects = new int[textBlocksTrue.Length];
+            int[] avalanchesEffects = new int[textBlocksTrue.Length];
 
             if (isEncrypteOrDecrypte)
             {
-                TextWithAvalanche cipherWithAvalanche = PCBC.Encrypte(PCBCTrue, PCBCFalse, null, null, textBlocksTrue[0], textBlocksFalse[0], null, null);
-                avalanchesEffects[0] = cipherWithAvalanche.avalancheEffect;
+                BitArray cipherTextLastBlockTrue = PCBCTrue.Encrypte(null, textBlocksTrue[0], null);
+                BitArray cipherTextLastBlockFalse = PCBCFalse.Encrypte(null, textBlocksTrue[0], null);
+
+                avalanchesEffects[0] = BitArrayFunctions.CountXor1(cipherTextLastBlockTrue, cipherTextLastBlockFalse);
 
                 for (int iBlock = 1; iBlock < textBlocksTrue.Length; iBlock++)
                 {
-                    cipherWithAvalanche = PCBC.Encrypte(PCBCTrue, PCBCFalse, textBlocksTrue[iBlock - 1], textBlocksFalse[iBlock - 1], textBlocksTrue[iBlock],  textBlocksFalse[iBlock], cipherWithAvalanche.textTrue, cipherWithAvalanche.textFalse);
-                    avalanchesEffects[i] = cipherWithAvalanche.avalancheEffect;
+                    cipherTextLastBlockTrue = PCBCTrue.Encrypte(textBlocksTrue[iBlock - 1], textBlocksTrue[iBlock], cipherTextLastBlockTrue);
+                    cipherTextLastBlockFalse = PCBCFalse.Encrypte(textBlocksFalse[iBlock - 1], textBlocksFalse[iBlock], cipherTextLastBlockFalse);
+
+                    avalanchesEffects[iBlock] = BitArrayFunctions.CountXor1(cipherTextLastBlockTrue, cipherTextLastBlockFalse);
                 }
             }
             else
             {
-                TextWithAvalanche originalWithAvalanche = PCBC.Decrypte(PCBCTrue, PCBCFalse, null, null, textBlocksTrue[0], textBlocksFalse[0], null, null);
-                avalanchesEffects[0] = originalWithAvalanche.avalancheEffect;
+                BitArray originalTextLastBlockTrue = PCBCTrue.Decrypte(null, textBlocksTrue[0], null);
+                BitArray originalTextLastBlockFalse = PCBCFalse.Decrypte(null, textBlocksFalse[0], null);
 
+                avalanchesEffects[0] = BitArrayFunctions.CountXor1(originalTextLastBlockTrue, originalTextLastBlockFalse);
+                
                 for (int iBlock = 1; iBlock < textBlocksTrue.Length; iBlock++)
                 {
-                    originalWithAvalanche = PCBC.Decrypte(PCBCTrue, PCBCFalse, textBlocksTrue[iBlock - 1], textBlocksFalse[iBlock - 1], textBlocksTrue[iBlock],  textBlocksFalse[iBlock], originalWithAvalanche.textTrue, originalWithAvalanche.textFalse);
-                    avalanchesEffects[i] = originalWithAvalanche.avalancheEffect;
+                    originalTextLastBlockTrue = PCBCTrue.Decrypte(textBlocksTrue[iBlock - 1], textBlocksTrue[iBlock], originalTextLastBlockTrue);
+                    originalTextLastBlockFalse = PCBCFalse.Decrypte(textBlocksFalse[iBlock - 1], textBlocksFalse[iBlock], originalTextLastBlockFalse);
+
+                    avalanchesEffects[iBlock] = BitArrayFunctions.CountXor1(originalTextLastBlockTrue, originalTextLastBlockFalse);
                 }
+
             }
-            
+
 
             return avalanchesEffects;
         }
 
         public void Decryption()
         {
+            GenerateEncryptor();
             BitArray[] cipherTextBlocks = DividingTextIntoBlocks(this.originalText);
             BitArray originalText = new BitArray(0);
             BitArray originalTextLastBlock = encryptorByPCBC.Decrypte(null, cipherTextBlocks[0], null);
@@ -441,5 +439,6 @@ namespace PSZI_lr1_v2
 
             this.cipherText = originalText;
         }
+
     }
 }

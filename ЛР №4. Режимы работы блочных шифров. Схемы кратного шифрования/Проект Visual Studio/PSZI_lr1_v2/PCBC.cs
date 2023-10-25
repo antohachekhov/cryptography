@@ -3,6 +3,7 @@ using System.Collections;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PSZI_lr1_v2.Program;
 
 namespace PSZI_lr1_v2
 {
@@ -34,7 +35,7 @@ namespace PSZI_lr1_v2
 
             newP.Xor(C_i_1);
 
-            if(lastP != null)
+            if (lastP != null)
             {
                 newP.Xor(lastP);
             }
@@ -63,41 +64,5 @@ namespace PSZI_lr1_v2
 
             return newC;
         }
-
-        public static TextWithAvalanche Decrypte(PCBC PCBCTrue, PCBC PCBCFalse,
-                                                 BitArray lastCTrue, BitArray lastCFalse,
-                                                 BitArray tempCTrue, BitArray tempCFalse,
-                                                 BitArray lastPTrue, BitArray lastPFalse)
-        {
-            BitArray C_i_1True, C_i_1False;
-
-            if (lastCTrue != null)
-                C_i_1True = lastCTrue;
-            else
-                C_i_1True = PCBCTrue.C0;
-
-            if (lastCFalse != null)
-                C_i_1False = lastCFalse;
-            else
-                C_i_1False = PCBCFalse.C0;
-
-            TextWithAvalanche newCWithAvalanche = EDE.DecrypteWithAvalanche(tempCTrue, tempCFalse, PCBCTrue.generatorKeys, PCBCFalse.generatorKeys);
-
-            newCWithAvalanche.textTrue.Xor(C_i_1True);
-            newCWithAvalanche.textFalse.Xor(C_i_1False);
-
-            if (lastP != null)
-            {
-                lastPTrue.Xor(lastP);
-            }
-
-            return newC;
-        }
-
-        public static TextWithAvalanche Encrypte(PCBC pCBCTrue, PCBC pCBCFalse,
-                                                   BitArray lastPTrue, BitArray lastPFalse,
-                                                   BitArray tempPTrue, BitArray tempPFalse,
-                                                   BitArray lastCTrue, BitArray lastCFalse)
-        {
-            
-        }
+    }
+}
