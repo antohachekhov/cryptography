@@ -169,6 +169,7 @@ namespace PSZI_lr1_v2
 
             bool isEncryptOrDecryptFlag = true; // true - если шифрование, false - если дешифровка
 
+            // Подсчет длины зависимостей
             int count = 0;
             if (chooseAvalanche == ModeChooseAvalanche.originalText || chooseAvalanche == ModeChooseAvalanche.cipherText)
                 count = program.originalText.Length;
@@ -177,14 +178,27 @@ namespace PSZI_lr1_v2
             else if(chooseAvalanche == ModeChooseAvalanche.iv)
                 count = program.iv.Length;
 
-            int[] positions = new int[count];
-            int countOfBlocks = program.DividingTextIntoBlocks(program.originalText).Length; // вообще всегда должно быть 3
-            int[][] countsOfChanges = new int[countOfBlocks][];
 
+
+
+            
+            int countOfBlocks = program.DividingTextIntoBlocks(program.originalText).Length; // вообще всегда должно быть 3
+            
+            // Инициализация осей
+            int[][] countsOfChanges = new int[countOfBlocks][]; // оси Y
+
+            for (int i = 0; i < countOfBlocks; i++)
+            {
+                countsOfChanges[i] = new int[count];
+            }
+
+            int[] positions = new int[count];   // ось X
+
+            // Заполнение зависимостей
             for (int index = 0; index < count; index++)
             {
-                positions[index] = index;
-
+                
+                // Замена бита
                 if (chooseAvalanche == ModeChooseAvalanche.originalText)
                 {
                     isEncryptOrDecryptFlag = true;
@@ -192,7 +206,7 @@ namespace PSZI_lr1_v2
                     originalTextTrue[index] = true;
 
                 }
-                // Изменение бита в ключе будет происходить только в первом бите
+                // Изменение бита в ключе будет происходить только в первом ключе
                 else if (chooseAvalanche == ModeChooseAvalanche.key)
                 {
                     isEncryptOrDecryptFlag = true;
@@ -212,9 +226,12 @@ namespace PSZI_lr1_v2
                     originalTextTrue[index] = true;
                 }
 
+                // Количество измененных бит в каждом из блоков
                 int[] countBits = program.searchAvalancheEffectForPCBC(originalTextTrue, originalTextFalse, 
                     key1False, key1True, ivFalse, ivTrue, isEncryptOrDecryptFlag);
 
+                // Запись в оси
+                positions[index] = index;
                 for (int i = 0; i < countOfBlocks; i++)
                 {
                     countsOfChanges[i][index] = countBits[i];
