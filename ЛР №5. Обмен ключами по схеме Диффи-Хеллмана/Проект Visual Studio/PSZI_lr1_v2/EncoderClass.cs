@@ -2,7 +2,6 @@
 using System.Collections;
 using System.Text;
 using System.Linq;
-using PSZI_lr1;
 
 namespace PSZI_lr1_v2
 {
@@ -41,6 +40,7 @@ namespace PSZI_lr1_v2
             return str;
         }
 
+
         public static string BitArrayToBinString(BitArray bits)
         {
             string binaryStr = "";
@@ -72,6 +72,33 @@ namespace PSZI_lr1_v2
             return EncoderClass.ByteArrayToString(EncoderClass.BitArrayToByteArray(bits));
         }
 
+        public static ulong ByteArrayToUlong(byte[] byteArray)
+        {
+            byte[] byteArrayToUlong = new byte[EncoderClass.byteCountLong];
+            Array.Reverse(byteArray);
+            for (int i = 0; i < byteArray.Length; i++)
+            {
+                byteArrayToUlong[i] = byteArray[i];
+            }
+            ulong number = BitConverter.ToUInt64(byteArrayToUlong, 0);
+            return number;
+        }
+
+        public static byte[] UlongToByteArray(ulong number)
+        {
+            byte[] byteArray = BitConverter.GetBytes(number);
+            Array.Reverse(byteArray);
+            int countOfNullBytes = 0;
+            foreach (byte b in byteArray)
+            {
+                if(b == 0x0) countOfNullBytes++;
+                else break;
+            }
+            byte[] byteArrayWithonNull = new byte[byteArray.Length - countOfNullBytes];
+            Array.Copy(byteArray, countOfNullBytes, byteArrayWithonNull, 0, byteArray.Length - countOfNullBytes);
+            return byteArrayWithonNull;
+        }
+
         public static long ByteArrayToLong(byte[] byteArray)
         {
             byte[] byteArrayToLong = new byte[EncoderClass.byteCountLong];
@@ -93,7 +120,7 @@ namespace PSZI_lr1_v2
 
         public static byte[] BitArrayToByteArray(BitArray bitArray)
         {
-            BitArray bits = BitArrayFunctions.ReverseOnlyValuesInBytes(bitArray);
+            BitArray bits = BitArrayFunctions.ReverseOnlyValuesInBytes(bitArray);   // TODO: ОШИБКА
             byte[] bytes = new byte[Convert.ToInt32(Math.Ceiling(bits.Count / 8.0))];
             bits.CopyTo(bytes, 0);
             return bytes;

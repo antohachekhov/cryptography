@@ -64,14 +64,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CipherXOR.cs" />
-    <Compile Include="EDE.cs" />
     <Compile Include="EncoderClass.cs" />
-    <Compile Include="EncryptByDES.cs" />
-    <Compile Include="EncryptByFeistelNetwork.cs" />
-    <Compile Include="GeneratorKey.cs" />
-    <Compile Include="GeneratorRandomKey.cs" />
-    <Compile Include="LFSR.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -82,7 +75,6 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PCBC.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
