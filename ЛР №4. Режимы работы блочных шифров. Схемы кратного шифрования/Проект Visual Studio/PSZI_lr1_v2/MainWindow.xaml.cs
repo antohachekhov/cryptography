@@ -152,18 +152,11 @@ namespace PSZI_lr1_v2
 
         public void ButtonSearch_Click(object sender, RoutedEventArgs e)
         {
-            BitArray originalTextFalse = new BitArray(program.originalText);
-            BitArray originalTextTrue = new BitArray(program.originalText);
-
-            BitArray key1False = new BitArray(GeneratorKey.ExtendedKey(program.key1));
-            BitArray key1True = new BitArray(GeneratorKey.ExtendedKey(program.key1));
-
+            
             BitArray key2 = new BitArray(GeneratorKey.ExtendedKey(program.key2));
             BitArray key3 = new BitArray(GeneratorKey.ExtendedKey(program.key3));
 
-            BitArray ivFalse = new BitArray(program.iv);
-            BitArray ivTrue = new BitArray(program.iv);
-
+           
             bool isEncryptOrDecryptFlag = true; // true - если шифрование, false - если дешифровка
 
             // Подсчет длины зависимостей
@@ -171,7 +164,7 @@ namespace PSZI_lr1_v2
             if (chooseAvalanche == ModeChooseAvalanche.originalText || chooseAvalanche == ModeChooseAvalanche.cipherText)
                 count = program.originalText.Length;
             else if (chooseAvalanche == ModeChooseAvalanche.key)
-                count = program.key1.Length;
+                count = key2.Length;
             else if(chooseAvalanche == ModeChooseAvalanche.iv)
                 count = program.iv.Length;
             
@@ -190,7 +183,16 @@ namespace PSZI_lr1_v2
             // Заполнение зависимостей
             for (int index = 0; index < count; index++)
             {
-                
+                BitArray originalTextFalse = new BitArray(program.originalText);
+                BitArray originalTextTrue = new BitArray(program.originalText);
+
+                BitArray key1False = new BitArray(GeneratorKey.ExtendedKey(program.key1));
+                BitArray key1True = new BitArray(GeneratorKey.ExtendedKey(program.key1));
+
+                BitArray ivFalse = new BitArray(program.iv);
+                BitArray ivTrue = new BitArray(program.iv);
+
+
                 // Замена бита
                 if (chooseAvalanche == ModeChooseAvalanche.originalText)
                 {

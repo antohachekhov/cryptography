@@ -402,7 +402,7 @@ namespace PSZI_lr1_v2
             if (isEncrypteOrDecrypte)
             {
                 BitArray cipherTextLastBlockTrue = PCBCTrue.Encrypte(null, textBlocksTrue[0], null);
-                BitArray cipherTextLastBlockFalse = PCBCFalse.Encrypte(null, textBlocksTrue[0], null);
+                BitArray cipherTextLastBlockFalse = PCBCFalse.Encrypte(null, textBlocksFalse[0], null);
 
                 avalanchesEffects[0] = BitArrayFunctions.CountXor1(cipherTextLastBlockTrue, cipherTextLastBlockFalse);
 
