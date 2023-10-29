@@ -69,8 +69,15 @@ namespace PSZI_lr1_v2
         public GeneratorKey[] generatorKeys;
         public PCBC encryptorByPCBC;
         public int lengthBlock = 64;
+        public int lengthKey = 56;
         public BitArray[] belowKeys;
         public long timeOfEncoding;
+        public ModeChoosePadding modePadding;
+
+        public BitArray GenerateRandomBitArray(int length)
+        {
+            return (new GeneratorRandomKey()).generateRandomKey(length);
+        }
 
         // Определение обьекта, который будет генерировать ключи
         public void GenerateKey()
@@ -128,7 +135,12 @@ namespace PSZI_lr1_v2
 
         public BitArray GetPadding(int length)
         {
-            return new BitArray(length);
+            if (modePadding == ModeChoosePadding.zeros)
+                return new BitArray(length);
+            else if (modePadding == ModeChoosePadding.ones)
+                return new BitArray(length, true);
+            else
+                return GenerateRandomBitArray(length);
         }
 
         public BitArray[] DividingTextIntoBlocks(BitArray text)
@@ -415,6 +427,51 @@ namespace PSZI_lr1_v2
                     originalTextLastBlockFalse = PCBCFalse.Decrypte(textBlocksFalse[iBlock - 1], textBlocksFalse[iBlock], originalTextLastBlockFalse);
 
                     avalanchesEffects[iBlock] = BitArrayFunctions.CountXor1(originalTextLastBlockTrue, originalTextLastBlockFalse);
+                }
+
+            }
+
+
+            return avalanchesEffects;
+        }
+
+        /// <summary>
+        /// <returns>Массив, в котором хранится количество изменившихся битов для каждого блока открытого/зашифрованного текста</returns>
+        /// </summary>
+        public int[] searchAvalancheEffectForEDE(BitArray textTrue, BitArray textFalse,
+                                                    BitArray key1True, BitArray key1False,
+                                                    BitArray key2, 
+                                                    BitArray key3,
+                                                    bool isEncrypteOrDecrypte)
+        {
+            GeneratorKey generatorKey1False = new GeneratorKey(key1False);
+            GeneratorKey generatorKey1True = new GeneratorKey(key1True);
+            GeneratorKey generatorKey2 = new GeneratorKey(key2);
+            GeneratorKey generatorKey3 = new GeneratorKey(key3);
+
+            BitArray[] textBlocksTrue = DividingTextIntoBlocks(textTrue);
+            BitArray[] textBlocksFalse = DividingTextIntoBlocks(textFalse);
+
+            int[] avalanchesEffects = new int[textBlocksTrue.Length];
+
+            if (isEncrypteOrDecrypte)
+            {
+                for (int iBlock = 0; iBlock < textBlocksTrue.Length; iBlock++)
+                {
+                    BitArray cipherTextLastBlockTrue = EDE.Encrypte(textBlocksTrue[iBlock], generatorKey1True, generatorKey2, generatorKey3);
+                    BitArray cipherTextLastBlockFalse = EDE.Encrypte(textBlocksFalse[iBlock], generatorKey1False, generatorKey2, generatorKey3);
+
+                    avalanchesEffects[iBlock] = BitArrayFunctions.CountXor1(cipherTextLastBlockTrue, cipherTextLastBlockFalse);
+                }
+            }
+            else
+            {
+                for (int iBlock = 0; iBlock < textBlocksTrue.Length; iBlock++)
+                {
+                    BitArray cipherTextLastBlockTrue = EDE.Decrypte(textBlocksTrue[iBlock], generatorKey1True, generatorKey2, generatorKey3);
+                    BitArray cipherTextLastBlockFalse = EDE.Decrypte(textBlocksFalse[iBlock], generatorKey1False, generatorKey2, generatorKey3);
+
+                    avalanchesEffects[iBlock] = BitArrayFunctions.CountXor1(cipherTextLastBlockTrue, cipherTextLastBlockFalse);
                 }
 
             }

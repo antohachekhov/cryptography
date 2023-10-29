@@ -4,7 +4,8 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="LR3" Height="870" Width="1200">
+        WindowState="Maximized"
+        Title="LR3" Height="1000" Width="1106.4">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
@@ -62,7 +63,7 @@
 
     <Grid>
         <ScrollViewer  VerticalAlignment="Top">
-            <StackPanel>
+            <StackPanel Height="1446">
                 <StackPanel Margin="5">
                     <TextBlock Style="{StaticResource Title}">Режимы работы блочных шифров. Схемы кратного шифрования</TextBlock>
                     <StackPanel Style="{StaticResource InputBlock}">
@@ -84,10 +85,9 @@
                     </StackPanel>
                     <TextBlock Style="{StaticResource Text}">Выберите padding:</TextBlock>
                     <StackPanel >
-                        <CheckBox>Заполнение нулями</CheckBox>
-                        <CheckBox>Заполнение единицами</CheckBox>
-                        <CheckBox>Случайное заполнение</CheckBox>
-                       
+                        <CheckBox x:Name="CheckBoxZerosPadding" Checked="ChooseZerosPadding">Заполнение нулями</CheckBox>
+                        <CheckBox x:Name="CheckBoxOnesPadding" Checked="ChooseOnesPadding">Заполнение единицами</CheckBox>
+                        <CheckBox x:Name="CheckBoxRandomPadding" Checked="ChooseRandomPadding">Случайное заполнение</CheckBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10">
                         <TextBlock  Style="{StaticResource Text}">padding:</TextBlock>
@@ -191,7 +191,7 @@
 
                     <StackPanel Style="{StaticResource InputBlock}">
                         <TextBlock Style="{StaticResource Text}">Полученный текст:</TextBlock>
-                        <StackPanel x:Name="StackPanelCipherTextOutput" Orientation="Horizontal">
+                        <StackPanel x:Name="StackPanelCipherTextOutput" Orientation="Horizontal" HorizontalAlignment="Center">
                             <TextBox Style="{StaticResource TextBoxForTexts}" IsReadOnly="True"></TextBox>
                             <TextBox Style="{StaticResource TextBoxForTexts}" IsReadOnly="True"></TextBox>
                         </StackPanel>
@@ -202,13 +202,13 @@
                         <TextBox x:Name="timeOfEncoding" Width="350" IsReadOnly="True"></TextBox>
                     </StackPanel>
                     <Grid>
-                        <Border BorderThickness="2" BorderBrush="#E667AF">
+                        <Border BorderThickness="2" BorderBrush="#E667AF" >
                             <StackPanel Style="{StaticResource InputBlock}" Margin="5">
                                 <TextBlock Style="{StaticResource Title}">Исследование лавинного эффекта</TextBlock>
                                 <StackPanel Style="{StaticResource InputBlock}">
                                     <TextBlock Style="{StaticResource Text}">Метод:</TextBlock>
-                                    <CheckBox x:Name="CheckBoxPCBC" Checked="ChoosePCBC">а) PCBC</CheckBox>
-                                    <CheckBox x:Name="CheckBoxEDE" Checked="ChooseEDE">б) EDE</CheckBox>
+                                    <CheckBox x:Name="CheckBoxPCBC" Checked="ChooseMethodPCBC">а) PCBC</CheckBox>
+                                    <CheckBox x:Name="CheckBoxEDE" Checked="ChooseMethodEDE">б) EDE</CheckBox>
                                 </StackPanel>
                                 <StackPanel Style="{StaticResource InputBlock}">
                                     <TextBlock Style="{StaticResource Text}">Где:</TextBlock>
@@ -217,11 +217,7 @@
                                     <CheckBox x:Name="CheckBoxIV" Checked="ChooseIV">в) вектор инициализации</CheckBox>
                                     <CheckBox x:Name="CheckBoxCipherText" Checked="ChooseCipherText">г) зашифрованный текст</CheckBox>
                                 </StackPanel>
-                                <StackPanel Orientation="Horizontal">
-                                    <TextBlock Style="{StaticResource Text}">Номер изменяемого бита:</TextBlock>
-                                    <TextBox x:Name="TextBoxChangeBit" Width="350" TextChanged="TextBoxChangeBit_TextChanged">1</TextBox>
-                                </StackPanel>
-                                <Button x:Name="ButtonSearch" Click="ButtonSearch_Click">Исследовать</Button>
+                                <Button x:Name="ButtonSearch" Click="ButtonSearch_Click" Height="42">Исследовать</Button>
                             </StackPanel>
                         </Border>
                     </Grid>

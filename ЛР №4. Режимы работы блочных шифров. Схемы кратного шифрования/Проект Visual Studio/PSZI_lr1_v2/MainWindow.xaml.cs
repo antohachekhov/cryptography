@@ -19,6 +19,20 @@ namespace PSZI_lr1_v2
         cipherText
     }
 
+
+    enum ModeChooseMethod
+    {
+        PCBC,
+        EDE
+    }
+
+    public enum ModeChoosePadding
+    {
+        zeros,
+        ones,
+        random
+    }
+
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
@@ -26,12 +40,17 @@ namespace PSZI_lr1_v2
     {
         Program program = null;
         ModeChooseAvalanche chooseAvalanche = ModeChooseAvalanche.originalText;
+        ModeChooseMethod chooseMethod = ModeChooseMethod.PCBC;
+        ModeChoosePadding choosePadding = ModeChoosePadding.zeros;
 
         public MainWindow()
         {
+            program = new Program();
             InitializeComponent();
             CheckBoxOriginalText.IsChecked = true;
-            program = new Program();
+            CheckBoxPCBC.IsChecked = true;
+            CheckBoxZerosPadding.IsChecked = true;
+            
         }
 
         private void setValueToProgramBitArray(string name, BitArray value)
@@ -131,31 +150,6 @@ namespace PSZI_lr1_v2
             writeToWindow(StackPanelCipherTextOutput);
         }
 
-        public void TextBoxChangeBit_TextChanged(object sender, RoutedEventArgs e)
-        {
-            decimal d;
-            if (decimal.TryParse(TextBoxChangeBit.Text, out d))
-            {
-                if (d > 0 && d < 65)
-                {
-
-                }
-                else
-                {
-                    TextBoxChangeBit.Text = "1";
-                    throw new Exception();
-
-                }
-
-            }
-            else
-            {
-                //invalid
-                MessageBox.Show("Please enter a valid number of rounds");
-                return;
-            }
-        }
-
         public void ButtonSearch_Click(object sender, RoutedEventArgs e)
         {
             BitArray originalTextFalse = new BitArray(program.originalText);
@@ -163,6 +157,9 @@ namespace PSZI_lr1_v2
 
             BitArray key1False = new BitArray(GeneratorKey.ExtendedKey(program.key1));
             BitArray key1True = new BitArray(GeneratorKey.ExtendedKey(program.key1));
+
+            BitArray key2 = new BitArray(GeneratorKey.ExtendedKey(program.key2));
+            BitArray key3 = new BitArray(GeneratorKey.ExtendedKey(program.key3));
 
             BitArray ivFalse = new BitArray(program.iv);
             BitArray ivTrue = new BitArray(program.iv);
@@ -177,10 +174,6 @@ namespace PSZI_lr1_v2
                 count = program.key1.Length;
             else if(chooseAvalanche == ModeChooseAvalanche.iv)
                 count = program.iv.Length;
-
-
-
-
             
             int countOfBlocks = program.DividingTextIntoBlocks(program.originalText).Length; // вообще всегда должно быть 3
             
@@ -226,9 +219,15 @@ namespace PSZI_lr1_v2
                     originalTextTrue[index] = true;
                 }
 
-                // Количество измененных бит в каждом из блоков
-                int[] countBits = program.searchAvalancheEffectForPCBC(originalTextTrue, originalTextFalse, 
-                    key1False, key1True, ivFalse, ivTrue, isEncryptOrDecryptFlag);
+                int[] countBits;
+                if (chooseMethod == ModeChooseMethod.PCBC)
+                    // Количество измененных бит в каждом из блоков
+                    countBits = program.searchAvalancheEffectForPCBC(originalTextTrue, originalTextFalse, 
+                        key1False, key1True, ivFalse, ivTrue, isEncryptOrDecryptFlag);
+                else
+                    // Количество измененных бит в каждом из блоков
+                    countBits = program.searchAvalancheEffectForEDE(originalTextTrue, originalTextFalse,
+                        key1False, key1True, key2,  key3, isEncryptOrDecryptFlag);
 
                 // Запись в оси
                 positions[index] = index;
@@ -245,7 +244,7 @@ namespace PSZI_lr1_v2
                 sr.Write(String.Join("\n", positions));
             }
 
-            for(int i = 0; i < countOfBlocks; i++)
+            for (int i = 0; i < countOfBlocks; i++)
             {
                 string fileNameCount = @".\countChanges" + Convert.ToString(i + 1) + @".txt";
                 using (var sr = new StreamWriter(fileNameCount))
@@ -254,12 +253,18 @@ namespace PSZI_lr1_v2
                 }
             }
 
-            Process.Start("..\\..\\..\\..\\main.exe");
+            if (chooseMethod == ModeChooseMethod.PCBC)
+            {
+                Process.Start("..\\..\\..\\..\\main3.exe");
+            }
+            else
+            {
+                Process.Start("..\\..\\..\\..\\main1.exe");
+            }
         }
 
         private void ChooseOriginalText(object sender, RoutedEventArgs e)
         {
-
             chooseAvalanche = ModeChooseAvalanche.originalText;
             CheckBoxKey.IsChecked = false;
             CheckBoxIV.IsChecked = false;
@@ -268,27 +273,67 @@ namespace PSZI_lr1_v2
 
         private void ChooseKey(object sender, RoutedEventArgs e)
         {
-            CheckBoxOriginalText.IsChecked = false;
             chooseAvalanche = ModeChooseAvalanche.key;
+            CheckBoxOriginalText.IsChecked = false;
             CheckBoxIV.IsChecked = false;
             CheckBoxCipherText.IsChecked = false;
         }
 
         private void ChooseIV(object sender, RoutedEventArgs e)
         {
+            chooseAvalanche = ModeChooseAvalanche.iv;
             CheckBoxOriginalText.IsChecked = false;
             CheckBoxKey.IsChecked = false;
-            chooseAvalanche = ModeChooseAvalanche.iv;
             CheckBoxCipherText.IsChecked = false;
         }
 
         private void ChooseCipherText(object sender, RoutedEventArgs e)
         {
+            chooseAvalanche = ModeChooseAvalanche.cipherText;
             CheckBoxOriginalText.IsChecked = false;
             CheckBoxKey.IsChecked = false;
             CheckBoxIV.IsChecked = false;
-            chooseAvalanche = ModeChooseAvalanche.cipherText;
         }
+
+        private void ChooseMethodPCBC(object sender, RoutedEventArgs e)
+        {
+            chooseMethod = ModeChooseMethod.PCBC;
+            CheckBoxEDE.IsChecked = false;
+        }
+
+        private void ChooseMethodEDE(object sender, RoutedEventArgs e)
+        {
+            chooseMethod = ModeChooseMethod.EDE;
+            CheckBoxPCBC.IsChecked = false;
+        }
+
+        private void ChooseZerosPadding(object sender, RoutedEventArgs e)
+        {
+            choosePadding = ModeChoosePadding.zeros;
+            CheckBoxOnesPadding.IsChecked = false;
+            CheckBoxRandomPadding.IsChecked = false;
+
+            program.modePadding = choosePadding;
+        }
+
+        private void ChooseOnesPadding(object sender, RoutedEventArgs e)
+        {
+            choosePadding = ModeChoosePadding.ones;
+            CheckBoxZerosPadding.IsChecked = false;
+            CheckBoxRandomPadding.IsChecked = false;
+
+            program.modePadding = choosePadding;
+        }
+
+        private void ChooseRandomPadding(object sender, RoutedEventArgs e)
+        {
+            choosePadding = ModeChoosePadding.random;
+            CheckBoxZerosPadding.IsChecked = false;
+            CheckBoxOnesPadding.IsChecked = false;
+
+            program.modePadding = choosePadding;
+        }
+
 
         private void ButtonOpenFile_Click(object sender, RoutedEventArgs e)
         {
@@ -320,7 +365,24 @@ namespace PSZI_lr1_v2
 
         private void ButtonRandomGenerate_Click(object sender, RoutedEventArgs e)
         {
+            Button button = sender as Button;
+            StackPanel stackPanel = (button?.Parent) as StackPanel;
 
+            string name = stackPanel.Name;
+
+            int length = 0;
+
+            if (name.Contains("Key1") || name.Contains("Key2") || name.Contains("Key3"))
+                length = program.lengthKey; // биты
+            else if (name.Contains("IV"))
+                length = program.lengthBlock;
+
+            BitArray randomBitArray = program.GenerateRandomBitArray(length);
+
+            // Запись в переменную
+            setValueToProgramBitArray(name, randomBitArray);
+
+            writeToWindow((stackPanel.Parent as StackPanel).Children.OfType<StackPanel>().Last());
         }
 
         private void TextBoxCC16_GotFocus(object sender, RoutedEventArgs e)
@@ -350,16 +412,6 @@ namespace PSZI_lr1_v2
             writeToWindow(textBox?.Parent as StackPanel);
             // Вывод на экран
             textBox.TextChanged -= TextBoxCC16_TextChanged;
-        }
-
-        private void ChoosePCBC(object sender, RoutedEventArgs e)
-        {
-
-        }
-
-        private void ChooseEDE(object sender, RoutedEventArgs e)
-        {
-
         }
     }
 }
