@@ -70,6 +70,7 @@
     <Compile Include="EncryptByDES.cs" />
     <Compile Include="EncryptByFeistelNetwork.cs" />
     <Compile Include="GeneratorKey.cs" />
+    <Compile Include="GeneratorRandomKey.cs" />
     <Compile Include="LFSR.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
