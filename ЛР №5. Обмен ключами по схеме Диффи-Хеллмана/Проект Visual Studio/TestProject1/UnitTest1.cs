@@ -12,24 +12,70 @@ namespace TestProject1
         }
 
         [Test]
-        public void UlongToByte() 
+        public void UlongToByte()
         {
             ulong number = 123456789;
-            byte[] expectedArray = new byte[] { 0x7, 0x5b, 0xcd, 0x15 }; // 0x15, 0xcd, 0x5b, 0x7
+            byte[] expectedArray = new byte[] { 0x07, 0x5b, 0xcd, 0x15 };
 
             byte[] actualArray = EncoderClass.UlongToByteArray(number);
 
-            CollectionAssert.AreEquivalent(expectedArray, actualArray);
+            CollectionAssert.AreEqual(expectedArray, actualArray);
         }
 
         [Test]
         public void ByteToULong()
         {
-            byte[] array = new byte[] { 0x7, 0x5b, 0xcd, 0x15 };
+            byte[] array = new byte[] { 0x07, 0x5b, 0xcd, 0x15 };
 
             ulong expectedNumber = 123456789;
 
             ulong actualNumber = EncoderClass.ByteArrayToUlong(array);
+
+            Assert.AreEqual(expectedNumber, actualNumber);
+        }
+
+
+        [Test]
+        public void UlongToBitArray()
+        {
+            ulong number = 123456789;
+
+            bool[] expectedArray = new bool[] { true, false, true, false, true, false, false, false,
+                                                true, false, true, true, false, false, true, true,
+                                                true, true, false, true, true, false, true, false,
+                                                true, true, true, false, false, false, false, false}; 
+
+
+            BitArray actualArray = EncoderClass.UlongToBitArray(number);
+
+            CollectionAssert.AreEqual(new BitArray(expectedArray), actualArray);
+        }
+
+        [Test]
+        public void BitArrayToULong()
+        {
+            bool[] array = new bool[] { true, false, true, false, true, false, false, false,
+                                                   true, false, true, true, false, false, true, true,
+                                                   true, true, false, true, true, false, true, false,
+                                                   true, true, true, false, false, false, false, false};
+
+            ulong expectedNumber = 123456789;
+
+            ulong actualNumber = EncoderClass.BitArrayToUlong(new BitArray(array));
+
+            Assert.AreEqual(expectedNumber, actualNumber);
+        }
+
+
+
+        [Test]
+        public void BitArray4ToULong()
+        {
+            bool[] array = new bool[] { true, true, true, true };
+
+            ulong expectedNumber = 15;
+
+            ulong actualNumber = EncoderClass.BitArrayToUlong(new BitArray(array));
 
             Assert.AreEqual(expectedNumber, actualNumber);
         }

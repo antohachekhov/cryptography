@@ -32,34 +32,45 @@ namespace PSZI_lr1_v2
             program.t = Convert.ToInt32(TextBoxT.Text);
             program.n = Convert.ToInt32(TextBoxN.Text);
 
-            TextBoxPN.Text = Convert.ToString(EncoderClass.ByteArrayToUlong(EncoderClass.BitArrayToByteArray(program.generateSimpleNumberByN()))); // простое число
-            TextBoxIN.Text = ""; // количество итераций
-            TextBoxTime.Text = ""; // время
+            SimpleValueWithNumItersAndTime result = program.generateSimpleNumberByN();
+
+            TextBoxPN.Text = Convert.ToString(EncoderClass.BitArrayToUlong(result.trueSimpleValue)); // простое число
+            TextBoxIN.Text = Convert.ToString(result.numIters); // количество итераций
+            TextBoxTime.Text = Convert.ToString(result.time) + " мс"; // время
         }
 
         // вывод простых чисел из диапазона
         private void ButtonShowPN_Click(object sender, RoutedEventArgs e)
-        {
-            ulong min = Convert.ToUInt64(TextBoxMin);
-            ulong max = Convert.ToUInt64(TextBoxMax);
-            int j = 0;
+        { 
 
-
-            BitArray smallerNumber = EncoderClass.ByteArrayToBitArray(EncoderClass.UlongToByteArray(min));
-            BitArray largerNumber = EncoderClass.ByteArrayToBitArray(EncoderClass.UlongToByteArray(max));
+            ListBoxPrimeNumbers.Items.Clear();
+            program.t = Convert.ToInt32(TextBoxT.Text);
+            ulong min = Convert.ToUInt64(TextBoxMin.Text);
+            ulong max = Convert.ToUInt64(TextBoxMax.Text);
+  
+            BitArray smallerNumber = EncoderClass.UlongToBitArray(min);
+            BitArray largerNumber = EncoderClass.UlongToBitArray(max);
 
             List<BitArray> simpleNumbers = new List<BitArray>();
 
-            while(simpleNumbers.Count == 0 || simpleNumbers[simpleNumbers.Count - 1] != null)
+            long sumTime = 0;
+
+            while (true)
             {
-                simpleNumbers.Add(program.generateSimpleNumberFromRange(smallerNumber, largerNumber));
+                SimpleValueWithNumItersAndTime result = program.generateSimpleNumberFromRange(smallerNumber, largerNumber);
+
+                if (result.trueSimpleValue == null)
+                    break;
+
+                sumTime += result.time;
+                simpleNumbers.Add(result.trueSimpleValue);
+                smallerNumber = result.trueSimpleValue;
             }
 
-
-            for (int i = 0; i < simpleNumbers.Count; i++)
+            for (int i = 0, j; i < simpleNumbers.Count; i++)
             {
                 j = i + 1;
-                ListBoxPrimeNumbers.Items.Add(j + "\t" + simpleNumbers[i]);
+                ListBoxPrimeNumbers.Items.Add(j + "\t" + EncoderClass.BitArrayToUlong(simpleNumbers[i]));
             }
         }
 

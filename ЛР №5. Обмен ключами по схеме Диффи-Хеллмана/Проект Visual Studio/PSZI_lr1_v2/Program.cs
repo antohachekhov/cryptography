@@ -58,7 +58,7 @@ namespace PSZI_lr1_v2
             return count;
         }
 
-        public static void Add10(ref BitArray bitArray)
+        public static BitArray Add10(BitArray bitArray)
         {
             bool flagAdded = false;
 
@@ -78,9 +78,49 @@ namespace PSZI_lr1_v2
             {
                 bitArray = bitArray.Append(new BitArray(1, true));
             }
+
+            return bitArray;
+        }
+
+        public static BitArray Add1(BitArray bitArray)
+        {
+            bool flagAdded = false;
+
+
+            for (int i = 0; !flagAdded && i < bitArray.Length; i++)
+            {
+
+                bitArray[i] = !bitArray[i];
+                if (bitArray[i] == true)
+                {
+                    flagAdded = true;
+                }
+            }
+
+            // Если идет переход на следующий разряд
+            if (!flagAdded)
+            {
+                bitArray = bitArray.Append(new BitArray(1, true));
+            }
+
+            return bitArray;
         }
     }
 
+
+    public struct SimpleValueWithNumItersAndTime
+    {
+        public BitArray trueSimpleValue;
+        public int numIters;
+        public long time;
+
+        public SimpleValueWithNumItersAndTime(BitArray trueSimpleValue, int numIters, long time) : this()
+        {
+            this.trueSimpleValue = trueSimpleValue;
+            this.numIters = numIters;
+            this.time = time;
+        }
+    }
     public class Program
     {
 
@@ -92,38 +132,43 @@ namespace PSZI_lr1_v2
 
         List<BitArray> simple3_2000Numbers;
 
+        // первообразный корень n
         public int g;
 
+
+
         // Генерирует простое число указанной размерности
-        public BitArray generateSimpleNumberByN()
+        public SimpleValueWithNumItersAndTime generateSimpleNumberByN()
         {
             // Задаем smallerNumber и largerNumber чтобы не писать два раза один и тот же алгоритм в функции
-            BitArray smallerNumber = new BitArray(n - 1, true);
+            BitArray smallerNumber = new BitArray(n);
+            smallerNumber[n-1] = true;
+
             BitArray largerNumber = new BitArray(n + 1);
+            largerNumber[n] = true;
 
             return generateSimpleNumberFromRange(smallerNumber, largerNumber);
         }
 
         // Генерирует простое число от нижней границы до верхней, если простого числа нет, то возвращает null
         // Диапазон не включает числа smallerNumber и largerNumber.
-        public BitArray generateSimpleNumberFromRange(BitArray smallerNumber, BitArray largerNumber)
+        public SimpleValueWithNumItersAndTime generateSimpleNumberFromRange(BitArray smallerNumber, BitArray largerNumber)
         {
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
             BitArray trueSimpleValue = null;
 
             BitArray simpleNumber = new BitArray(smallerNumber);
+            ulong simpleNumberULong = EncoderClass.BitArrayToUlong(simpleNumber);
+            ulong largerNumberULong = EncoderClass.BitArrayToUlong(largerNumber);
 
-
-
-
-            for (int i = 0; simpleNumber != largerNumber; i++)
+            simpleNumber = BitArrayFunctions.Add1(simpleNumber);
+            // Делаем число нечетным
+            simpleNumber[0] = true;
+            int i = 0;
+            for (; simpleNumberULong < largerNumberULong; i++, simpleNumber = BitArrayFunctions.Add10(simpleNumber))
             {
-                // Генерация простого числа
-                // Выбор случайного числа p 
-                BitArrayFunctions.Add10(ref simpleNumber);
-
-                // Делаем число нечетным
-                simpleNumber[0] = true;
-
                 // Проверка на делимость
 
                 // Подсчет simple3_2000Numbers
@@ -142,18 +187,21 @@ namespace PSZI_lr1_v2
                             }
                         }
 
-                        if (!flagDivision2) simple3_2000Numbers.Add(EncoderClass.ByteArrayToBitArray(EncoderClass.UlongToByteArray(simpleNumber2ULong)));
+                        if (!flagDivision2) simple3_2000Numbers.Add(EncoderClass.UlongToBitArray(simpleNumber2ULong));
                     }
                 }
 
                 bool flagDivision = true;
-                ulong simpleNumerULong = EncoderClass.ByteArrayToUlong(EncoderClass.BitArrayToByteArray(simpleNumber));
-                Console.WriteLine(simpleNumerULong);
+                simpleNumberULong = EncoderClass.BitArrayToUlong(simpleNumber);
+                Console.WriteLine(simpleNumberULong);
                 for (int j = 0; flagDivision && j < simple3_2000Numbers.Count; j++)
                 {
-                    ulong simple3_2000Number = EncoderClass.ByteArrayToUlong(EncoderClass.BitArrayToByteArray(simple3_2000Numbers[j]));
+                    ulong simple3_2000Number = EncoderClass.BitArrayToUlong(simple3_2000Numbers[j]);
 
-                    if (simpleNumerULong % simple3_2000Number != 0)
+                    if (simpleNumberULong >= simple3_2000Number)
+                        break;
+
+                    if (simpleNumberULong % simple3_2000Number == 0)
                     {
                         flagDivision = false;
                     }
@@ -161,25 +209,103 @@ namespace PSZI_lr1_v2
 
                 if (!flagDivision)
                 {
+                    Console.WriteLine("Число " + simpleNumberULong + "не прошло проверку на деление");
                     continue;
                 }
 
-                bool flagTestMillerRabin = false;
                 // Делаем тесты Рабина-Миллера
-                for (int numTests = 0; numTests < t; numTests++)
-                {
+                bool flagTestMillerRabin = flagTestMillerRabin = testRabinMiller(simpleNumberULong);
 
-                }
 
-                if (!flagTestMillerRabin)
+                if (flagTestMillerRabin)
                 {
+                    
                     trueSimpleValue = new BitArray(simpleNumber);
                     break;
                 }
+                else
+                {
+                    Console.WriteLine("Число " + simpleNumberULong + "не прошло проверку на тесте");
+                }
 
             }
+            //останавливаем счётчик
+            stopwatch.Stop();
+            long time = stopwatch.ElapsedMilliseconds;
 
-            return trueSimpleValue;
+            return new SimpleValueWithNumItersAndTime(trueSimpleValue, i, time);
+        }
+
+        public bool testRabinMiller(ulong number)
+        {
+            if(number == 1 || number == 3)
+            {
+                return true;
+            }
+
+            if (number < 2 || number % 2 == 0)
+                return false;
+
+            ulong m = number - 1;
+            int b = 0;
+
+            while (m % 2 == 0)
+            {
+                m /= 2;
+                b += 1;
+            }
+
+            // m = (p - 1) / 2^b
+
+            for (int i = 0; i < t; i++)
+            {
+                // 1 шаг
+                Random rnd = new Random();
+                int a = rnd.Next(2, (int)number - 2);
+
+                // 2 шаг
+                ulong z = (ulong)Math.Pow(a, m) % number;
+
+                // 3 шаг
+                if (z == 1 || z == number - 1)
+                {
+                    continue;
+                }
+
+                int j = 0;
+
+                while (j < b)
+                {
+                    // 4 шаг
+                    if (j > 0 && z == 1)
+                    {
+                        return false;
+                    }
+
+                    // 5 шаг
+                    j++;
+                    if (j < b && z < number - 1)
+                    {
+                        z = (ulong)(Math.Pow(z, 2) % number);
+                        continue;
+                    }
+
+                    if (z == number - 1)
+                    {
+                        return true;
+                    }
+                }
+                
+
+                // 6 шаг
+                if (j == b && z != number - 1)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+
         }
 
     }
