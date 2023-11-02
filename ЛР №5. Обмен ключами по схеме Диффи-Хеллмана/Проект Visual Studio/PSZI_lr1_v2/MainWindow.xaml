@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="LR5" Height="1300">
-    
+        Title="LR5" Height="1500">
+
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
@@ -33,11 +33,11 @@
             <Setter Property="ItemsControl.Margin" Value="10"/>
             <Setter Property="Height" Value="20"/>
         </Style>
-        <Style x:Key="InputTextBoxForFileName" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-            <Setter Property="Width" Value="500"/>
+        <Style x:Key="TextBoxForLargerTexts" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Width" Value="150"/>
         </Style>
         <Style x:Key="TextBoxForTexts" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
-            <Setter Property="Width" Value="400" />
+            <Setter Property="Width" Value="100" />
         </Style>
 
         <Style TargetType="Button">
@@ -55,10 +55,17 @@
             <Setter Property="Height" Value="40"/>
             <Setter Property="MinHeight" Value="40"/>
             <Setter Property="Width" Value="350"/>
+            <Setter Property="Margin" Value="10"/>
         </Style>
 
         <Style x:Key="InputBlock" TargetType="StackPanel">
             <Setter Property="Margin" Value="0,10"/>
+        </Style>
+
+        <Style TargetType="ListBox">
+            <Setter Property="Height" Value="180"/>
+            <Setter Property="Width" Value="350"/>
+            <Setter Property="Margin" Value="0 0 0 10"/>
         </Style>
     </Window.Resources>
 
@@ -74,38 +81,68 @@
                                 <TextBlock Style="{StaticResource Title}">Генерация больших простых чисел</TextBlock>
                                 <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Style="{StaticResource Text}">t</TextBlock>
-                                    <TextBox x:Name="TextBoxT" Width="100"/>
+                                    <TextBox x:Name="TextBoxT" Style="{StaticResource TextBoxForTexts}"/>
                                     <TextBlock Style="{StaticResource Text}">n</TextBlock>
-                                    <TextBox x:Name="TextBoxN" Width="100"/>
+                                    <TextBox x:Name="TextBoxN" Style="{StaticResource TextBoxForTexts}"/>
                                 </StackPanel>
 
-                                <Button x:Name="ButtonGeneratePN" Click="ButtonGeneratePN_Click" Height="30">Сгенерировать простое число</Button>
+                                <Button Style="{StaticResource MaxiButton}" x:Name="ButtonGeneratePN" Click="ButtonGeneratePN_Click">Сгенерировать простое число</Button>
                                 <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Style="{StaticResource Text}">Простое число</TextBlock>
-                                    <TextBox x:Name="TextBoxPN" Width="150"/>
+                                    <TextBox x:Name="TextBoxPN" Style="{StaticResource TextBoxForLargerTexts}"/>
                                     <TextBlock Style="{StaticResource Text}">Количество итераций</TextBlock>
-                                    <TextBox x:Name="TextBoxIN" Width="100" />
+                                    <TextBox x:Name="TextBoxIN"  Style="{StaticResource TextBoxForTexts}" />
                                     <TextBlock Style="{StaticResource Text}">Время</TextBlock>
-                                    <TextBox x:Name="TextBoxTime" Width="100"/>
+                                    <TextBox x:Name="TextBoxTime" Style="{StaticResource TextBoxForTexts}"/>
                                 </StackPanel>
                                 <TextBlock Style="{StaticResource Title}">Введите диапазон</TextBlock>
                                 <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Style="{StaticResource Text}">от</TextBlock>
-                                    <TextBox x:Name="TextBoxMin" Width="100"/>
+                                    <TextBox x:Name="TextBoxMin"  Style="{StaticResource TextBoxForTexts}"/>
                                     <TextBlock Style="{StaticResource Text}">до</TextBlock>
-                                    <TextBox x:Name="TextBoxMax" Width="100"/>
+                                    <TextBox x:Name="TextBoxMax"  Style="{StaticResource TextBoxForTexts}"/>
                                 </StackPanel>
-                                <Button x:Name="ButtonShowPN" Height="30" Margin="0 0 0 10" Click="ButtonShowPN_Click">Вывод простых чисел из диапазона</Button>
-                                <ListBox x:Name="ListBoxPrimeNumbers" Height="180" Width="350" Margin="0 0 0 10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="1" >
+                                        <Button Style="{StaticResource MaxiButton}" x:Name="ButtonShowPN" Click="ButtonShowPN_Click">Вывод простых чисел из диапазона</Button>
+                                        <ListBox x:Name="ListBoxPrimeNumbers" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource Text}">Время</TextBlock>
+                                        <TextBox x:Name="TextBoxTime2"  Style="{StaticResource TextBoxForTexts}"/>
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                         </Border>
                     </Grid>
                     <Grid>
                         <Border BorderThickness="2" BorderBrush="#E667AF">
                             <StackPanel>
+                                <TextBlock Style="{StaticResource Title}">Введите число n</TextBlock>
+                                <TextBox  x:Name="TextBoxInputN"  Style="{StaticResource TextBoxForLargerTexts}"/>
                                 <TextBlock Style="{StaticResource Title}">Поиск первообразных корней</TextBlock>
-                                <Button x:Name="ButtonGetPR" Height="30" Click="ButtonGetPR_Click">Получить первообразные корни</Button>
-                                <ListBox x:Name="ListBoxPrimitiveRoots" Height="180" Width="350" Margin="0 10 0 10"/>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <StackPanel Grid.Column="1" >
+                                        <Button Style="{StaticResource MaxiButton}" x:Name="ButtonGetPR" Click="ButtonGetPR_Click">Вывод первообразных корней</Button>
+                                        <ListBox x:Name="ListBoxPrimitiveRoots" />
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="2" Orientation="Horizontal">
+                                        <TextBlock Style="{StaticResource Text}">Время</TextBlock>
+                                        <TextBox x:Name="TextBoxTime3" Style="{StaticResource TextBoxForTexts}"/>
+                                    </StackPanel>
+                                </Grid>
                             </StackPanel>
                         </Border>
                     </Grid>
@@ -126,27 +163,46 @@
                                         <ColumnDefinition></ColumnDefinition>
                                         <ColumnDefinition></ColumnDefinition>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock HorizontalAlignment="Center" Grid.Column="0" Style="{StaticResource Text}" Text="Абонент А"/>
-                                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Style="{StaticResource Text}" Text="Абонент Б"/>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                        <RowDefinition></RowDefinition>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock HorizontalAlignment="Center" Grid.Column="0" Grid.Row="0" Style="{StaticResource Text}">Абонент А</TextBlock>
+                                    <TextBlock HorizontalAlignment="Center" Grid.Column="1" Grid.Row="0" Style="{StaticResource Text}">Абонент Б</TextBlock>
+                                    <StackPanel Grid.Column="0" Grid.Row="1" Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text}">XA</TextBlock>
+                                        <TextBox x:Name="TextBoxXA" Width="300"/>
+
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="1" Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text}">XB</TextBlock>
+                                        <TextBox x:Name="TextBoxXB" Width="300"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="2" Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text}">YA</TextBlock>
+                                        <TextBox x:Name="TextBoxYA" Width="300"/>
+
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="2" Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                        <TextBlock Style="{StaticResource Text}">YB</TextBlock>
+                                        <TextBox x:Name="TextBoxYB" Width="300"/>
+                                    </StackPanel>
+
+                                    <StackPanel Grid.Column="0" Grid.Row="3" Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        <TextBlock Style="{StaticResource Text}">KA</TextBlock>
+                                        <TextBox x:Name="TextBoxKA" Width="300"/>
+                                    </StackPanel>
+                                    <StackPanel Grid.Column="1" Grid.Row="3" Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
+
+                                        <TextBlock Style="{StaticResource Text}">KB</TextBlock>
+                                        <TextBox x:Name="TextBoxKB" Width="300"/>
+                                    </StackPanel>
+
                                 </Grid>
-                                <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Style="{StaticResource Text}">XA</TextBlock>
-                                    <TextBox x:Name="TextBoxXA" Width="300"/>
-                                    <TextBlock Style="{StaticResource Text}">XB</TextBlock>
-                                    <TextBox x:Name="TextBoxXB" Width="300"/>
-                                </StackPanel>
-                                <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Style="{StaticResource Text}">YA</TextBlock>
-                                    <TextBox x:Name="TextBoxYA" Width="300"/>
-                                    <TextBlock Style="{StaticResource Text}">YB</TextBlock>
-                                    <TextBox x:Name="TextBoxYB" Width="300"/>
-                                </StackPanel>
-                                <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
-                                    <TextBlock Style="{StaticResource Text}">KA</TextBlock>
-                                    <TextBox x:Name="TextBoxKA" Width="300"/>
-                                    <TextBlock Style="{StaticResource Text}">KB</TextBlock>
-                                    <TextBox x:Name="TextBoxKB" Width="300"/>
-                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </Grid>

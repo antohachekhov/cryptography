@@ -41,47 +41,51 @@ namespace PSZI_lr1_v2
 
         // вывод простых чисел из диапазона
         private void ButtonShowPN_Click(object sender, RoutedEventArgs e)
-        { 
+        {
 
             ListBoxPrimeNumbers.Items.Clear();
             program.t = Convert.ToInt32(TextBoxT.Text);
             ulong min = Convert.ToUInt64(TextBoxMin.Text);
             ulong max = Convert.ToUInt64(TextBoxMax.Text);
-  
+
             BitArray smallerNumber = EncoderClass.UlongToBitArray(min);
             BitArray largerNumber = EncoderClass.UlongToBitArray(max);
 
-            List<BitArray> simpleNumbers = new List<BitArray>();
+            ValuesWithTime result = program.generateAllSimpleNumbersFromRange(smallerNumber, largerNumber);
 
-            long sumTime = 0;
+            List<BitArray> simpleNumbers = result.values;
 
-            while (true)
-            {
-                SimpleValueWithNumItersAndTime result = program.generateSimpleNumberFromRange(smallerNumber, largerNumber);
-
-                if (result.trueSimpleValue == null)
-                    break;
-
-                sumTime += result.time;
-                simpleNumbers.Add(result.trueSimpleValue);
-                smallerNumber = result.trueSimpleValue;
-            }
+            long sumTime = result.time;
 
             for (int i = 0, j; i < simpleNumbers.Count; i++)
             {
                 j = i + 1;
                 ListBoxPrimeNumbers.Items.Add(j + "\t" + EncoderClass.BitArrayToUlong(simpleNumbers[i]));
             }
+
+            TextBoxTime2.Text = Convert.ToString(sumTime);
         }
 
         // получить первообразные корни
         private void ButtonGetPR_Click(object sender, RoutedEventArgs e)
         {
-            for (int i = 0; i < 1; i++)
+            ListBoxPrimitiveRoots.Items.Clear();
+            program.t = Convert.ToInt32(TextBoxT.Text);
+            ulong number = Convert.ToUInt64(TextBoxInputN.Text);
+
+            ValuesWithTime result = program.getPrimitiveRoots(number);
+
+            List<BitArray> primitiveNumbers = result.values;
+
+            long sumTime = result.time;
+
+            for (int i = 0; i < primitiveNumbers.Count; i++)
             {
                 int j = i + 1;
-                ListBoxPrimitiveRoots.Items.Add(j + "\t" + "");
+                ListBoxPrimitiveRoots.Items.Add(j + "\t" + EncoderClass.BitArrayToUlong(primitiveNumbers[i]));
             }
+
+            TextBoxTime3.Text = Convert.ToString(sumTime);
         }
 
         // обменять ключи

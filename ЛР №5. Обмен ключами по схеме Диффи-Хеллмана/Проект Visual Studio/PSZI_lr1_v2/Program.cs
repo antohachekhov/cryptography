@@ -121,6 +121,19 @@ namespace PSZI_lr1_v2
             this.time = time;
         }
     }
+
+    public struct ValuesWithTime
+    {
+        public List<BitArray> values;
+        public long time;
+
+        public ValuesWithTime(List<BitArray> trueSimpleValues, long time) : this()
+        {
+            this.values = trueSimpleValues;
+            this.time = time;
+        }
+    }
+
     public class Program
     {
 
@@ -142,7 +155,7 @@ namespace PSZI_lr1_v2
         {
             // Задаем smallerNumber и largerNumber чтобы не писать два раза один и тот же алгоритм в функции
             BitArray smallerNumber = new BitArray(n);
-            smallerNumber[n-1] = true;
+            smallerNumber[n - 1] = true;
 
             BitArray largerNumber = new BitArray(n + 1);
             largerNumber[n] = true;
@@ -214,12 +227,12 @@ namespace PSZI_lr1_v2
                 }
 
                 // Делаем тесты Рабина-Миллера
-                bool flagTestMillerRabin = flagTestMillerRabin = testRabinMiller(simpleNumberULong);
+                bool flagTestMillerRabin = testRabinMiller(simpleNumberULong);
 
 
                 if (flagTestMillerRabin)
                 {
-                    
+
                     trueSimpleValue = new BitArray(simpleNumber);
                     break;
                 }
@@ -238,7 +251,7 @@ namespace PSZI_lr1_v2
 
         public bool testRabinMiller(ulong number)
         {
-            if(number == 1 || number == 3)
+            if (number == 1 || number == 3)
             {
                 return true;
             }
@@ -295,7 +308,7 @@ namespace PSZI_lr1_v2
                         return true;
                     }
                 }
-                
+
 
                 // 6 шаг
                 if (j == b && z != number - 1)
@@ -307,6 +320,112 @@ namespace PSZI_lr1_v2
             return true;
 
         }
+
+
+        public void addSampleFactorAndDecreaseNumber(List<BitArray> sampleFactors, ref ulong numberUlong, ulong sampleNumberUlong)
+        {
+            if (numberUlong % sampleNumberUlong == 0)
+            {
+                sampleFactors.Add(EncoderClass.UlongToBitArray(sampleNumberUlong));
+
+                // Уменьшаем number пока оно не перестанет иметь множитель 2
+                while (numberUlong % sampleNumberUlong == 0)
+                    numberUlong /= sampleNumberUlong;
+            }
+        }
+
+        public List<BitArray> getSampleFactors(ulong numberUlong)
+        {
+            List<BitArray> sampleFactors = new List<BitArray>();
+
+
+            ulong sampleNumberUlong = 2;
+
+            // Убираем четный множитель
+            addSampleFactorAndDecreaseNumber(sampleFactors, ref numberUlong, sampleNumberUlong);
+
+
+            BitArray number = EncoderClass.UlongToBitArray(numberUlong + 1);    // Крайняя граница на 1 больше чем число
+            int maxIters = 1000;
+            BitArray sampleNumber;
+            for (int k = 0; k < maxIters && numberUlong != 1; k++)
+            {
+                sampleNumber = EncoderClass.UlongToBitArray(sampleNumberUlong);
+                // Поиск простого числа < number
+                SimpleValueWithNumItersAndTime result = generateSimpleNumberFromRange(sampleNumber, number);
+
+                sampleNumberUlong = EncoderClass.BitArrayToUlong(result.trueSimpleValue);
+
+                addSampleFactorAndDecreaseNumber(sampleFactors, ref numberUlong, sampleNumberUlong);
+            }
+
+            if (numberUlong != 1)
+            {
+                Console.WriteLine("Число n = " + numberUlong + " не нашло простого делителя");
+            }
+
+            return sampleFactors;
+        }
+
+        public ValuesWithTime getPrimitiveRoots(ulong numberUlong)
+        {
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
+
+            // TODO: подсчет фи(n)
+            // TODO: Если n - простое то мы делаем то то
+            // TODO: иначе то то
+
+
+            // Нахождение простых множителей
+            List<BitArray> sampleFactors = getSampleFactors(numberUlong);   // TODO: сюда надо впихнуть результат функции фи(n)
+
+            int maxCountPrimitiveRoots = 100;
+            List<BitArray> primitiveRoots = new List<BitArray>();
+
+            for (ulong primitiveRootUlong = 2; primitiveRoots.Count != maxCountPrimitiveRoots; primitiveRootUlong++)
+            {
+                bool isPrimitiveRoot = true;
+                foreach (BitArray sampleRoot in sampleFactors)
+                {
+                    ulong sampleRootUlong = EncoderClass.BitArrayToUlong(sampleRoot);
+
+                    if (Math.Pow(primitiveRootUlong, numberUlong /*TODO: Тут должен быть результат фи(n) */ / sampleRootUlong) % numberUlong == 1)
+                        isPrimitiveRoot = false;
+                }
+
+                if (isPrimitiveRoot)
+                    primitiveRoots.Add(EncoderClass.UlongToBitArray(primitiveRootUlong));
+
+            }
+            //останавливаем счётчик
+            stopwatch.Stop();
+            long time = stopwatch.ElapsedMilliseconds;
+            return new ValuesWithTime(primitiveRoots, time);
+        }
+
+        public ValuesWithTime generateAllSimpleNumbersFromRange(BitArray smallerNumber, BitArray largerNumber)
+        {
+            List<BitArray> simpleNumbers = new List<BitArray>();
+
+            long sumTime = 0;
+
+            while (true)
+            {
+                SimpleValueWithNumItersAndTime result = generateSimpleNumberFromRange(smallerNumber, largerNumber);
+
+                if (result.trueSimpleValue == null)
+                    break;
+
+                sumTime += result.time;
+                simpleNumbers.Add(result.trueSimpleValue);
+                smallerNumber = result.trueSimpleValue;
+            }
+
+            return new ValuesWithTime(simpleNumbers, sumTime);
+        }
+
 
     }
 }

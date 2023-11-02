@@ -1,6 +1,7 @@
 using NUnit.Framework;
 using PSZI_lr1_v2;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace TestProject1
 {
@@ -78,6 +79,68 @@ namespace TestProject1
             ulong actualNumber = EncoderClass.BitArrayToUlong(new BitArray(array));
 
             Assert.AreEqual(expectedNumber, actualNumber);
+        }
+
+
+        [Test]
+        public void GetSampleFactorsFrom2()
+        {
+            ulong number = 2;
+
+            List<BitArray> expectedSampleFactors = new List<BitArray>();
+            expectedSampleFactors.Add(EncoderClass.UlongToBitArray(2));
+
+            Program program = new Program();
+            program.t = 5;
+            List<BitArray> actualNumber = program.getSampleFactors(number);
+
+            CollectionAssert.AreEqual(expectedSampleFactors, actualNumber);
+        }
+
+        [Test]
+        public void GetSampleFactorsFrom1024()
+        {
+            ulong number = 1024;
+
+            List<BitArray> expectedSampleFactors = new List<BitArray>();
+            expectedSampleFactors.Add(EncoderClass.UlongToBitArray(2));
+
+            Program program = new Program();
+            program.t = 5;
+            List<BitArray> actualNumber = program.getSampleFactors(number);
+
+            CollectionAssert.AreEqual(expectedSampleFactors, actualNumber);
+        }
+
+        [Test]
+        public void GetSampleFactorsFrom41()
+        {
+            ulong number = 41;
+
+            List<BitArray> expectedSampleFactors = new List<BitArray>();
+            expectedSampleFactors.Add(EncoderClass.UlongToBitArray(41));
+
+            Program program = new Program();
+            program.t = 5;
+            List<BitArray> actualNumber = program.getSampleFactors(number);
+
+            CollectionAssert.AreEqual(expectedSampleFactors, actualNumber);
+        }
+
+        [Test]
+        public void GetSampleFactorsFromNumber()
+        {
+            ulong number = 40;
+
+            List<BitArray> expectedSampleFactors = new List<BitArray>();
+            expectedSampleFactors.Add(EncoderClass.UlongToBitArray(2));
+            expectedSampleFactors.Add(EncoderClass.UlongToBitArray(5));
+
+            Program program = new Program();
+            program.t = 5;
+            List<BitArray> actualNumber = program.getSampleFactors(number);
+
+            CollectionAssert.AreEqual(expectedSampleFactors, actualNumber);
         }
     }
 }
