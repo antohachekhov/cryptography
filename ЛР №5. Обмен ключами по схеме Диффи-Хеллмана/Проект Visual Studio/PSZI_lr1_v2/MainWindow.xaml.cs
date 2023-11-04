@@ -2,10 +2,6 @@
 using System.Windows;
 using Microsoft.Win32;
 using System.Diagnostics;
-using System.IO;
-using System.Collections;
-using System.Windows.Controls;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace PSZI_lr1_v2
@@ -29,14 +25,20 @@ namespace PSZI_lr1_v2
         // сгенерировать простое число
         private void ButtonGeneratePN_Click(object sender, RoutedEventArgs e)
         {
-            program.t = Convert.ToInt32(TextBoxT.Text);
-            program.n = Convert.ToInt32(TextBoxN.Text);
+            int t = Convert.ToInt32(TextBoxT.Text);
+            int n = Convert.ToInt32(TextBoxN1.Text);
 
-            SimpleValueWithNumItersAndTime result = program.generateSimpleNumberByN();
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
+            NumberWithNumIters result = program.generateSimpleNumberByN(n, t);
+            //останавливаем счётчик
+            stopwatch.Stop();
 
-            TextBoxPN.Text = Convert.ToString(EncoderClass.BitArrayToUlong(result.trueSimpleValue)); // простое число
+            long time = stopwatch.ElapsedMilliseconds;
+            TextBoxPN.Text = Convert.ToString(result.number); // простое число
             TextBoxIN.Text = Convert.ToString(result.numIters); // количество итераций
-            TextBoxTime.Text = Convert.ToString(result.time) + " мс"; // время
+            TextBoxTime.Text = Convert.ToString(time) + " мс"; // время
         }
 
         // вывод простых чисел из диапазона
@@ -44,63 +46,100 @@ namespace PSZI_lr1_v2
         {
 
             ListBoxPrimeNumbers.Items.Clear();
-            program.t = Convert.ToInt32(TextBoxT.Text);
+            int t = Convert.ToInt32(TextBoxT.Text);
             ulong min = Convert.ToUInt64(TextBoxMin.Text);
             ulong max = Convert.ToUInt64(TextBoxMax.Text);
 
-            BitArray smallerNumber = EncoderClass.UlongToBitArray(min);
-            BitArray largerNumber = EncoderClass.UlongToBitArray(max);
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
+            List<ulong> result = program.generateAllSimpleNumbersFromRange(min, max, t);
+            //останавливаем счётчик
+            stopwatch.Stop();
 
-            ValuesWithTime result = program.generateAllSimpleNumbersFromRange(smallerNumber, largerNumber);
+            long time = stopwatch.ElapsedMilliseconds;
 
-            List<BitArray> simpleNumbers = result.values;
-
-            long sumTime = result.time;
-
-            for (int i = 0, j; i < simpleNumbers.Count; i++)
+            for (int i = 0, j; i < result.Count; i++)
             {
                 j = i + 1;
-                ListBoxPrimeNumbers.Items.Add(j + "\t" + EncoderClass.BitArrayToUlong(simpleNumbers[i]));
+                ListBoxPrimeNumbers.Items.Add(j + "\t" + result[i]);
             }
 
-            TextBoxTime2.Text = Convert.ToString(sumTime);
+            TextBoxTime2.Text = Convert.ToString(time) + " мс";
         }
 
         // получить первообразные корни
         private void ButtonGetPR_Click(object sender, RoutedEventArgs e)
         {
             ListBoxPrimitiveRoots.Items.Clear();
-            program.t = Convert.ToInt32(TextBoxT.Text);
-            ulong number = Convert.ToUInt64(TextBoxInputN.Text);
+            int t = Convert.ToInt32(TextBoxT.Text);
+            ulong number = Convert.ToUInt64(TextBoxN2.Text);
 
-            ValuesWithTime result = program.getPrimitiveRoots(number);
+            Stopwatch stopwatch = new Stopwatch();
+            //засекаем время начала операции
+            stopwatch.Start();
+            List<ulong> result = program.getPrimitiveRoots(number, t);
+            //останавливаем счётчик
+            stopwatch.Stop();
+            long time = stopwatch.ElapsedMilliseconds;
 
-            List<BitArray> primitiveNumbers = result.values;
+            long sumTime = time;
 
-            long sumTime = result.time;
-
-            for (int i = 0; i < primitiveNumbers.Count; i++)
+            for (int i = 0; i < result.Count; i++)
             {
                 int j = i + 1;
-                ListBoxPrimitiveRoots.Items.Add(j + "\t" + EncoderClass.BitArrayToUlong(primitiveNumbers[i]));
+                ListBoxPrimitiveRoots.Items.Add(j + "\t" + result[i]);
             }
 
-            TextBoxTime3.Text = Convert.ToString(sumTime);
+            TextBoxTime3.Text = Convert.ToString(sumTime) + " мс";
         }
 
         // обменять ключи
-        private void ButtonChangeKeys_Click(object sender, RoutedEventArgs e)
+        private void ButtonSendKeys_Click(object sender, RoutedEventArgs e)
         {
-            program.n = Convert.ToInt32(TextBoxChangeN.Text);
-            program.g = Convert.ToInt32(TextBoxChangeG.Text);
+            ulong n = Convert.ToUInt64(TextBoxN3.Text);
+            ulong g = Convert.ToUInt64(TextBoxG.Text);
 
-            TextBoxXA.Text = "";
-            TextBoxXB.Text = "";
-            TextBoxYA.Text = "";
-            TextBoxYB.Text = "";
-            TextBoxKA.Text = "";
-            TextBoxKB.Text = "";
+            if (g >= n)
+            {
+                MessageBox.Show("g должно быть меньше, чем n");
+                return;
+            }
 
+            ulong xa = Convert.ToUInt64(TextBoxXA.Text);
+            ulong xb = Convert.ToUInt64(TextBoxXB.Text);
+            
+            TextBoxYA.Text = Convert.ToString(program.generateY(g, xa, n));
+            TextBoxYB.Text = Convert.ToString(program.generateY(g, xb, n));
+            TextBlock2Step.Text = "2) Вычисление чисел";
+
+
+            ulong ya = Convert.ToUInt64(TextBoxYA.Text);
+            ulong yb = Convert.ToUInt64(TextBoxYB.Text);
+
+            TextBoxKA.Text = Convert.ToString(program.generateY(ya, xa, n));
+            TextBoxKB.Text = Convert.ToString(program.generateY(yb, xb, n));
+            TextBlock3Step.Text = "3) Вычисление секретного ключа";
+
+        }
+
+        private void ButtonRandomN_Click(object sender, RoutedEventArgs e)
+        {
+            int t = Convert.ToInt32(TextBoxT.Text);
+            ulong n = (ulong)program.random.Next(2, 8 * EncoderClass.byteCountLong);
+            TextBoxN3.Text = Convert.ToString(n);
+        }
+
+        private void ButtonRandomX_Click(object sender, RoutedEventArgs e)
+        {
+            int t = Convert.ToInt32(TextBoxT.Text);
+            int n = Convert.ToInt32(TextBoxN3.Text);
+
+            NumberWithNumIters xa = program.generateSimpleNumberByN(n, t);
+            NumberWithNumIters xb = program.generateSimpleNumberByN(n, t);
+
+            TextBoxXA.Text = Convert.ToString(xa.number);
+            TextBoxXB.Text = Convert.ToString(xb.number);
         }
     }
 }

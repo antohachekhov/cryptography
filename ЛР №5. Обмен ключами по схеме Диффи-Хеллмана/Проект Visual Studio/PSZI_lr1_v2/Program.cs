@@ -38,7 +38,7 @@ namespace PSZI_lr1_v2
                     bools[j] = current.Get((i + 1) * 8 - j - 1);
                 }
                 BitArray bitArrayInByte = new BitArray(bools);
-                bitArray = BitArrayFunctions.Append(bitArray, bitArrayInByte);
+                bitArray = Append(bitArray, bitArrayInByte);
             }
             return bitArray;
         }
@@ -58,12 +58,24 @@ namespace PSZI_lr1_v2
             return count;
         }
 
-        public static BitArray Add10(BitArray bitArray)
+        public static BitArray Sum(BitArray bitArray1, BitArray bitArray2)
+        {
+            BitArray newBitArray = new BitArray(bitArray1);
+
+            for (int i = 0; i < bitArray2.Length; i++)
+            {
+                if (bitArray2[i] == true)
+                    newBitArray = Add1ToPos(newBitArray, i);
+            }
+            return newBitArray;
+        }
+
+        public static BitArray Add1ToPos(BitArray bitArray, int pos)
         {
             bool flagAdded = false;
 
 
-            for (int i = 1; !flagAdded && i < bitArray.Length; i++)
+            for (int i = pos; !flagAdded && i < bitArray.Length; i++)
             {
 
                 bitArray[i] = !bitArray[i];
@@ -76,83 +88,147 @@ namespace PSZI_lr1_v2
             // Если идет переход на следующий разряд
             if (!flagAdded)
             {
-                bitArray = bitArray.Append(new BitArray(1, true));
+                int dopLength = pos - bitArray.Length > 0 ? pos - bitArray.Length + 1 : 1;
+
+                BitArray dopBitArray = new BitArray(dopLength);
+                dopBitArray[dopLength - 1] = true;
+                bitArray = bitArray.Append(dopBitArray);
             }
 
             return bitArray;
         }
 
-        public static BitArray Add1(BitArray bitArray)
+
+        public static BitArray GetBitArrayWithLengthFromBitArray(BitArray bitArray, int maxLength)
         {
-            bool flagAdded = false;
-
-
-            for (int i = 0; !flagAdded && i < bitArray.Length; i++)
+            BitArray returned = new BitArray(maxLength);
+            for (int i = 0; i < maxLength && i < bitArray.Length; i++)
             {
+                returned[i] = bitArray[i];
+            }
 
-                bitArray[i] = !bitArray[i];
-                if (bitArray[i] == true)
+            return returned;
+        }
+
+        public static BitArray GenerateRandomBitArray(Random random, BitArray startBitArray, BitArray endBitArray)
+        {
+            byte[] randomBytes = new byte[EncoderClass.byteCountLong];
+
+            random.NextBytes(randomBytes);
+
+            BitArray randomBits = GetBitArrayWithLengthFromBitArray(EncoderClass.ByteArrayToBitArray(randomBytes), endBitArray.Length);
+            return randomBits;
+        }
+
+        public static BitArray Mult(BitArray bitArray1, BitArray bitArray2)
+        {
+            BitArray newBitArray = new BitArray(0);
+
+            for (int i = 0; i < bitArray1.Length; i++)
+            {
+                if(bitArray1[i] == true)
                 {
-                    flagAdded = true;
+                    BitArray zeroBitArray = new BitArray(i);
+                    newBitArray = Sum(newBitArray, Append(zeroBitArray, bitArray2));
                 }
             }
+            return newBitArray;
+        }
 
-            // Если идет переход на следующий разряд
-            if (!flagAdded)
+        public static BitArray Pow(BitArray bitArray, ulong pow)
+        {
+            BitArray newBitArray = new BitArray(1, true);
+
+            for (ulong i = 0; i < pow; i++)
             {
-                bitArray = bitArray.Append(new BitArray(1, true));
+                newBitArray = Mult(newBitArray, bitArray);
             }
 
-            return bitArray;
+            return newBitArray;
         }
+
     }
 
 
-    public struct SimpleValueWithNumItersAndTime
+    public struct NumberWithNumIters
     {
-        public BitArray trueSimpleValue;
-        public int numIters;
-        public long time;
+        public ulong number;
+        public ulong numIters;
 
-        public SimpleValueWithNumItersAndTime(BitArray trueSimpleValue, int numIters, long time) : this()
+        public NumberWithNumIters(ulong number, ulong numIters) : this()
         {
-            this.trueSimpleValue = trueSimpleValue;
+            this.number = number;
             this.numIters = numIters;
-            this.time = time;
         }
     }
 
-    public struct ValuesWithTime
+    public struct FactorWithPow
     {
-        public List<BitArray> values;
-        public long time;
+        public ulong number;
+        public ulong pow;
 
-        public ValuesWithTime(List<BitArray> trueSimpleValues, long time) : this()
+        public FactorWithPow(ulong number, ulong pow) : this()
         {
-            this.values = trueSimpleValues;
-            this.time = time;
+            this.number = number;
+            this.pow = pow;
         }
     }
 
     public class Program
     {
+        List<ulong> simple3_2000Numbers;
 
-        // Количество бит в числе
-        public int n;
+        public Random random = new Random();
 
-        // Количество проверок в тесте Рабина-Миллера
-        public int t;
+        public bool checkNumberIsSimple(ulong number, int t)
+        {
+            // Проверка на делимость
+            // Подсчет simple3_2000Numbers
+            if (simple3_2000Numbers == null)
+            {
+                simple3_2000Numbers = new List<ulong>();
+                for (ulong simpleNumber = 2; simpleNumber < 2000; simpleNumber++)
+                {
+                    bool flagDivision = false;
+                    for (ulong divNumber = 2; divNumber < simpleNumber; divNumber++)
+                    {
+                        if (simpleNumber % divNumber == 0 && simpleNumber != divNumber)
+                        {
+                            flagDivision = true;
+                            break;
+                        }
+                    }
 
-        List<BitArray> simple3_2000Numbers;
+                    if (!flagDivision) simple3_2000Numbers.Add(simpleNumber);
+                }
+            }
 
-        // первообразный корень n
-        public int g;
+            for (int j = 0; j < simple3_2000Numbers.Count && simple3_2000Numbers[j] < number; j++)
+            {
+                if (number % simple3_2000Numbers[j] == 0)
+                {
+                    Console.WriteLine("Число " + number + "не прошло проверку на деление");
+                    return false;
+                }
+            }
+
+            // Делаем тесты Рабина-Миллера
+            bool flagTestMillerRabin = testRabinMiller(number, t);
 
 
+            if (!flagTestMillerRabin)
+            {
+                Console.WriteLine("Число " + number + "не прошло проверку на тесте");
+                return false;
+            }
+
+            return true;
+        }
 
         // Генерирует простое число указанной размерности
-        public SimpleValueWithNumItersAndTime generateSimpleNumberByN()
+        public NumberWithNumIters generateSimpleNumberByN(int n, int t)
         {
+
             // Задаем smallerNumber и largerNumber чтобы не писать два раза один и тот же алгоритм в функции
             BitArray smallerNumber = new BitArray(n);
             smallerNumber[n - 1] = true;
@@ -160,96 +236,53 @@ namespace PSZI_lr1_v2
             BitArray largerNumber = new BitArray(n + 1);
             largerNumber[n] = true;
 
-            return generateSimpleNumberFromRange(smallerNumber, largerNumber);
+            ulong randomNumber;
+
+            byte[] randomBytes = new byte[EncoderClass.byteCountLong];
+
+            ulong numIters = 0;
+            for (; ; numIters++)
+            {
+                random.NextBytes(randomBytes);
+
+                BitArray randomBits = BitArrayFunctions.GenerateRandomBitArray(random, smallerNumber, largerNumber);
+                randomBits[0] = true;
+                randomBits[n - 1] = true;
+                randomNumber = EncoderClass.BitArrayToUlong(randomBits);
+
+                if (checkNumberIsSimple(randomNumber, t))
+                    break;
+            }
+
+            return new NumberWithNumIters(randomNumber, numIters);
         }
 
         // Генерирует простое число от нижней границы до верхней, если простого числа нет, то возвращает null
         // Диапазон не включает числа smallerNumber и largerNumber.
-        public SimpleValueWithNumItersAndTime generateSimpleNumberFromRange(BitArray smallerNumber, BitArray largerNumber)
+        public NumberWithNumIters generateSimpleNumberFromRange(ulong smallerNumber, ulong largerNumber, int t)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            //засекаем время начала операции
-            stopwatch.Start();
-            BitArray trueSimpleValue = null;
+            ulong trueSimpleNumber = 0;
+            ulong simpleNumber = smallerNumber + 1; // Границы не входят в диапазон
 
-            BitArray simpleNumber = new BitArray(smallerNumber);
-            ulong simpleNumberULong = EncoderClass.BitArrayToUlong(simpleNumber);
-            ulong largerNumberULong = EncoderClass.BitArrayToUlong(largerNumber);
-
-            simpleNumber = BitArrayFunctions.Add1(simpleNumber);
             // Делаем число нечетным
-            simpleNumber[0] = true;
-            int i = 0;
-            for (; simpleNumberULong < largerNumberULong; i++, simpleNumber = BitArrayFunctions.Add10(simpleNumber))
+            if (simpleNumber % 2 == 0)
+                simpleNumber++;
+
+            ulong numIters = 0;
+            for (; simpleNumber < largerNumber; numIters++, simpleNumber += 2)
             {
-                // Проверка на делимость
-
-                // Подсчет simple3_2000Numbers
-                if (simple3_2000Numbers == null)
+                if (checkNumberIsSimple(simpleNumber, t))
                 {
-                    simple3_2000Numbers = new List<BitArray>();
-                    for (ulong simpleNumber2ULong = 2; simpleNumber2ULong < 2000; simpleNumber2ULong++)
-                    {
-                        bool flagDivision2 = false;
-                        for (ulong divNumber = 2; divNumber < simpleNumber2ULong; divNumber++)
-                        {
-                            if (simpleNumber2ULong % divNumber == 0 && simpleNumber2ULong != divNumber)
-                            {
-                                flagDivision2 = true;
-                                break;
-                            }
-                        }
-
-                        if (!flagDivision2) simple3_2000Numbers.Add(EncoderClass.UlongToBitArray(simpleNumber2ULong));
-                    }
-                }
-
-                bool flagDivision = true;
-                simpleNumberULong = EncoderClass.BitArrayToUlong(simpleNumber);
-                Console.WriteLine(simpleNumberULong);
-                for (int j = 0; flagDivision && j < simple3_2000Numbers.Count; j++)
-                {
-                    ulong simple3_2000Number = EncoderClass.BitArrayToUlong(simple3_2000Numbers[j]);
-
-                    if (simpleNumberULong >= simple3_2000Number)
-                        break;
-
-                    if (simpleNumberULong % simple3_2000Number == 0)
-                    {
-                        flagDivision = false;
-                    }
-                }
-
-                if (!flagDivision)
-                {
-                    Console.WriteLine("Число " + simpleNumberULong + "не прошло проверку на деление");
-                    continue;
-                }
-
-                // Делаем тесты Рабина-Миллера
-                bool flagTestMillerRabin = testRabinMiller(simpleNumberULong);
-
-
-                if (flagTestMillerRabin)
-                {
-
-                    trueSimpleValue = new BitArray(simpleNumber);
+                    trueSimpleNumber = simpleNumber;
                     break;
-                }
-                else
-                {
-                    Console.WriteLine("Число " + simpleNumberULong + "не прошло проверку на тесте");
                 }
 
             }
-            //останавливаем счётчик
-            stopwatch.Stop();
-            long time = stopwatch.ElapsedMilliseconds;
 
-            return new SimpleValueWithNumItersAndTime(trueSimpleValue, i, time);
+            return new NumberWithNumIters(trueSimpleNumber, numIters);
         }
 
-        public bool testRabinMiller(ulong number)
+        public bool testRabinMiller(ulong number, int t)
         {
             if (number == 1 || number == 3)
             {
@@ -274,7 +307,9 @@ namespace PSZI_lr1_v2
             {
                 // 1 шаг
                 Random rnd = new Random();
-                int a = rnd.Next(2, (int)number - 2);
+                BitArray randomBitArray = BitArrayFunctions.GenerateRandomBitArray(random,
+                    EncoderClass.UlongToBitArray(2), EncoderClass.UlongToBitArray(number - 2));
+                ulong a = EncoderClass.BitArrayToUlong(randomBitArray);
 
                 // 2 шаг
                 ulong z = (ulong)Math.Pow(a, m) % number;
@@ -322,110 +357,108 @@ namespace PSZI_lr1_v2
         }
 
 
-        public void addSampleFactorAndDecreaseNumber(List<BitArray> sampleFactors, ref ulong numberUlong, ulong sampleNumberUlong)
+        public void addSampleFactorAndDecreaseNumber(List<FactorWithPow> sampleFactors, ref ulong numberUlong, ulong sampleNumberUlong)
         {
             if (numberUlong % sampleNumberUlong == 0)
             {
-                sampleFactors.Add(EncoderClass.UlongToBitArray(sampleNumberUlong));
-
-                // Уменьшаем number пока оно не перестанет иметь множитель 2
-                while (numberUlong % sampleNumberUlong == 0)
+                // Уменьшаем number пока оно не перестанет иметь множитель
+                ulong pow = 0;
+                for (; numberUlong % sampleNumberUlong == 0; pow++)
                     numberUlong /= sampleNumberUlong;
+
+                sampleFactors.Add(new FactorWithPow(sampleNumberUlong, pow));
             }
         }
 
-        public List<BitArray> getSampleFactors(ulong numberUlong)
+        public List<FactorWithPow> getSampleFactors(ulong number, int t)
         {
-            List<BitArray> sampleFactors = new List<BitArray>();
-
+            List<FactorWithPow> sampleFactorsWithPows = new List<FactorWithPow>();
 
             ulong sampleNumberUlong = 2;
 
             // Убираем четный множитель
-            addSampleFactorAndDecreaseNumber(sampleFactors, ref numberUlong, sampleNumberUlong);
+            addSampleFactorAndDecreaseNumber(sampleFactorsWithPows, ref number, sampleNumberUlong);
 
 
-            BitArray number = EncoderClass.UlongToBitArray(numberUlong + 1);    // Крайняя граница на 1 больше чем число
             int maxIters = 1000;
-            BitArray sampleNumber;
-            for (int k = 0; k < maxIters && numberUlong != 1; k++)
+            for (int k = 0; k < maxIters && number != 1; k++)
             {
-                sampleNumber = EncoderClass.UlongToBitArray(sampleNumberUlong);
                 // Поиск простого числа < number
-                SimpleValueWithNumItersAndTime result = generateSimpleNumberFromRange(sampleNumber, number);
+                NumberWithNumIters result = generateSimpleNumberFromRange(sampleNumberUlong, number + 1, t);
 
-                sampleNumberUlong = EncoderClass.BitArrayToUlong(result.trueSimpleValue);
-
-                addSampleFactorAndDecreaseNumber(sampleFactors, ref numberUlong, sampleNumberUlong);
+                Console.WriteLine(result.number);
+                sampleNumberUlong = result.number;
+                addSampleFactorAndDecreaseNumber(sampleFactorsWithPows, ref number, sampleNumberUlong);
             }
 
-            if (numberUlong != 1)
+            if (number != 1)
             {
-                Console.WriteLine("Число n = " + numberUlong + " не нашло простого делителя");
+                Console.WriteLine("Число n = " + number + " не нашло простого делителя");
             }
 
-            return sampleFactors;
+            return sampleFactorsWithPows;
         }
 
-        public ValuesWithTime getPrimitiveRoots(ulong numberUlong)
+        public List<ulong> getPrimitiveRoots(ulong numberUlong, int t)
         {
-            Stopwatch stopwatch = new Stopwatch();
-            //засекаем время начала операции
-            stopwatch.Start();
+            List<FactorWithPow> sampleFactorsWithPowsFromN = getSampleFactors(numberUlong, t);
 
-            // TODO: подсчет фи(n)
-            // TODO: Если n - простое то мы делаем то то
-            // TODO: иначе то то
-
+            ulong phi = 1;
+            foreach (FactorWithPow sampleFactorWithPow in sampleFactorsWithPowsFromN)
+            {
+                phi *= (sampleFactorWithPow.number - 1) * (ulong)Math.Pow(sampleFactorWithPow.number, sampleFactorWithPow.pow - 1);
+            }
 
             // Нахождение простых множителей
-            List<BitArray> sampleFactors = getSampleFactors(numberUlong);   // TODO: сюда надо впихнуть результат функции фи(n)
+            List<FactorWithPow> sampleFactorsWithPowsFromPhi = getSampleFactors(phi, t);
 
             int maxCountPrimitiveRoots = 100;
-            List<BitArray> primitiveRoots = new List<BitArray>();
+            List<ulong> primitiveRoots = new List<ulong>();
 
             for (ulong primitiveRootUlong = 2; primitiveRoots.Count != maxCountPrimitiveRoots; primitiveRootUlong++)
             {
                 bool isPrimitiveRoot = true;
-                foreach (BitArray sampleRoot in sampleFactors)
+                foreach (FactorWithPow sampleRoot in sampleFactorsWithPowsFromPhi)
                 {
-                    ulong sampleRootUlong = EncoderClass.BitArrayToUlong(sampleRoot);
-
-                    if (Math.Pow(primitiveRootUlong, numberUlong /*TODO: Тут должен быть результат фи(n) */ / sampleRootUlong) % numberUlong == 1)
+                    if (Math.Pow(primitiveRootUlong, phi / sampleRoot.number) % numberUlong == 1)
                         isPrimitiveRoot = false;
                 }
 
                 if (isPrimitiveRoot)
-                    primitiveRoots.Add(EncoderClass.UlongToBitArray(primitiveRootUlong));
-
+                    primitiveRoots.Add(primitiveRootUlong);
             }
-            //останавливаем счётчик
-            stopwatch.Stop();
-            long time = stopwatch.ElapsedMilliseconds;
-            return new ValuesWithTime(primitiveRoots, time);
+
+            return primitiveRoots;
         }
 
-        public ValuesWithTime generateAllSimpleNumbersFromRange(BitArray smallerNumber, BitArray largerNumber)
+        public List<ulong> generateAllSimpleNumbersFromRange(ulong smallerNumber, ulong largerNumber, int t)
         {
-            List<BitArray> simpleNumbers = new List<BitArray>();
-
-            long sumTime = 0;
+            List<ulong> simpleNumbers = new List<ulong>();
 
             while (true)
             {
-                SimpleValueWithNumItersAndTime result = generateSimpleNumberFromRange(smallerNumber, largerNumber);
+                NumberWithNumIters result = generateSimpleNumberFromRange(smallerNumber, largerNumber, t);
 
-                if (result.trueSimpleValue == null)
+                if (result.number == 0)
                     break;
 
-                sumTime += result.time;
-                simpleNumbers.Add(result.trueSimpleValue);
-                smallerNumber = result.trueSimpleValue;
+                simpleNumbers.Add(result.number);
+                smallerNumber = result.number;
             }
 
-            return new ValuesWithTime(simpleNumbers, sumTime);
+            return simpleNumbers;
         }
 
+        public ulong generateY(ulong g, ulong xa, ulong n)
+        {
+            BitArray powBits = BitArrayFunctions.Pow(EncoderClass.UlongToBitArray(g), xa);
 
+
+            // Я ЗАЕБАЛАСЬ
+            // Крч тут идет переполнение, т.к. g^большое простое число = точно не больщое число, а сверх большое число
+            // Мне было лень писать деление и разность, но похоже тут не обойтись
+            // И еще надо подумать как вывести на экран, похоже цифрами(
+            return EncoderClass.BitArrayToUlong(powBits) % n;
+        }
     }
 }
