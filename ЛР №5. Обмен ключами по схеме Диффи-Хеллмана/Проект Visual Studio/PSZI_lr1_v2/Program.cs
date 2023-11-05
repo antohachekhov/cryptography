@@ -3,7 +3,7 @@ using System.IO;
 using System.Collections.Generic;
 using System.Collections;
 using System.Diagnostics;
-
+using System.Numerics;
 
 namespace PSZI_lr1_v2
 {
@@ -98,6 +98,35 @@ namespace PSZI_lr1_v2
             return bitArray;
         }
 
+        public static BitArray Remove1FromPose(BitArray bitArray, int pos)
+        {
+            if (bitArray[pos])
+            {
+                bitArray[pos] = false;
+            }
+            else
+            {
+                bool oneFounded = false;
+                int posOne;
+                for (posOne = pos; !oneFounded && posOne < bitArray.Length; posOne++)
+                {
+                    if (bitArray[posOne])
+                        oneFounded = true;
+                }
+                if (oneFounded)
+                {
+                    for (int i = pos; i < posOne; i++)
+                        bitArray[i] = !bitArray[i];
+                }
+                else
+                {
+                    Console.WriteLine("Error");
+                }
+            }
+
+            return bitArray;
+        }
+
 
         public static BitArray GetBitArrayWithLengthFromBitArray(BitArray bitArray, int maxLength)
         {
@@ -135,11 +164,11 @@ namespace PSZI_lr1_v2
             return newBitArray;
         }
 
-        public static BitArray Pow(BitArray bitArray, ulong pow)
+        public static BitArray Pow(BitArray bitArray, BigInteger pow)
         {
             BitArray newBitArray = new BitArray(1, true);
 
-            for (ulong i = 0; i < pow; i++)
+            for (BigInteger i = 0; i < pow; i++)// TODO: сделать через двоичную степень
             {
                 newBitArray = Mult(newBitArray, bitArray);
             }
@@ -147,15 +176,104 @@ namespace PSZI_lr1_v2
             return newBitArray;
         }
 
-    }
+        public static BitArray Diff(BitArray bitArray1, BitArray bitArray2)
+        {
+            BitArray newBitArray = new BitArray(bitArray1.Length);
+            for (int i = 0; i < bitArray1.Length; i++)
+            {
+                if (i < bitArray2.Length)
+                {
+                    if (bitArray1[i])
+                    {
+                        newBitArray[i] = !bitArray2[i];
+                    }
+                    else
+                    {
+                        if (bitArray2[i])
+                        {
+                            bitArray1 = Remove1FromPose(bitArray1, i);
+                            newBitArray[i] = true;
+                        }
+                    }
+                }
+                else
+                {
+                    newBitArray[i] = bitArray1[i];
+                }
+            }
 
+            bool oneFounded = false;
+            int j;
+            for (j = newBitArray.Length - 1; j >= 0; j--)
+            {
+                if (newBitArray[j])
+                    break;
+            }
+
+            if (j != newBitArray.Length - 1)
+            {
+                BitArray copiedBitArray = new BitArray(j + 1);
+                for (int k = 0; k < j + 1; k++)
+                    copiedBitArray[k] = newBitArray[k];
+                newBitArray = copiedBitArray;
+            }
+
+            return newBitArray;
+        }
+
+
+        public static BitArray Div(BitArray bitArray1, BitArray bitArray2)
+        {
+            BitArray newBitArray = new BitArray(1);
+
+
+            return newBitArray;
+        }
+
+        public static bool Less(BitArray bitArray1, BitArray bitArray2)
+        {
+            bool isLess = false;
+            bool isLengthLess = bitArray1.Length < bitArray2.Length;    
+
+            BitArray largerBitArray = isLengthLess ? bitArray2 : bitArray1;
+            BitArray smallerBitArray = isLengthLess ? bitArray1 : bitArray2;
+            int i = largerBitArray.Length - 1;
+            for (; i >= smallerBitArray.Length; i--)
+            {
+                if(largerBitArray[i] && isLengthLess)
+                {
+                    return true;
+                }
+            }
+
+            for (; i >= 0 && bitArray1[i] == bitArray2[i]; i--);
+
+            if (i != -1 && bitArray2[i] == true)
+                return true;
+
+            return isLess;
+        }
+
+
+        public static BitArray Mod(BitArray bitArray1, BitArray bitArray2)
+        {
+            BitArray newBitArray = new BitArray(1, true);
+
+            //for (ulong i = 0; i < pow; i++)
+            {
+           //     newBitArray = Mult(newBitArray, bitArray);
+            }
+
+            return newBitArray;
+        }
+    }
 
     public struct NumberWithNumIters
     {
-        public ulong number;
+        public BigInteger number;
         public ulong numIters;
 
-        public NumberWithNumIters(ulong number, ulong numIters) : this()
+        public NumberWithNumIters(BigInteger number, ulong numIters) : this()
         {
             this.number = number;
             this.numIters = numIters;
@@ -164,10 +282,10 @@ namespace PSZI_lr1_v2
 
     public struct FactorWithPow
     {
-        public ulong number;
-        public ulong pow;
+        public BigInteger number;
+        public int pow;
 
-        public FactorWithPow(ulong number, ulong pow) : this()
+        public FactorWithPow(BigInteger number, int pow) : this()
         {
             this.number = number;
             this.pow = pow;
@@ -180,7 +298,7 @@ namespace PSZI_lr1_v2
 
         public Random random = new Random();
 
-        public bool checkNumberIsSimple(ulong number, int t)
+        public bool checkNumberIsSimple(BigInteger numberBitArray, int t)
         {
             // Проверка на делимость
             // Подсчет simple3_2000Numbers
@@ -203,22 +321,27 @@ namespace PSZI_lr1_v2
                 }
             }
 
-            for (int j = 0; j < simple3_2000Numbers.Count && simple3_2000Numbers[j] < number; j++)
+            for (int j = 0; j < simple3_2000Numbers.Count; j++)
             {
-                if (number % simple3_2000Numbers[j] == 0)
+                BigInteger simple3_2000NumberBigInteger = new BigInteger(simple3_2000Numbers[j]);
+
+                if (simple3_2000NumberBigInteger >= numberBitArray)
+                    break;
+
+                if (numberBitArray % simple3_2000NumberBigInteger == 0)
                 {
-                    Console.WriteLine("Число " + number + "не прошло проверку на деление");
+                    Console.WriteLine("Число " + numberBitArray + "не прошло проверку на деление");
                     return false;
                 }
             }
 
             // Делаем тесты Рабина-Миллера
-            bool flagTestMillerRabin = testRabinMiller(number, t);
+            bool flagTestMillerRabin = testRabinMiller(numberBitArray, t);
 
 
             if (!flagTestMillerRabin)
             {
-                Console.WriteLine("Число " + number + "не прошло проверку на тесте");
+                Console.WriteLine("Число " + numberBitArray + "не прошло проверку на тесте");
                 return false;
             }
 
@@ -233,13 +356,10 @@ namespace PSZI_lr1_v2
             BitArray smallerNumber = new BitArray(n);
             smallerNumber[n - 1] = true;
 
-            BitArray largerNumber = new BitArray(n + 1);
-            largerNumber[n] = true;
-
-            ulong randomNumber;
+            BitArray largerNumber = new BitArray(n, true);
 
             byte[] randomBytes = new byte[EncoderClass.byteCountLong];
-
+            BigInteger randomNumber;
             ulong numIters = 0;
             for (; ; numIters++)
             {
@@ -248,7 +368,7 @@ namespace PSZI_lr1_v2
                 BitArray randomBits = BitArrayFunctions.GenerateRandomBitArray(random, smallerNumber, largerNumber);
                 randomBits[0] = true;
                 randomBits[n - 1] = true;
-                randomNumber = EncoderClass.BitArrayToUlong(randomBits);
+                randomNumber = EncoderClass.BitArrayToBigInteger(randomBits);
 
                 if (checkNumberIsSimple(randomNumber, t))
                     break;
@@ -259,17 +379,18 @@ namespace PSZI_lr1_v2
 
         // Генерирует простое число от нижней границы до верхней, если простого числа нет, то возвращает null
         // Диапазон не включает числа smallerNumber и largerNumber.
-        public NumberWithNumIters generateSimpleNumberFromRange(ulong smallerNumber, ulong largerNumber, int t)
+        public NumberWithNumIters generateSimpleNumberFromRange(BigInteger smallerNumber, BigInteger largerNumber, int t)
         {
-            ulong trueSimpleNumber = 0;
-            ulong simpleNumber = smallerNumber + 1; // Границы не входят в диапазон
+            BigInteger trueSimpleNumber = 0;
+            BigInteger simpleNumber = smallerNumber + 1; // Границы не входят в диапазон
 
             // Делаем число нечетным
             if (simpleNumber % 2 == 0)
                 simpleNumber++;
 
             ulong numIters = 0;
-            for (; simpleNumber < largerNumber; numIters++, simpleNumber += 2)
+            for (; simpleNumber < largerNumber ;
+                numIters++, simpleNumber += 2)
             {
                 if (checkNumberIsSimple(simpleNumber, t))
                 {
@@ -282,17 +403,15 @@ namespace PSZI_lr1_v2
             return new NumberWithNumIters(trueSimpleNumber, numIters);
         }
 
-        public bool testRabinMiller(ulong number, int t)
+        public bool testRabinMiller(BigInteger number, int t)
         {
-            if (number == 1 || number == 3)
-            {
+            if(number != 0 || number != 1 || number != 2 || number != 3)  // Если число равно 0 || 1 || 2 || 3
                 return true;
-            }
 
-            if (number < 2 || number % 2 == 0)
+            if (number % 2 == 0)
                 return false;
 
-            ulong m = number - 1;
+            BigInteger m = number - 1;
             int b = 0;
 
             while (m % 2 == 0)
@@ -303,16 +422,18 @@ namespace PSZI_lr1_v2
 
             // m = (p - 1) / 2^b
 
+            BitArray bitArrayFrom2 = new BitArray(new bool[2] {false, true});
             for (int i = 0; i < t; i++)
             {
                 // 1 шаг
                 Random rnd = new Random();
-                BitArray randomBitArray = BitArrayFunctions.GenerateRandomBitArray(random,
-                    EncoderClass.UlongToBitArray(2), EncoderClass.UlongToBitArray(number - 2));
-                ulong a = EncoderClass.BitArrayToUlong(randomBitArray);
+
+               
+                BitArray a = BitArrayFunctions.GenerateRandomBitArray(random,
+                    bitArrayFrom2, EncoderClass.BigIntegerToBitArray(number - 2));
 
                 // 2 шаг
-                ulong z = (ulong)Math.Pow(a, m) % number;
+                BigInteger z = EncoderClass.BitArrayToBigInteger(BitArrayFunctions.Pow(a, m)) % number;
 
                 // 3 шаг
                 if (z == 1 || z == number - 1)
@@ -334,7 +455,7 @@ namespace PSZI_lr1_v2
                     j++;
                     if (j < b && z < number - 1)
                     {
-                        z = (ulong)(Math.Pow(z, 2) % number);
+                        z = BigInteger.Pow(z, 2) % number;
                         continue;
                     }
 
@@ -353,41 +474,46 @@ namespace PSZI_lr1_v2
             }
 
             return true;
-
         }
 
 
-        public void addSampleFactorAndDecreaseNumber(List<FactorWithPow> sampleFactors, ref ulong numberUlong, ulong sampleNumberUlong)
+        public void addSampleFactorAndDecreaseNumber(List<FactorWithPow> sampleFactors,
+            ref BigInteger number, BigInteger sampleNumber)
         {
-            if (numberUlong % sampleNumberUlong == 0)
+            if (number % sampleNumber == 0)
             {
                 // Уменьшаем number пока оно не перестанет иметь множитель
-                ulong pow = 0;
-                for (; numberUlong % sampleNumberUlong == 0; pow++)
-                    numberUlong /= sampleNumberUlong;
+                int pow = 0;
+                for (; number % sampleNumber == 0; pow++)
+                {
+                    number /= sampleNumber;
+                }
 
-                sampleFactors.Add(new FactorWithPow(sampleNumberUlong, pow));
+              sampleFactors.Add(new FactorWithPow(sampleNumber, pow));
             }
         }
 
-        public List<FactorWithPow> getSampleFactors(ulong number, int t)
+        public List<FactorWithPow> getSampleFactors(BigInteger number, int t)
         {
             List<FactorWithPow> sampleFactorsWithPows = new List<FactorWithPow>();
 
-            ulong sampleNumberUlong = 2;
+            BigInteger sampleNumberUlong = 2;
 
             // Убираем четный множитель
             addSampleFactorAndDecreaseNumber(sampleFactorsWithPows, ref number, sampleNumberUlong);
-
 
             int maxIters = 1000;
             for (int k = 0; k < maxIters && number != 1; k++)
             {
                 // Поиск простого числа < number
-                NumberWithNumIters result = generateSimpleNumberFromRange(sampleNumberUlong, number + 1, t);
+                NumberWithNumIters result = generateSimpleNumberFromRange(sampleNumberUlong,
+                   number + 1, t);
 
                 Console.WriteLine(result.number);
                 sampleNumberUlong = result.number;
+
+                if (sampleNumberUlong == 0)
+                    break;
                 addSampleFactorAndDecreaseNumber(sampleFactorsWithPows, ref number, sampleNumberUlong);
             }
 
@@ -399,28 +525,29 @@ namespace PSZI_lr1_v2
             return sampleFactorsWithPows;
         }
 
-        public List<ulong> getPrimitiveRoots(ulong numberUlong, int t)
+        public List<BigInteger> getPrimitiveRoots(BigInteger number, int t)
         {
-            List<FactorWithPow> sampleFactorsWithPowsFromN = getSampleFactors(numberUlong, t);
+            List<FactorWithPow> sampleFactorsWithPowsFromN = getSampleFactors(number, t);
 
-            ulong phi = 1;
+            BigInteger phi = 1;
             foreach (FactorWithPow sampleFactorWithPow in sampleFactorsWithPowsFromN)
             {
-                phi *= (sampleFactorWithPow.number - 1) * (ulong)Math.Pow(sampleFactorWithPow.number, sampleFactorWithPow.pow - 1);
+                phi *= sampleFactorWithPow.number - 1;
+                phi *= BigInteger.Pow(sampleFactorWithPow.number, sampleFactorWithPow.pow - 1);
             }
 
             // Нахождение простых множителей
             List<FactorWithPow> sampleFactorsWithPowsFromPhi = getSampleFactors(phi, t);
 
             int maxCountPrimitiveRoots = 100;
-            List<ulong> primitiveRoots = new List<ulong>();
+            List<BigInteger> primitiveRoots = new List<BigInteger>();
 
-            for (ulong primitiveRootUlong = 2; primitiveRoots.Count != maxCountPrimitiveRoots; primitiveRootUlong++)
+            for (BigInteger primitiveRootUlong = 2; primitiveRoots.Count != maxCountPrimitiveRoots; primitiveRootUlong++)
             {
                 bool isPrimitiveRoot = true;
                 foreach (FactorWithPow sampleRoot in sampleFactorsWithPowsFromPhi)
                 {
-                    if (Math.Pow(primitiveRootUlong, phi / sampleRoot.number) % numberUlong == 1)
+                    if (BigInteger.Pow(primitiveRootUlong, (int)(phi / sampleRoot.number)) % number == 1)
                         isPrimitiveRoot = false;
                 }
 
@@ -428,18 +555,18 @@ namespace PSZI_lr1_v2
                     primitiveRoots.Add(primitiveRootUlong);
             }
 
-            return primitiveRoots;
+             return primitiveRoots;
         }
 
-        public List<ulong> generateAllSimpleNumbersFromRange(ulong smallerNumber, ulong largerNumber, int t)
+        public List<BigInteger> generateAllSimpleNumbersFromRange(BigInteger smallerNumber, BigInteger largerNumber, int t)
         {
-            List<ulong> simpleNumbers = new List<ulong>();
+            List<BigInteger> simpleNumbers = new List<BigInteger>();
 
             while (true)
             {
                 NumberWithNumIters result = generateSimpleNumberFromRange(smallerNumber, largerNumber, t);
 
-                if (result.number == 0)
+               if (result.number == 0)
                     break;
 
                 simpleNumbers.Add(result.number);
@@ -449,16 +576,32 @@ namespace PSZI_lr1_v2
             return simpleNumbers;
         }
 
-        public ulong generateY(ulong g, ulong xa, ulong n)
+        public int generateY(int g, BigInteger xa, int n)
         {
-            BitArray powBits = BitArrayFunctions.Pow(EncoderClass.UlongToBitArray(g), xa);
+            BigInteger powBigInt = g;
 
+            int n1 = n - 1;
+            BigInteger q = xa / n1;
+            int r = (int)(xa % n1);
 
-            // Я ЗАЕБАЛАСЬ
-            // Крч тут идет переполнение, т.к. g^большое простое число = точно не больщое число, а сверх большое число
-            // Мне было лень писать деление и разность, но похоже тут не обойтись
-            // И еще надо подумать как вывести на экран, похоже цифрами(
-            return EncoderClass.BitArrayToUlong(powBits) % n;
+            for (int i = 0; i < r - 1; i++)
+            {
+                powBigInt *= g;
+            }
+
+            
+            return (int)(powBigInt % n);
+        }
+
+        public int generateY2(ulong g, BigInteger xa, int n)
+        {
+            
+
+            BitArray gb = EncoderClass.UlongToBitArray(g);
+
+            BigInteger pow = EncoderClass.BitArrayToBigInteger(BitArrayFunctions.Pow(gb, xa));
+
+            return (int)(pow % n);
         }
     }
 }

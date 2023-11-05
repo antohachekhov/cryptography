@@ -2,11 +2,12 @@
 using System.Collections;
 using System.Text;
 using System.Linq;
+using System.Numerics;
 
 namespace PSZI_lr1_v2
 {
     public class EncoderClass
-    {
+    { 
         public static Encoding enc = Encoding.ASCII;
         public static int byteCountLong = 8;
         public static int byteCountInt = 4;
@@ -178,5 +179,42 @@ namespace PSZI_lr1_v2
             return bits.ReverseAll(); ;
         }
 
+        public static BitArray BigIntegerToBitArray(BigInteger bigInteger)
+        {
+            return ByteArrayToBitArray(BigIntegerToByteArray(bigInteger));
+        }
+
+        private static byte[] BigIntegerToByteArray(BigInteger bigInteger)
+        {
+            byte[] byteArray = bigInteger.ToByteArray();
+
+            Array.Reverse(byteArray); // Обратный переворот младший бит стоит в последней позиции
+
+            // Удаление лишних нулевых элементов
+            int countOfNullBytes = 0;
+            foreach (byte b in byteArray)
+            {
+                if (b == 0x0) countOfNullBytes++;
+                else break;
+            }
+            byte[] byteArrayWithoutNull = new byte[byteArray.Length - countOfNullBytes];
+            Array.Copy(byteArray, countOfNullBytes, byteArrayWithoutNull, 0, byteArray.Length - countOfNullBytes);
+
+            // Младший бит стоит в старшей позиции
+            return byteArrayWithoutNull;
+        }
+
+        public static BigInteger BitArrayToBigInteger(BitArray bitArray)
+        {
+            return ByteArrayToBigInteger(BitArrayToByteArray(bitArray));
+        }
+
+        private static BigInteger ByteArrayToBigInteger(byte[] byteArray)
+        {
+
+            Array.Reverse(byteArray); // Младший бит числа должен находиться в нулевой позиции
+            BigInteger number = new BigInteger(byteArray);
+            return number;
+        }
     }
 }

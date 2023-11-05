@@ -98,9 +98,9 @@
                                 <TextBlock Style="{StaticResource Title}">Введите диапазон</TextBlock>
                                 <StackPanel Style="{StaticResource InputBlock}" Orientation="Horizontal" HorizontalAlignment="Center">
                                     <TextBlock Style="{StaticResource Text}">от</TextBlock>
-                                    <TextBox x:Name="TextBoxMin"  Style="{StaticResource TextBoxForTexts}"/>
+                                    <TextBox x:Name="TextBoxMin"  Style="{StaticResource TextBoxForLargerTexts}"/>
                                     <TextBlock Style="{StaticResource Text}">до</TextBlock>
-                                    <TextBox x:Name="TextBoxMax"  Style="{StaticResource TextBoxForTexts}"/>
+                                    <TextBox x:Name="TextBoxMax"  Style="{StaticResource TextBoxForLargerTexts}"/>
                                 </StackPanel>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
