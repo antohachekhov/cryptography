@@ -55,17 +55,24 @@ namespace PSZI_lr1_v2
             Stopwatch stopwatch = new Stopwatch();
             //засекаем время начала операции
             stopwatch.Start();
-            List<BigInteger> result = program.generateAllSimpleNumbersFromRange(min, max, t);
+            List<BigInteger> simpleNumbers = new List<BigInteger>();
+
+            for (int j = 1; ; j++)
+            {
+                
+                NumberWithNumIters result = program.generateSimpleNumberFromRange(min, max, t);
+
+                if (result.number == 0)
+                    break;
+
+                simpleNumbers.Add(result.number);
+                min = result.number;
+                ListBoxPrimeNumbers.Items.Add(j + "\t" + result.number.ToString());
+            }
             //останавливаем счётчик
             stopwatch.Stop();
 
             long time = stopwatch.ElapsedMilliseconds;
-
-            for (int i = 0, j; i < result.Count; i++)
-            {
-                j = i + 1;
-                ListBoxPrimeNumbers.Items.Add(j + "\t" + result[i].ToString());
-            }
 
             TextBoxTime2.Text = Convert.ToString(time) + " мс";
         }
@@ -127,9 +134,8 @@ namespace PSZI_lr1_v2
 
         private void ButtonRandomN_Click(object sender, RoutedEventArgs e)
         {
-            int t = Convert.ToInt32(TextBoxT.Text);
-           // BitArray n = (BitArray)program.random.Next(2, 8 * EncoderClass.byteCountLong);
-            //TextBoxN3.Text = EncoderClass.BitArrayToString(n);
+            int n = program.random.Next(2, 8 * EncoderClass.byteCountLong);
+            TextBoxN3.Text = n.ToString();
         }
 
         private void ButtonRandomX_Click(object sender, RoutedEventArgs e)
