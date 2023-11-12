@@ -155,7 +155,7 @@ namespace PSZI_lr1_v2
 
             for (int i = 0; i < bitArray1.Length; i++)
             {
-                if(bitArray1[i] == true)
+                if (bitArray1[i] == true)
                 {
                     BitArray zeroBitArray = new BitArray(i);
                     newBitArray = Sum(newBitArray, Append(zeroBitArray, bitArray2));
@@ -233,20 +233,20 @@ namespace PSZI_lr1_v2
         public static bool Less(BitArray bitArray1, BitArray bitArray2)
         {
             bool isLess = false;
-            bool isLengthLess = bitArray1.Length < bitArray2.Length;    
+            bool isLengthLess = bitArray1.Length < bitArray2.Length;
 
             BitArray largerBitArray = isLengthLess ? bitArray2 : bitArray1;
             BitArray smallerBitArray = isLengthLess ? bitArray1 : bitArray2;
             int i = largerBitArray.Length - 1;
             for (; i >= smallerBitArray.Length; i--)
             {
-                if(largerBitArray[i] && isLengthLess)
+                if (largerBitArray[i] && isLengthLess)
                 {
                     return true;
                 }
             }
 
-            for (; i >= 0 && bitArray1[i] == bitArray2[i]; i--);
+            for (; i >= 0 && bitArray1[i] == bitArray2[i]; i--) ;
 
             if (i != -1 && bitArray2[i] == true)
                 return true;
@@ -261,39 +261,24 @@ namespace PSZI_lr1_v2
 
             //for (ulong i = 0; i < pow; i++)
             {
-           //     newBitArray = Mult(newBitArray, bitArray);
+                //     newBitArray = Mult(newBitArray, bitArray);
             }
 
             return newBitArray;
         }
     }
-
-    public struct NumberWithNumIters
+    class Program
     {
-        public BigInteger number;
-        public ulong numIters;
+        public BitArray originalText;
+        public BitArray key;
+        public BitArray cipherKey;
+        public BitArray cipherText;
+        public EncryptByDES encryptorByDES;
+        public int lengthBlock = 64;
+        internal BitArray p;
+        internal BitArray q;
+        internal keys keys;
 
-        public NumberWithNumIters(BigInteger number, ulong numIters) : this()
-        {
-            this.number = number;
-            this.numIters = numIters;
-        }
-    }
-
-    public struct FactorWithPow
-    {
-        public BigInteger number;
-        public int pow;
-
-        public FactorWithPow(BigInteger number, int pow) : this()
-        {
-            this.number = number;
-            this.pow = pow;
-        }
-    }
-
-    public class Program
-    {
         List<ulong> simple3_2000Numbers;
 
         public Random random = new Random();
@@ -348,64 +333,9 @@ namespace PSZI_lr1_v2
             return true;
         }
 
-        // Генерирует простое число указанной размерности
-        public NumberWithNumIters generateSimpleNumberByN(int n, int t)
-        {
-
-            // Задаем smallerNumber и largerNumber чтобы не писать два раза один и тот же алгоритм в функции
-            BitArray smallerNumber = new BitArray(n);
-            smallerNumber[n - 1] = true;
-
-            BitArray largerNumber = new BitArray(n, true);
-
-            byte[] randomBytes = new byte[EncoderClass.byteCountLong];
-            BigInteger randomNumber;
-            ulong numIters = 0;
-            for (; ; numIters++)
-            {
-                random.NextBytes(randomBytes);
-
-                BitArray randomBits = BitArrayFunctions.GenerateRandomBitArray(random, smallerNumber, largerNumber);
-                randomBits[0] = true;
-                randomBits[n - 1] = true;
-                randomNumber = EncoderClass.BitArrayToBigInteger(randomBits);
-
-                if (checkNumberIsSimple(randomNumber, t))
-                    break;
-            }
-
-            return new NumberWithNumIters(randomNumber, numIters);
-        }
-
-        // Генерирует простое число от нижней границы до верхней, если простого числа нет, то возвращает null
-        // Диапазон не включает числа smallerNumber и largerNumber.
-        public NumberWithNumIters generateSimpleNumberFromRange(BigInteger smallerNumber, BigInteger largerNumber, int t)
-        {
-            BigInteger trueSimpleNumber = 0;
-            BigInteger simpleNumber = smallerNumber + 1; // Границы не входят в диапазон
-
-            // Делаем число нечетным
-            if (simpleNumber % 2 == 0)
-                simpleNumber++;
-
-            ulong numIters = 0;
-            for (; simpleNumber < largerNumber ;
-                numIters++, simpleNumber += 2)
-            {
-                if (checkNumberIsSimple(simpleNumber, t))
-                {
-                    trueSimpleNumber = simpleNumber;
-                    break;
-                }
-
-            }
-
-            return new NumberWithNumIters(trueSimpleNumber, numIters);
-        }
-
         public bool testRabinMiller(BigInteger number, int t)
         {
-            if(number != 0 || number != 1 || number != 2 || number != 3)  // Если число равно 0 || 1 || 2 || 3
+            if (number != 0 || number != 1 || number != 2 || number != 3)  // Если число равно 0 || 1 || 2 || 3
                 return true;
 
             if (number % 2 == 0)
@@ -422,13 +352,13 @@ namespace PSZI_lr1_v2
 
             // m = (p - 1) / 2^b
 
-            BitArray bitArrayFrom2 = new BitArray(new bool[2] {false, true});
+            BitArray bitArrayFrom2 = new BitArray(new bool[2] { false, true });
             for (int i = 0; i < t; i++)
             {
                 // 1 шаг
                 Random rnd = new Random();
 
-               
+
                 BitArray a = BitArrayFunctions.GenerateRandomBitArray(random,
                     bitArrayFrom2, EncoderClass.BigIntegerToBitArray(number - 2));
 
@@ -476,131 +406,159 @@ namespace PSZI_lr1_v2
             return true;
         }
 
-
-        public void addSampleFactorAndDecreaseNumber(List<FactorWithPow> sampleFactors,
-            ref BigInteger number, BigInteger sampleNumber)
+        // Генерирует простое число указанной размерности
+        public BigInteger generateSimpleNumberByN(int n, int t)
         {
-            if (number % sampleNumber == 0)
+
+            // Задаем smallerNumber и largerNumber чтобы не писать два раза один и тот же алгоритм в функции
+            BitArray smallerNumber = new BitArray(n);
+            smallerNumber[n - 1] = true;
+
+            BitArray largerNumber = new BitArray(n, true);
+
+            byte[] randomBytes = new byte[EncoderClass.byteCountLong];
+            BigInteger randomNumber;
+            ulong numIters = 0;
+            for (; ; numIters++)
             {
-                // Уменьшаем number пока оно не перестанет иметь множитель
-                int pow = 0;
-                for (; number % sampleNumber == 0; pow++)
-                {
-                    number /= sampleNumber;
-                }
+                random.NextBytes(randomBytes);
 
-              sampleFactors.Add(new FactorWithPow(sampleNumber, pow));
-            }
-        }
+                BitArray randomBits = BitArrayFunctions.GenerateRandomBitArray(random, smallerNumber, largerNumber);
+                randomBits[0] = true;
+                randomBits[n - 1] = true;
+                randomNumber = EncoderClass.BitArrayToBigInteger(randomBits);
 
-        public List<FactorWithPow> getSampleFactors(BigInteger number, int t)
-        {
-            List<FactorWithPow> sampleFactorsWithPows = new List<FactorWithPow>();
-
-            BigInteger sampleNumberUlong = 2;
-
-            // Убираем четный множитель
-            addSampleFactorAndDecreaseNumber(sampleFactorsWithPows, ref number, sampleNumberUlong);
-
-            int maxIters = 1000;
-            for (int k = 0; k < maxIters && number != 1; k++)
-            {
-                // Поиск простого числа < number
-                NumberWithNumIters result = generateSimpleNumberFromRange(sampleNumberUlong,
-                   number + 1, t);
-
-                Console.WriteLine(result.number);
-                sampleNumberUlong = result.number;
-
-                if (sampleNumberUlong == 0)
+                if (checkNumberIsSimple(randomNumber, t))
                     break;
-                addSampleFactorAndDecreaseNumber(sampleFactorsWithPows, ref number, sampleNumberUlong);
             }
 
-            if (number != 1)
-            {
-                Console.WriteLine("Число n = " + number + " не нашло простого делителя");
-            }
-
-            return sampleFactorsWithPows;
+            return randomNumber;
         }
 
-        public List<BigInteger> getPrimitiveRoots(BigInteger number, int t)
+        // Чтение текста из файла
+        public void ReadOriginalText(string filename)
         {
-            List<FactorWithPow> sampleFactorsWithPowsFromN = getSampleFactors(number, t);
+            Console.WriteLine("Читаем текст из файла...");
+            originalText = EncoderClass.StringToBitArray(ReadFromFile(filename));
+            Console.WriteLine("Текст = " + "\'" + originalText + "\'");
+        }
 
-            BigInteger phi = 1;
-            foreach (FactorWithPow sampleFactorWithPow in sampleFactorsWithPowsFromN)
+        public void ReadKey(string filename)
+        {
+            Console.WriteLine("Читаем ключ из файла...");
+            key = EncoderClass.StringToBitArray(ReadFromFile(filename));
+            Console.WriteLine("Ключ = " + "\'" + key + "\'");
+        }
+
+        // Определение обьекта, который будет генерировать ключи
+        public void GenerateKey()
+        {
+           
+        }
+
+        public static string ReadFromFile(string fileName)
+        {
+            string text = "";
+            try
             {
-                phi *= sampleFactorWithPow.number - 1;
-                phi *= BigInteger.Pow(sampleFactorWithPow.number, sampleFactorWithPow.pow - 1);
-            }
-
-            // Нахождение простых множителей
-            List<FactorWithPow> sampleFactorsWithPowsFromPhi = getSampleFactors(phi, t);
-
-            int maxCountPrimitiveRoots = 100;
-            List<BigInteger> primitiveRoots = new List<BigInteger>();
-
-            for (BigInteger primitiveRootUlong = 2; primitiveRoots.Count != maxCountPrimitiveRoots; primitiveRootUlong++)
-            {
-                bool isPrimitiveRoot = true;
-                foreach (FactorWithPow sampleRoot in sampleFactorsWithPowsFromPhi)
+                // Открываем файл для чтения текста 
+                using (var sr = new StreamReader(fileName))
                 {
-                    if (BigInteger.Pow(primitiveRootUlong, (int)(phi / sampleRoot.number)) % number == 1)
-                        isPrimitiveRoot = false;
+                    text = sr.ReadToEnd();
                 }
-
-                if (isPrimitiveRoot)
-                    primitiveRoots.Add(primitiveRootUlong);
             }
-
-             return primitiveRoots;
-        }
-
-        public List<BigInteger> generateAllSimpleNumbersFromRange(BigInteger smallerNumber, BigInteger largerNumber, int t)
-        {
-            List<BigInteger> simpleNumbers = new List<BigInteger>();
-
-            while (true)
+            catch (IOException e)
             {
-                NumberWithNumIters result = generateSimpleNumberFromRange(smallerNumber, largerNumber, t);
-
-               if (result.number == 0)
-                    break;
-
-                simpleNumbers.Add(result.number);
-                smallerNumber = result.number;
+                Console.WriteLine("Файл " + e.Message.ToString() + " не удалось прочитать.");
             }
 
-            return simpleNumbers;
+            return text;
         }
 
-        public int generateY(int g, BigInteger xa, int n)
+        public static void writeToFile(string fileName, string text)
         {
-            BigInteger powBigInt = g;
-
-            int n1 = n - 1;
-            int r = (int)(xa % n1);
-
-            for (int i = 0; i < r - 1; i++)
+            try
             {
-                powBigInt *= g;
+                // Открытие файла для записи данных
+                using (var sr = new StreamWriter(fileName))
+                {
+
+                    sr.Write(text);
+                }
+            }
+            catch (IOException e)
+            {
+                Console.WriteLine("В файл " + e.Message.ToString() + " невозможно записать данные");
+            }
+        }
+
+        public BitArray[] DividingTextIntoBlocks(BitArray text)
+        {
+
+            BitArray[] originalTextBlocks = new BitArray[text.Length / lengthBlock];
+
+            // Разделение текста на блоки по 64 бита
+            for (int i = 0; i < text.Length / lengthBlock; i++)
+            {
+                BitArray bitArray64 = new BitArray(lengthBlock);
+
+                // Подсчет левой части
+                for (int j = 0; j < lengthBlock; j++)
+                    bitArray64[j] = text[i * lengthBlock + j];
+
+                originalTextBlocks[i] = new BitArray(bitArray64);
             }
 
-            
-            return (int)(powBigInt % n);
+            return originalTextBlocks;
         }
 
-        public int generateY2(ulong g, BigInteger xa, int n)
+        public void Encryption()
         {
-            
+            // Случайная генерация ключа DES алгоритма
+            key = GeneratorRandomKey.generateRandomKey(GeneratorDESKey.keyLength);
 
-            BitArray gb = EncoderClass.UlongToBitArray(g);
+            // Шифруем открытый текст
+            encryptorByDES = new EncryptByDES(new GeneratorDESKey(key));
 
-            BigInteger pow = EncoderClass.BitArrayToBigInteger(BitArrayFunctions.Pow(gb, xa));
+            BitArray[] originalTextBlocks = DividingTextIntoBlocks(originalText);
+            BitArray cipherText = new BitArray(0);
 
-            return (int)(pow % n);
+            // Шифруем каждый блок
+            for (int iBlock = 0; iBlock < originalTextBlocks.Length; iBlock++)
+            {
+                cipherText = BitArrayFunctions.Append(cipherText, encryptorByDES.Encrypte(originalTextBlocks[iBlock]));
+            }
+
+            this.cipherText = cipherText;
+
+            // Шифруем ключ
+            cipherKey = EncryptByRSA.Encrypte(key, keys.openKey);
         }
+
+        public void Decryption()
+        {
+            // Расшифровываем ключ для DES
+            key = EncryptByRSA.Decrypte(cipherKey, keys.closeKey);
+
+            // Расшифровываем шифр
+            encryptorByDES = new EncryptByDES(new GeneratorDESKey(key));
+
+            BitArray[] cipherTextBlocks = DividingTextIntoBlocks(cipherText);
+            BitArray originalText = new BitArray(0);
+
+            // Шифруем каждый блок
+            for (int iBlock = 0; iBlock < cipherTextBlocks.Length; iBlock++)
+            {
+                originalText = BitArrayFunctions.Append(originalText, encryptorByDES.Decrypte(cipherTextBlocks[iBlock]));
+            }
+
+            this.originalText = originalText;
+        }
+
+        public void GenerateRSAKeys()
+        {
+            keys = GeneratorKeysRSA.generateKeys(EncoderClass.BitArrayToBigInteger(p), EncoderClass.BitArrayToBigInteger(q));
+        }
+
     }
 }
