@@ -1,0 +1,82 @@
+﻿<Window x:Class="PSZI_lr1_v2.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        mc:Ignorable="d"
+        WindowState="Maximized"
+        Title="LR3" Height="400" Width="1106.4">
+    <Window.Resources>
+        <Style TargetType="TextBlock">
+            <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
+            <Setter Property="ItemsControl.Foreground" Value="#85004B"/>
+            <Setter Property="VerticalAlignment" Value="Center"/>
+        </Style>
+        <Style x:Key="Title" TargetType="TextBlock"  BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="ItemsControl.FontSize" Value="16"/>
+            <Setter Property="ItemsControl.HorizontalAlignment" Value="Center"/>
+            <Setter Property="Margin" Value="10"/>
+        </Style>
+        <Style x:Key="Text" TargetType="TextBlock" BasedOn="{StaticResource {x:Type TextBlock}}">
+            <Setter Property="ItemsControl.FontSize" Value="14"/>
+            <Setter Property="ItemsControl.HorizontalAlignment" Value="Left"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+        </Style>
+        <Style TargetType="TextBox">
+            <Setter Property="ItemsControl.Margin" Value="10"/>
+            <Setter Property="Height" Value="20"/>
+        </Style>
+        <Style x:Key="TextBoxForLargeTexts" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Width" Value="1000" />
+        </Style>
+        <Style x:Key="TextBoxForTexts" TargetType="TextBox" BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Width" Value="300" />
+        </Style>
+        <Style TargetType="Button">
+            <Setter Property="Background" Value="#E6B2D6"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Margin" Value="10, 0"/>
+            <Setter Property="Width" Value="350"/>
+        </Style>
+        <Style x:Key="MaxiButton" TargetType="Button" BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Height" Value="40"/>
+            <Setter Property="MinHeight" Value="40"/>
+            <Setter Property="Width" Value="350"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <StackPanel Margin="0,0,0,0.4">
+            <StackPanel Margin="5">
+                <TextBlock Style="{StaticResource Title}">Однонаправленные хэш-функции. Электронная цифровая подпись</TextBlock>
+                <TextBlock Style="{StaticResource Text}">Сообщение:</TextBlock>
+                <StackPanel x:Name="Msg" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox x:Name = "TextBoxMsg" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                    <Button x:Name="ButtonCountRSA" Style="{StaticResource MaxiButton}" Click="ButtonCountRSA_Click">Вычислить ЭЦП RSA</Button>
+                    <Button x:Name="ButtonCheckRSA" Style="{StaticResource MaxiButton}" Click="ButtonCheckRSA_Click">Проверить ЭЦП RSA</Button>
+                </StackPanel>
+                <TextBlock Style="{StaticResource Text}">Электронная цифровая подпись по RSA:</TextBlock>
+                <StackPanel x:Name="EDSRSA" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox x:Name = "TextBoxEDSRSA" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+                <StackPanel x:Name="EDSRSATrue" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox x:Name="TextBoxEDSRSATrue" Style="{StaticResource TextBoxForTexts}"/>
+                </StackPanel>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
+                    <Button x:Name="ButtonCountEG" Style="{StaticResource MaxiButton}" Click="ButtonCountEG_Click">Вычислить ЭЦП Эль-Гамаль</Button>
+                    <Button x:Name="ButtonCheckEG" Style="{StaticResource MaxiButton}" Click="ButtonCheckEG_Click">Проверить ЭЦП Эль-Гамаль</Button>
+                </StackPanel>
+                <TextBlock Style="{StaticResource Text}">Электронная цифровая подпись по Эль-Гамалю:</TextBlock>
+                <StackPanel x:Name="EDSEG" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox x:Name="TextBoxEDSEG" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+                <StackPanel x:Name="EDSEGTrue" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBox x:Name="TextBoxEDSEGTrue" Style="{StaticResource TextBoxForTexts}"/>
+                </StackPanel>
+            </StackPanel>
+        </StackPanel>
+    </Grid>
+
+</Window>
