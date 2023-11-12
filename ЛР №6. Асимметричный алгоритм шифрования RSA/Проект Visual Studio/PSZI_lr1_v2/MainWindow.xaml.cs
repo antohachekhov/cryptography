@@ -36,7 +36,7 @@ namespace PSZI_lr1_v2
                 string[] partTexts = text.Split('(', ',', ')');
 
                 BigInteger e = BigInteger.Parse(partTexts[1]);
-                BigInteger n = BigInteger.Parse(partTexts[3]);
+                BigInteger n = BigInteger.Parse(partTexts[2]);
 
                 program.keys.openKey = (e, n);
             }
@@ -45,7 +45,7 @@ namespace PSZI_lr1_v2
                 string[] partTexts = text.Split('(', ',', ')');
 
                 BigInteger d = BigInteger.Parse(partTexts[1]);
-                BigInteger n = BigInteger.Parse(partTexts[3]);
+                BigInteger n = BigInteger.Parse(partTexts[2]);
 
                 program.keys.openKey = (d, n);
             }
@@ -146,6 +146,7 @@ namespace PSZI_lr1_v2
         {
             program.Encryption();
             Program.writeToFile("cipherText.txt", EncoderClass.BitArrayToString(program.cipherText));
+            Program.writeToFile("cipherKey.txt", EncoderClass.BitArrayToString(program.cipherKey));
             writeToWindow(StackPanelCipherTextOutput);
             writeToWindow(StackPanelCipherKeyOutput);
         }
@@ -253,8 +254,6 @@ namespace PSZI_lr1_v2
 
             writeToWindow(StackPanelOpenKeyOutput);
             writeToWindow(StackPanelCloseKeyOutput);
-
-
 
         }
 

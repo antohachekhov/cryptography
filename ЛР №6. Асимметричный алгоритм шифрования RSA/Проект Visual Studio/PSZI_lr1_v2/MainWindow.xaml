@@ -97,7 +97,7 @@
                                     <StackPanel Style="{StaticResource InputBlock}" Grid.Column="2">
                                         <TextBlock Style="{StaticResource Text}">Введите путь к файлу, в котором расположено простое число q.</TextBlock>
                                         <StackPanel x:Name="StackPanelSampleQEnterFile" Orientation="Horizontal">
-                                        <TextBox Style="{StaticResource TextBoxForMediumText}" TextChanged="TextBoxSampleNumbers_TextChanged"/>
+                                        <TextBox Style="{StaticResource TextBoxForMediumText}"/>
                                             <Button Style="{StaticResource MiniButton}"
                                             Click="ButtonOpenFile_Click">Выбрать файл</Button>
 
@@ -174,13 +174,13 @@
                                 <StackPanel Style="{StaticResource InputBlock}">
                                     <TextBlock Style="{StaticResource Text}">Введите путь к файлу, в котором расположен зашифрованный асимметричным алгоритмом ключ симметричного алгоритма.</TextBlock>
                                     <StackPanel x:Name="StackPanelCipherKeyEnterFile" Orientation="Horizontal">
-                                        <TextBox Style="{StaticResource TextBoxForMediumText}"/>
+                                    <TextBox Style="{StaticResource TextBoxForMediumText}"/>
                                         <Button Style="{StaticResource MiniButton}"
                                             Click="ButtonOpenFile_Click">Выбрать файл</Button>
                                     </StackPanel>
                                     <TextBlock Style="{StaticResource Text}">K</TextBlock>
                                     <StackPanel x:Name="StackPanelCipherKeyOutput" Orientation="Horizontal" >
-                                        <TextBox Style="{StaticResource TextBoxForMediumText}" 
+                                    <TextBox  x:Name="TextBoxCipherKey" Style="{StaticResource TextBoxForMediumText}" 
                                              GotFocus="TextBoxCC_GotFocus" 
                                              LostFocus="TextBoxCC_LostFocus"/>
                                     </StackPanel>
