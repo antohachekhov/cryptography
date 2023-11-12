@@ -282,7 +282,7 @@ namespace PSZI_lr1_v2
 
         public Random random = new Random();
 
-        public bool checkNumberIsSimple(BigInteger numberBitArray, int t)
+        public bool checkNumberIsSimple(BigInteger numberBitArray, BigInteger t)
         {
             // Проверка на делимость
             // Подсчет simple3_2000Numbers
@@ -332,7 +332,7 @@ namespace PSZI_lr1_v2
             return true;
         }
 
-        public bool testRabinMiller(BigInteger number, int t)
+        public bool testRabinMiller(BigInteger number, BigInteger t)
         {
             if (number != 0 || number != 1 || number != 2 || number != 3)  // Если число равно 0 || 1 || 2 || 3
                 return true;
@@ -341,7 +341,7 @@ namespace PSZI_lr1_v2
                 return false;
 
             BigInteger m = number - 1;
-            int b = 0;
+            BigInteger b = 0;
 
             while (m % 2 == 0)
             {
@@ -352,7 +352,7 @@ namespace PSZI_lr1_v2
             // m = (p - 1) / 2^b
 
             BitArray bitArrayFrom2 = new BitArray(new bool[2] { false, true });
-            for (int i = 0; i < t; i++)
+            for (BigInteger i = 0; i < t; i++)
             {
                 // 1 шаг
                 Random rnd = new Random();
@@ -370,7 +370,7 @@ namespace PSZI_lr1_v2
                     continue;
                 }
 
-                int j = 0;
+                BigInteger j = 0;
 
                 while (j < b)
                 {
@@ -406,7 +406,7 @@ namespace PSZI_lr1_v2
         }
 
         // Генерирует простое число указанной размерности
-        public BigInteger generateSimpleNumberByN(int n, int t)
+        public BigInteger generateSimpleNumberByN(int n, BigInteger t)
         {
 
             // Задаем smallerNumber и largerNumber чтобы не писать два раза один и тот же алгоритм в функции
@@ -485,10 +485,23 @@ namespace PSZI_lr1_v2
             }
         }
 
+        public BitArray GenerateRandomBitArray(int length)
+        {
+            return GeneratorRandomKey.generateRandomKey(length);
+        }
+        public BitArray GetPadding(int length)
+        {
+            return GenerateRandomBitArray(length / 8);
+        }
+
         public BitArray[] DividingTextIntoBlocks(BitArray text)
         {
+            int countBlocks = text.Length / lengthBlock;
 
-            BitArray[] originalTextBlocks = new BitArray[text.Length / lengthBlock];
+            if (text.Length % lengthBlock != 0)
+                countBlocks++;
+
+            BitArray[] originalTextBlocks = new BitArray[countBlocks];
 
             // Разделение текста на блоки по 64 бита
             for (int i = 0; i < text.Length / lengthBlock; i++)
@@ -502,13 +515,53 @@ namespace PSZI_lr1_v2
                 originalTextBlocks[i] = new BitArray(bitArray64);
             }
 
+            // Добавление padding
+            if (text.Length % lengthBlock != 0)
+            {
+                int lengthMiniBlock = text.Length % lengthBlock;
+                BitArray bitArray64 = new BitArray(lengthMiniBlock);
+                for (int j = 0; j < lengthMiniBlock; j++)
+                    bitArray64[j] = text[text.Length - lengthMiniBlock + j];
+
+                BitArray padding = GetPadding(lengthBlock - lengthMiniBlock);
+
+                bitArray64 = BitArrayFunctions.Append(bitArray64, padding);
+                originalTextBlocks[countBlocks - 1] = new BitArray(bitArray64);
+            }
+
             return originalTextBlocks;
+        }
+
+        // Генерирует простое число от нижней границы до верхней, если простого числа нет, то возвращает null
+        // Диапазон не включает числа smallerNumber и largerNumber.
+        public BigInteger generateSimpleNumberFromRange(BigInteger smallerNumber, BigInteger largerNumber, int t)
+        {
+            BigInteger trueSimpleNumber = 0;
+            BigInteger simpleNumber = smallerNumber + 1; // Границы не входят в диапазон
+
+            // Делаем число нечетным
+            if (simpleNumber % 2 == 0)
+                simpleNumber++;
+
+            ulong numIters = 0;
+            for (; simpleNumber < largerNumber;
+                numIters++, simpleNumber += 2)
+            {
+                if (checkNumberIsSimple(simpleNumber, t))
+                {
+                    trueSimpleNumber = simpleNumber;
+                    break;
+                }
+
+            }
+
+            return trueSimpleNumber;
         }
 
         public void Encryption()
         {
             // Случайная генерация ключа DES алгоритма
-            key = GeneratorRandomKey.generateRandomKey(GeneratorDESKey.keyLength);
+            key = GeneratorRandomKey.generateRandomKeyBits(56);
 
             // Шифруем открытый текст
             encryptorByDES = new EncryptByDES(new GeneratorDESKey(key));
@@ -531,10 +584,14 @@ namespace PSZI_lr1_v2
         public void Decryption()
         {
             // Расшифровываем ключ для DES
-            key = EncryptByRSA.Decrypte(cipherKey, keys.closeKey);
+            BitArray RsaDecipherkey = EncryptByRSA.Decrypte(cipherKey, keys.closeKey);
+
+            BitArray key1 = new BitArray(GeneratorDESKey.keyLength);
+            for (int i = 0; i < GeneratorDESKey.keyLength; i++)
+                key1[i] = RsaDecipherkey[i];
 
             // Расшифровываем шифр
-            encryptorByDES = new EncryptByDES(new GeneratorDESKey(key));
+            encryptorByDES = new EncryptByDES(new GeneratorDESKey(key1));
 
             BitArray[] cipherTextBlocks = DividingTextIntoBlocks(cipherText);
             BitArray originalText = new BitArray(0);

@@ -28,5 +28,23 @@ namespace PSZI_lr1_v2
             return EncoderClass.ByteArrayToBitArray(key);
         }
 
+        public static BitArray generateRandomKeyBits(int length)
+        {
+            byte[] key = new byte[(length + 8) / 8];
+
+            for (int i = 0; i < key.Length; i++)
+                key[i] = (byte)generateRandomValue(startEndASCII[0], startEndASCII[1]);
+
+            BitArray keyBits = EncoderClass.ByteArrayToBitArray(key);
+            BitArray keyBitsTrue = new BitArray(length);
+
+            for (int i = 0; i < length; i++)
+            {
+                keyBitsTrue[i] = keyBits[i];
+            }
+
+            return keyBitsTrue;
+        }
+
     }
 }

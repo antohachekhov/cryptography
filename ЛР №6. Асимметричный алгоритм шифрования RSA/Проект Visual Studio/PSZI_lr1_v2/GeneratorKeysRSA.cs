@@ -48,21 +48,21 @@ namespace PSZI_lr1_v2
             BigInteger phi = (p - 1) * (q - 1);
 
             // Поиск минимального числа взаимно простого с phi
-            //BigInteger e = 2;
-            //for (; e < phi; e++)
-            //{
-            //    if(calcDByEuclideanAlg(phi, e).d == 1)
-            //        break;
-            //}
+            BigInteger e = 2;
+            for (; e < phi; e++)
+            {
+                if(calcDByEuclideanAlg(phi, e).d == 1)
+                    break;
+            }
 
             // Поиск случайного числа взаимно простого с phi
-            BitArray randomBits = BitArrayFunctions.GenerateRandomBitArray(random, new BitArray(new bool[] { false, true }), EncoderClass.BigIntegerToBitArray(phi));
-            BigInteger e = EncoderClass.BitArrayToBigInteger(randomBits);
-            while (calcDByEuclideanAlg(phi, e).d != 1)
-            {
-                randomBits = BitArrayFunctions.GenerateRandomBitArray(random, new BitArray(new bool[] { false, true }), EncoderClass.BigIntegerToBitArray(phi));
-                e = EncoderClass.BitArrayToBigInteger(randomBits);
-            }
+            //BitArray randomBits = BitArrayFunctions.GenerateRandomBitArray(random, new BitArray(new bool[] { false, true }), EncoderClass.BigIntegerToBitArray(phi));
+            //BigInteger e = EncoderClass.BitArrayToBigInteger(randomBits);
+            //while (calcDByEuclideanAlg(phi, e).d != 1)
+            //{
+            //    randomBits = BitArrayFunctions.GenerateRandomBitArray(random, new BitArray(new bool[] { false, true }), EncoderClass.BigIntegerToBitArray(phi));
+            //    e = EncoderClass.BitArrayToBigInteger(randomBits);
+            //}
 
 
             BigInteger d = calcDByEuclideanAlg(phi, e).j;

@@ -104,7 +104,7 @@
                                         </StackPanel>
                                         <TextBlock Style="{StaticResource Text}">q</TextBlock>
                                         <StackPanel x:Name="StackPanelSampleQOutput" Orientation="Horizontal" >
-                                            <TextBox Style="{StaticResource TextBoxForMediumText}"/>
+                                        <TextBox Style="{StaticResource TextBoxForMediumText}" TextChanged="TextBoxSampleNumbers_TextChanged"/>
                                             <Button Style="{StaticResource MiniButton}"
                                             Click="ButtonGenerateSampleNumber_Click">Сгенерировать простое число</Button>
                                         </StackPanel>

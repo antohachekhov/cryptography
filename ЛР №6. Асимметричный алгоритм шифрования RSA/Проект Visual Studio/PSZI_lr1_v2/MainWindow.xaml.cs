@@ -154,8 +154,8 @@ namespace PSZI_lr1_v2
         private void ButtonDecrypte_Click(object sender, RoutedEventArgs e)
         {
             program.Decryption();
-            Program.writeToFile("originalText.txt", EncoderClass.BitArrayToString(program.cipherText));
-            writeToWindow(StackPanelCipherTextOutput);
+            Program.writeToFile("originalText.txt", EncoderClass.BitArrayToString(program.originalText));
+            writeToWindow(StackPanelOriginalTextOutput);
         }
 
         private void ButtonOpenFile_Click(object sender, RoutedEventArgs e)
@@ -190,7 +190,23 @@ namespace PSZI_lr1_v2
 
             string name = stackPanel.Name;
 
-            BigInteger randomSampleNumber = program.generateSimpleNumberByN(129, 5);
+            BigInteger randomSampleNumber = program.generateSimpleNumberByN(130, BigInteger.Parse("10000000000000000000000000000"));
+
+            string randomBitArray = this.RandomGenerate().ToString();
+            // Запись в переменную
+            setValueToProgramBitArray(name, randomBitArray);
+
+            writeToWindow((stackPanel.Parent as StackPanel).Children.OfType<StackPanel>().Last());
+        }
+
+        private void ButtonGenerateSampleNumber2_Click(object sender, RoutedEventArgs e)
+        {
+            Button button = sender as Button;
+            StackPanel stackPanel = (button?.Parent) as StackPanel;
+
+            string name = stackPanel.Name;
+
+            BigInteger randomSampleNumber = program.generateSimpleNumberFromRange(BigInteger.Parse("10000000000000000000000000000"), BigInteger.Parse("10000000000000000000000000000000"), 1000);
             string randomBitArray = randomSampleNumber.ToString();
             // Запись в переменную
             setValueToProgramBitArray(name, randomBitArray);
@@ -241,5 +257,23 @@ namespace PSZI_lr1_v2
 
 
         }
+
+        public BigInteger RandomGenerate()
+        {
+            BigInteger[] arr = new BigInteger[]
+            {
+                BigInteger.Parse("680564733841876926927715055360727278773"),
+                BigInteger.Parse("680564733841876926927715055360727278377"),
+                BigInteger.Parse("340282366920938463471724603615805326309"),
+                BigInteger.Parse("340282366920938463471724603615805326673"),
+                BigInteger.Parse("910282376920938463463568564727192087897"),
+                BigInteger.Parse("910282376920938463463568564727192087757"),
+            };
+
+            int i = program.random.Next(arr.Length);
+
+            return arr[i];
+        }
+
     }
 }

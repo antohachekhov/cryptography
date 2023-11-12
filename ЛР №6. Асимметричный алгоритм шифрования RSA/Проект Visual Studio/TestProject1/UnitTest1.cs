@@ -499,5 +499,15 @@ namespace TestProject1
         }
 
 
+        [Test]
+        public void PowMod()
+        {
+            BigInteger number = 7;
+            BigInteger pow = 1;
+            BigInteger expectedNum = 2;
+            BigInteger actualNum = EncryptByRSA.pow_mod(number, pow, 5);
+            Assert.AreEqual(expectedNum, actualNum);
+        }
+
     }
 }
