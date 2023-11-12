@@ -2,7 +2,6 @@
 using System.IO;
 using System.Collections.Generic;
 using System.Collections;
-using System.Diagnostics;
 using System.Numerics;
 
 namespace PSZI_lr1_v2
@@ -448,12 +447,6 @@ namespace PSZI_lr1_v2
             Console.WriteLine("Читаем ключ из файла...");
             key = EncoderClass.StringToBitArray(ReadFromFile(filename));
             Console.WriteLine("Ключ = " + "\'" + key + "\'");
-        }
-
-        // Определение обьекта, который будет генерировать ключи
-        public void GenerateKey()
-        {
-           
         }
 
         public static string ReadFromFile(string fileName)

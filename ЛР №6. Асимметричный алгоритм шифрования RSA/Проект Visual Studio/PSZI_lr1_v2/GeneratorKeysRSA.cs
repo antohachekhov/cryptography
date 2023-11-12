@@ -1,4 +1,6 @@
-﻿using System.Numerics;
+﻿using System;
+using System.Collections;
+using System.Numerics;
 
 namespace PSZI_lr1_v2
 {
@@ -37,19 +39,31 @@ namespace PSZI_lr1_v2
 
     public static class GeneratorKeysRSA
     {
+        public static Random random = new Random();
+
         public static keys generateKeys(BigInteger p,BigInteger q)
         {
             BigInteger n = p * q;
 
             BigInteger phi = (p - 1) * (q - 1);
 
-            BigInteger e = 2;
-            for (; e < phi; e++)
-            {
+            // Поиск минимального числа взаимно простого с phi
+            //BigInteger e = 2;
+            //for (; e < phi; e++)
+            //{
+            //    if(calcDByEuclideanAlg(phi, e).d == 1)
+            //        break;
+            //}
 
-                if(calcDByEuclideanAlg(phi, e).d == 1)
-                    break;
+            // Поиск случайного числа взаимно простого с phi
+            BitArray randomBits = BitArrayFunctions.GenerateRandomBitArray(random, new BitArray(new bool[] { false, true }), EncoderClass.BigIntegerToBitArray(phi));
+            BigInteger e = EncoderClass.BitArrayToBigInteger(randomBits);
+            while (calcDByEuclideanAlg(phi, e).d != 1)
+            {
+                randomBits = BitArrayFunctions.GenerateRandomBitArray(random, new BitArray(new bool[] { false, true }), EncoderClass.BigIntegerToBitArray(phi));
+                e = EncoderClass.BitArrayToBigInteger(randomBits);
             }
+
 
             BigInteger d = calcDByEuclideanAlg(phi, e).j;
 
