@@ -64,6 +64,8 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="CBC.cs" />
+    <Compile Include="EDE.cs" />
     <Compile Include="EncoderClass.cs" />
     <Compile Include="EncryptByDES.cs" />
     <Compile Include="EncryptByElgamal.cs" />
@@ -73,6 +75,7 @@
     <Compile Include="GeneratorKeysElgamal.cs" />
     <Compile Include="GeneratorKeysRSA.cs" />
     <Compile Include="GeneratorRandomKey.cs" />
+    <Compile Include="HashFunctions.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

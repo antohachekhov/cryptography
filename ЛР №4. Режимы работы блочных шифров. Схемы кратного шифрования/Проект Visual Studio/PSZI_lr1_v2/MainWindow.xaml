@@ -86,7 +86,7 @@
                     <TextBlock Style="{StaticResource Text}">Выберите padding:</TextBlock>
                     <StackPanel >
                         <CheckBox x:Name="CheckBoxZerosPadding" Checked="ChooseZerosPadding">Заполнение нулями</CheckBox>
-                        <CheckBox x:Name="CheckBoxOnesPadding" Checked="ChooseOnesPadding">Заполнение единицами</CheckBox>
+                        <CheckBox x:Name="CheckBoxOnesPadding" Checked="ChooseOnesPadding">Заполнение правильное</CheckBox>
                         <CheckBox x:Name="CheckBoxRandomPadding" Checked="ChooseRandomPadding">Случайное заполнение</CheckBox>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="10">

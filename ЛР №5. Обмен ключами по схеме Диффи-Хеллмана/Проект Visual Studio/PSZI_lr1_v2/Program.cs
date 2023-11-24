@@ -552,7 +552,11 @@ namespace PSZI_lr1_v2
                 }
 
                 if (isPrimitiveRoot)
-                    primitiveRoots.Add(primitiveRootUlong);
+                {
+                    if(BigInteger.Pow(primitiveRootUlong, (int)phi) % number == 1)
+                        primitiveRoots.Add(primitiveRootUlong);
+                }
+                    
             }
 
              return primitiveRoots;

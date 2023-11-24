@@ -120,7 +120,7 @@ namespace PSZI_lr1_v2
 
         public static BitArray IntToBitArrayLength4(int value)
         {
-            BitArray bits = new BitArray(4);
+            BitArray bits = new BitArray(8);
 
             for(int i = bits.Length - 1; i >=0 ; i--)
             {

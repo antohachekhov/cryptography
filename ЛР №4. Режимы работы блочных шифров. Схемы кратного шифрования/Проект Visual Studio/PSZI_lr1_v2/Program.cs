@@ -138,9 +138,27 @@ namespace PSZI_lr1_v2
             if (modePadding == ModeChoosePadding.zeros)
                 return new BitArray(length);
             else if (modePadding == ModeChoosePadding.ones)
-                return new BitArray(length, true);
+                return GenerateTrueBitArray(length);
             else
                 return GenerateRandomBitArray(length);
+        }
+
+        private BitArray GenerateTrueBitArray(int length)
+        {
+            BitArray bitArray = EncoderClass.IntToBitArrayLength4(length / 8);
+
+            BitArray newPadding = new BitArray(length);
+
+            for(int i = 0; i < newPadding.Length;  )
+            {
+                for (int j = 0; j < bitArray.Length && i < newPadding.Length; j++, i++)
+                {
+                    newPadding[i] = bitArray[j];
+                }
+            }
+
+            return newPadding;
+
         }
 
         public BitArray[] DividingTextIntoBlocks(BitArray text)

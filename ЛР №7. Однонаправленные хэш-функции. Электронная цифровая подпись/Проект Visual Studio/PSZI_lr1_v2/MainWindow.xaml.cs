@@ -26,9 +26,28 @@ namespace PSZI_lr1_v2
             BigInteger message = BigInteger.Parse(TextBoxMsg.Text);
             keysRSA keys = GeneratorKeysRSA.generateKeys(BigInteger.Parse("680564733841876926927715055360727278773"), BigInteger.Parse("295734403997374903219419662932896015067"));
 
-            EncryptByRSA.edsRSA eds = EncryptByRSA.GenerateEDS(message, keys.closeKey);
+            TextBoxEDSRSA.Text = "Тут должна быть функция, которая выведет ЭЦП по RSA";
 
-            TextBoxEDSRSA.Text = "(" + eds.eds.m.ToString() + "," + eds.eds.s.ToString() + ")";
+
+            // ТЕСТИРОВАНИЕ ХЭШ ФУНКЦИИ
+            BitArray rand = program.GenerateRandomBitArray(8);
+            BitArray[] blocks = program.DividingTextIntoBlocks(EncoderClass.StringToBitArray(message));
+            
+            BitArray hash = HashFunctions.schema1(blocks, rand);
+            Console.WriteLine("Схема-1: " + EncoderClass.BitArrayToString(hash));
+            hash = HashFunctions.schema2(blocks, rand);
+            Console.WriteLine("Схема-2: " + EncoderClass.BitArrayToString(hash));
+            hash = HashFunctions.schema3(blocks, rand);
+            Console.WriteLine("Схема-3: " + EncoderClass.BitArrayToString(hash));
+            hash = HashFunctions.schema4(blocks, rand);
+            Console.WriteLine("Схема-4: " + EncoderClass.BitArrayToString(hash));
+
+            BitArray rand2 = program.GenerateRandomBitArray(8);
+            hash = HashFunctions.PBGV(blocks, rand, rand2);
+            Console.WriteLine("Схема-PBGV: " + EncoderClass.BitArrayToString(hash));
+            hash = HashFunctions.QG(blocks, rand, rand2);
+            Console.WriteLine("Схема-QG: " + EncoderClass.BitArrayToString(hash));
+
         }
         public void ButtonCheckRSA_Click(object sender, RoutedEventArgs ev)
         {

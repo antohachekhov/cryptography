@@ -59,7 +59,9 @@ namespace PSZI_lr1_v2
         // Генерация ключа
         public BitArray GenerateKey(int i)
         {
-            Console.WriteLine("Генерируем подключ...");
+            //
+            //Console.WriteLine("Генерируем подключ...");
+            //
 
             int countSumShift = 0;
             for (int j = 0; j < i; j++)
@@ -147,12 +149,14 @@ namespace PSZI_lr1_v2
                 
             }
 
-            Console.WriteLine("Расширение ключа...");
+            //
+            //Console.WriteLine("Расширение ключа...");
+            //
             BitArray extendedKey = new BitArray(generalKey);
             if(extendedKey.Length != 64)
                 extendedKey = ExtendedKey(generalKey);
 
-            Console.WriteLine("Вычисление C_0 и D_0");
+            //Console.WriteLine("Вычисление C_0 и D_0");
             // Генерация C_0 и D_0 
             DivideKeyToC0AndD0(this, extendedKey);
         }
