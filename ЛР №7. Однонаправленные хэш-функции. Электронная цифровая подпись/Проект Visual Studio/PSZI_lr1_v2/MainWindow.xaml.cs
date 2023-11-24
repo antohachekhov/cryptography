@@ -23,31 +23,36 @@ namespace PSZI_lr1_v2
         public void ButtonCountRSA_Click(object sender, RoutedEventArgs e)
         {
 
-            string message = TextBoxMsg.Text;
+            BigInteger message = BigInteger.Parse(TextBoxMsg.Text);
+            keysRSA keys = GeneratorKeysRSA.generateKeys(BigInteger.Parse("680564733841876926927715055360727278773"), BigInteger.Parse("295734403997374903219419662932896015067"));
 
-            TextBoxEDSRSA.Text = "Тут должна быть функция, которая выведет ЭЦП по RSA";
+            EncryptByRSA.edsRSA eds = EncryptByRSA.GenerateEDS(message, keys.closeKey);
+
+            TextBoxEDSRSA.Text = "(" + eds.eds.m.ToString() + "," + eds.eds.s.ToString() + ")";
         }
         public void ButtonCheckRSA_Click(object sender, RoutedEventArgs ev)
         {
-            BigInteger m = 13;
-            BigInteger s = 41;
+            string[] strings = TextBoxEDSRSA.Text.Split('(', ',', ')');
+
+
+
+            BigInteger m = BigInteger.Parse(strings[1]);
+            BigInteger s = BigInteger.Parse(strings[2]);
 
             EncryptByRSA.edsRSA eds = new EncryptByRSA.edsRSA(m, s);
 
-            BigInteger e = 7;
-            BigInteger n = 77;
+            //BigInteger e = 7;
+            //BigInteger n = 77;
+            keysRSA keys = GeneratorKeysRSA.generateKeys(BigInteger.Parse("680564733841876926927715055360727278773"), BigInteger.Parse("295734403997374903219419662932896015067"));
 
-            bool check = EncryptByRSA.CheckEDS(eds, (e, n));
+            bool check = EncryptByRSA.CheckEDS(eds, keys.openKey);
+            //bool check = EncryptByRSA.CheckEDS(eds, (e, n));
 
             TextBoxEDSRSATrue.Text = check ? "Подлинная" : "Неподлинная";
         }
         public void ButtonCountEG_Click(object sender, RoutedEventArgs e)
         {
-            TextBoxEDSEG.Text = "Тут должна быть функция, которая выведет ЭЦП по Эль-Гамалю";
-        }
-        public void ButtonCheckEG_Click(object sender, RoutedEventArgs e)
-        {
-            BigInteger m = 8;
+            BigInteger m = BigInteger.Parse(TextBoxMsg.Text);
             BigInteger p = 23;
             BigInteger g = 5;
             BigInteger x = 3;
@@ -56,9 +61,28 @@ namespace PSZI_lr1_v2
             keysElgamal keys = GeneratorKeysElgamal.generateKeys(p, g, x);
             EncryptByElgamal.edsElgamal eds = EncryptByElgamal.GenerateEDS(m, keys, k);
 
+            TextBoxEDSEG.Text = "(" + eds.eds.a.ToString() + ',' + eds.eds.b.ToString() + ')';
+        }
+        public void ButtonCheckEG_Click(object sender, RoutedEventArgs e)
+        {
+            BigInteger m = BigInteger.Parse(TextBoxMsg.Text);
+            BigInteger p = 23;
+            BigInteger g = 5;
+            BigInteger x = 3;
+            keysElgamal keys = GeneratorKeysElgamal.generateKeys(p, g, x);
+
+            string[] strings = TextBoxEDSEG.Text.Split('(', ',', ')');
+
+
+
+            BigInteger a = BigInteger.Parse(strings[1]);
+            BigInteger b = BigInteger.Parse(strings[2]);
+
+            EncryptByElgamal.edsElgamal eds = new EncryptByElgamal.edsElgamal(a, b);
+
             bool check = EncryptByElgamal.CheckEDS(m, keys, eds);
 
-            TextBoxEDSRSATrue.Text = check ? "Подлинная" : "Неподлинная";
+            TextBoxEDSEGTrue.Text = check ? "Подлинная" : "Неподлинная";
         }
 
         public BigInteger RandomGenerate()
