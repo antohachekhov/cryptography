@@ -20,84 +20,124 @@ namespace PSZI_lr1_v2
             program = new Program();
             InitializeComponent();
         }
+
         public void ButtonCountRSA_Click(object sender, RoutedEventArgs e)
         {
+            BigInteger hashValue = BigInteger.Parse(TextBoxHash.Text);
 
-            BigInteger message = BigInteger.Parse(TextBoxMsg.Text);
+            // Генерация ключей RSA
             keysRSA keys = GeneratorKeysRSA.generateKeys(BigInteger.Parse("680564733841876926927715055360727278773"), BigInteger.Parse("295734403997374903219419662932896015067"));
 
-            TextBoxEDSRSA.Text = "Тут должна быть функция, которая выведет ЭЦП по RSA";
+            // Вывод открытого ключа:
+            TextBoxOpenKey.Text = "(" + keys.openKey.Item1.ToString() + "," + keys.openKey.Item2.ToString() + ")";
 
 
-            // ТЕСТИРОВАНИЕ ХЭШ ФУНКЦИИ
-            BitArray rand = program.GenerateRandomBitArray(8);
-            BitArray[] blocks = program.DividingTextIntoBlocks(EncoderClass.StringToBitArray(message));
-            
-            BitArray hash = HashFunctions.schema1(blocks, rand);
-            Console.WriteLine("Схема-1: " + EncoderClass.BitArrayToString(hash));
-            hash = HashFunctions.schema2(blocks, rand);
-            Console.WriteLine("Схема-2: " + EncoderClass.BitArrayToString(hash));
-            hash = HashFunctions.schema3(blocks, rand);
-            Console.WriteLine("Схема-3: " + EncoderClass.BitArrayToString(hash));
-            hash = HashFunctions.schema4(blocks, rand);
-            Console.WriteLine("Схема-4: " + EncoderClass.BitArrayToString(hash));
+            // Генерация цифровой подписи
+            EncryptByRSA.edsRSA eds = EncryptByRSA.GenerateEDS(hashValue, keys.closeKey);
 
-            BitArray rand2 = program.GenerateRandomBitArray(8);
-            hash = HashFunctions.PBGV(blocks, rand, rand2);
-            Console.WriteLine("Схема-PBGV: " + EncoderClass.BitArrayToString(hash));
-            hash = HashFunctions.QG(blocks, rand, rand2);
-            Console.WriteLine("Схема-QG: " + EncoderClass.BitArrayToString(hash));
 
+            string message = TextBoxMsg.Text;
+            TextBoxEDSRSA.Text = "<" + message + "," + eds.eds.ToString() + ">";
         }
+
         public void ButtonCheckRSA_Click(object sender, RoutedEventArgs ev)
         {
-            string[] strings = TextBoxEDSRSA.Text.Split('(', ',', ')');
+            // Ввод электронного документа
+            string[] strings = TextBoxEDSRSA.Text.Split('<', ',', '>');
 
+            // Parse message
+            string message = "";
+            BigInteger m = 0;
+            try
+            {
+                m = BigInteger.Parse(strings[1]);
+            }
+            catch
+            {
+                message = strings[1];
+            }
 
+            if (message != "")
+                m = program.generateHashValue(message);
 
-            BigInteger m = BigInteger.Parse(strings[1]);
             BigInteger s = BigInteger.Parse(strings[2]);
 
-            EncryptByRSA.edsRSA eds = new EncryptByRSA.edsRSA(m, s);
+            EncryptByRSA.edsRSA eds = new EncryptByRSA.edsRSA(s);
 
-            //BigInteger e = 7;
-            //BigInteger n = 77;
-            keysRSA keys = GeneratorKeysRSA.generateKeys(BigInteger.Parse("680564733841876926927715055360727278773"), BigInteger.Parse("295734403997374903219419662932896015067"));
 
-            bool check = EncryptByRSA.CheckEDS(eds, keys.openKey);
-            //bool check = EncryptByRSA.CheckEDS(eds, (e, n));
+            // Ввод открытого ключа
+
+            strings = TextBoxOpenKey.Text.Split('(', ',', ')');
+
+
+
+            BigInteger e = BigInteger.Parse(strings[1]);
+            BigInteger n = BigInteger.Parse(strings[2]);
+            keysRSA keys = new keysRSA(e, 0, n);
+
+            bool check = EncryptByRSA.CheckEDS(m, eds, keys.openKey);
 
             TextBoxEDSRSATrue.Text = check ? "Подлинная" : "Неподлинная";
         }
         public void ButtonCountEG_Click(object sender, RoutedEventArgs e)
         {
-            BigInteger m = BigInteger.Parse(TextBoxMsg.Text);
-            BigInteger p = 23;
-            BigInteger g = 5;
-            BigInteger x = 3;
-            BigInteger k = 13;
+            BigInteger hashValue = BigInteger.Parse(TextBoxHash.Text);
+            BigInteger p = BigInteger.Parse(TextBoxEGp.Text);
+            BigInteger g = BigInteger.Parse(TextBoxEGg.Text);
+            BigInteger x = BigInteger.Parse(TextBoxEGx.Text);
+            BigInteger k = BigInteger.Parse(TextBoxEGk.Text);
+
+
+            if (g >= p || x >= p)
+            {
+                MessageBox.Show("Проверьте правильность введенных чисел! g < p && x < p", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                return;
+            }
+
 
             keysElgamal keys = GeneratorKeysElgamal.generateKeys(p, g, x);
-            EncryptByElgamal.edsElgamal eds = EncryptByElgamal.GenerateEDS(m, keys, k);
+            // Вывод открытого ключа:
+            TextBoxOpenKey.Text = "(" + keys.openKey.y.ToString() + "," + keys.openKey.g.ToString() + "," + keys.openKey.p.ToString() + ")";
 
-            TextBoxEDSEG.Text = "(" + eds.eds.a.ToString() + ',' + eds.eds.b.ToString() + ')';
+            EncryptByElgamal.edsElgamal eds = EncryptByElgamal.GenerateEDS(hashValue, keys, k);
+
+            string message = TextBoxMsg.Text;
+
+            TextBoxEDSEG.Text = "<" + message + "," + "(" + eds.eds.a.ToString() + ";" + eds.eds.b.ToString() + ")" + ">";
         }
         public void ButtonCheckEG_Click(object sender, RoutedEventArgs e)
         {
-            BigInteger m = BigInteger.Parse(TextBoxMsg.Text);
-            BigInteger p = 23;
-            BigInteger g = 5;
-            BigInteger x = 3;
-            keysElgamal keys = GeneratorKeysElgamal.generateKeys(p, g, x);
+            // Ввод электронного документа
+            string[] strings = TextBoxEDSEG.Text.Split('<', ',', '>');
 
-            string[] strings = TextBoxEDSEG.Text.Split('(', ',', ')');
+            // Parse message
+            string message = "";
+            BigInteger m = 0;
+            try
+            {
+                m = BigInteger.Parse(strings[1]);
+            }
+            catch
+            {
+                message = strings[1];
+            }
 
+            if (message != "")
+                m = program.generateHashValue(message);
 
-
+            strings = strings[2].Split('(', ';', ')');
             BigInteger a = BigInteger.Parse(strings[1]);
             BigInteger b = BigInteger.Parse(strings[2]);
 
+            // Ввод открытого ключа
+            strings = TextBoxOpenKey.Text.Split('(', ',', ')');
+            BigInteger y = BigInteger.Parse(strings[1]);
+            BigInteger g = BigInteger.Parse(strings[2]);
+            BigInteger p = BigInteger.Parse(strings[3]);
+
             EncryptByElgamal.edsElgamal eds = new EncryptByElgamal.edsElgamal(a, b);
+
+            keysElgamal keys = new keysElgamal(y, g, p, 0);
 
             bool check = EncryptByElgamal.CheckEDS(m, keys, eds);
 
@@ -137,5 +177,27 @@ namespace PSZI_lr1_v2
             return arr[i];
         }
 
+        private void ButtonCountHash_Click(object sender, RoutedEventArgs e)
+        {
+            string message = TextBoxMsg.Text;
+
+            BigInteger hashValue = program.generateHashValue(message);
+
+            TextBoxHash.Text = hashValue.ToString();
+
+            //Console.WriteLine("Схема-1: " + EncoderClass.BitArrayToString(hash));
+            //hash = HashFunctions.schema2(blocks, rand);
+            //Console.WriteLine("Схема-2: " + EncoderClass.BitArrayToString(hash));
+            //hash = HashFunctions.schema3(blocks, rand);
+            //Console.WriteLine("Схема-3: " + EncoderClass.BitArrayToString(hash));
+            //hash = HashFunctions.schema4(blocks, rand);
+            //Console.WriteLine("Схема-4: " + EncoderClass.BitArrayToString(hash));
+            //
+            //BitArray rand2 = program.GenerateRandomBitArray(8);
+            //hash = HashFunctions.PBGV(blocks, rand, rand2);
+            //Console.WriteLine("Схема-PBGV: " + EncoderClass.BitArrayToString(hash));
+            //hash = HashFunctions.QG(blocks, rand, rand2);
+            //Console.WriteLine("Схема-QG: " + EncoderClass.BitArrayToString(hash));
+        }
     }
 }

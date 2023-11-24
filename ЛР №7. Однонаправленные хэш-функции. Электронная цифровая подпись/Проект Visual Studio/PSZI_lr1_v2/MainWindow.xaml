@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
         WindowState="Maximized"
-        Title="LR3" Height="400" Width="1106.4">
+        Title="LR3" Height="550" Width="1000">
     <Window.Resources>
         <Style TargetType="TextBlock">
             <Setter Property="ItemsControl.FontFamily" Value="Verdana"/>
@@ -49,9 +49,21 @@
         <StackPanel Margin="0,0,0,0.4">
             <StackPanel Margin="5">
                 <TextBlock Style="{StaticResource Title}">Однонаправленные хэш-функции. Электронная цифровая подпись</TextBlock>
-                <TextBlock Style="{StaticResource Text}">Сообщение:</TextBlock>
-                <StackPanel x:Name="Msg" Orientation="Horizontal" HorizontalAlignment="Center">
-                    <TextBox x:Name = "TextBoxMsg" Style="{StaticResource TextBoxForLargeTexts}"/>
+                
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text}">Сообщение:</TextBlock>
+                    <TextBox x:Name="TextBoxMsg" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+                <Button x:Name="ButtonCountHash" Style="{StaticResource MaxiButton}" Click="ButtonCountHash_Click">Вычислить хеш-значение сообщения</Button>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text}">Хеш-значение:</TextBlock>
+                    <TextBox x:Name="TextBoxHash" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+
+                <TextBlock Style="{StaticResource Title}">Генерация и проверка электронной цифровой подписи</TextBlock>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text}">Открытый ключ:</TextBlock>
+                    <TextBox x:Name="TextBoxOpenKey" Style="{StaticResource TextBoxForLargeTexts}"/>
                 </StackPanel>
                 <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="10">
                     <Button x:Name="ButtonCountRSA" Style="{StaticResource MaxiButton}" Click="ButtonCountRSA_Click">Вычислить ЭЦП RSA</Button>
@@ -71,6 +83,22 @@
                 <TextBlock Style="{StaticResource Text}">Электронная цифровая подпись по Эль-Гамалю:</TextBlock>
                 <StackPanel x:Name="EDSEG" Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBox x:Name="TextBoxEDSEG" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+                <StackPanel x:Name="EGx" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text}">x:</TextBlock>
+                    <TextBox x:Name="TextBoxEGx" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+                <StackPanel x:Name="EGk" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text}">k:</TextBlock>
+                    <TextBox x:Name="TextBoxEGk" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+                <StackPanel x:Name="EGg" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text}">g:</TextBlock>
+                    <TextBox x:Name="TextBoxEGg" Style="{StaticResource TextBoxForLargeTexts}"/>
+                </StackPanel>
+                <StackPanel x:Name="EGp" Orientation="Horizontal" HorizontalAlignment="Center">
+                    <TextBlock Style="{StaticResource Text}">p:</TextBlock>
+                    <TextBox x:Name="TextBoxEGp" Style="{StaticResource TextBoxForLargeTexts}"/>
                 </StackPanel>
                 <StackPanel x:Name="EDSEGTrue" Orientation="Horizontal" HorizontalAlignment="Center">
                     <TextBox x:Name="TextBoxEDSEGTrue" Style="{StaticResource TextBoxForTexts}"/>

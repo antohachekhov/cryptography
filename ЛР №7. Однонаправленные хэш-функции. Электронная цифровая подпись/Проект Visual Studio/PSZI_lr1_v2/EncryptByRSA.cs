@@ -28,25 +28,24 @@ namespace PSZI_lr1_v2
 
         public struct edsRSA
         {
-            public (BigInteger m, BigInteger s) eds;
-            public edsRSA(BigInteger m, BigInteger s) : this()
+            public BigInteger eds;
+            public edsRSA(BigInteger s) : this()
             {
-                this.eds = (m, s);
+                this.eds = s;
             }
         }
         public static edsRSA GenerateEDS(BigInteger message, (BigInteger d, BigInteger n) closeKey)
         {
             BigInteger s = powMod(message, closeKey.d, closeKey.n);
 
-            return new edsRSA(message, s);
+            return new edsRSA(s);
         }
 
-        public static bool CheckEDS(edsRSA EDS, (BigInteger e, BigInteger n) openKey)
+        public static bool CheckEDS(BigInteger hashMessage, edsRSA EDS, (BigInteger e, BigInteger n) openKey)
         {
-            BigInteger left = EDS.eds.m;
-            BigInteger right = powMod(EDS.eds.s, openKey.e, openKey.n);
+            BigInteger right = powMod(EDS.eds, openKey.e, openKey.n);
 
-            return left == right;
+            return hashMessage == right;
         }
     }
 }

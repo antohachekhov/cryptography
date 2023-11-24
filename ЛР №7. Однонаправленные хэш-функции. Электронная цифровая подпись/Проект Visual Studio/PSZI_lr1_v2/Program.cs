@@ -201,7 +201,6 @@ namespace PSZI_lr1_v2
                 }
             }
 
-            bool oneFounded = false;
             int j;
             for (j = newBitArray.Length - 1; j >= 0; j--)
             {
@@ -270,13 +269,7 @@ namespace PSZI_lr1_v2
     {
         public BitArray originalText;
         public BitArray key;
-        public BitArray cipherKey;
-        public BitArray cipherText;
-        public EncryptByDES encryptorByDES;
         public int lengthBlock = 64;
-        internal BitArray p;
-        internal BitArray q;
-        internal keysRSA keys;
 
         List<ulong> simple3_2000Numbers;
 
@@ -489,9 +482,27 @@ namespace PSZI_lr1_v2
         {
             return GeneratorRandomKey.generateRandomKey(length);
         }
+
+        private BitArray GenerateTrueBitArray(int length)
+        {
+            BitArray bitArray = EncoderClass.IntToBitArrayLength4(length / 8);
+
+            BitArray newPadding = new BitArray(length);
+
+            for (int i = 0; i < newPadding.Length;)
+            {
+                for (int j = 0; j < bitArray.Length && i < newPadding.Length; j++, i++)
+                {
+                    newPadding[i] = bitArray[j];
+                }
+            }
+
+            return newPadding;
+
+        }
         public BitArray GetPadding(int length)
         {
-            return GenerateRandomBitArray(length / 8);
+            return GenerateTrueBitArray(length);
         }
 
         public BitArray[] DividingTextIntoBlocks(BitArray text)
@@ -558,13 +569,19 @@ namespace PSZI_lr1_v2
             return trueSimpleNumber;
         }
 
-       
-
-
-        public void GenerateRSAKeys()
+        public BigInteger generateHashValue(string message)
         {
-            keys = GeneratorKeysRSA.generateKeys(EncoderClass.BitArrayToBigInteger(p), EncoderClass.BitArrayToBigInteger(q));
-        }
+            // Разделение сообщения на блоки по 64 бита
+            BitArray[] blocks = DividingTextIntoBlocks(EncoderClass.StringToBitArray(message));
 
+
+            BitArray rand = new BitArray(64);
+
+            BitArray hash = HashFunctions.schema1(blocks, rand);
+
+            BigInteger hashValue = EncoderClass.BitArrayToBigInteger(hash);
+
+            return hashValue;
+        }
     }
 }

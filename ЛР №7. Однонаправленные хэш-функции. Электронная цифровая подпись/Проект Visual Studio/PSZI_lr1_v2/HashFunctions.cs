@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace PSZI_lr1_v2
 {
     public class HashFunctions
     {
+
+        // Hi = E_M_i (H_(i-1)) xor (H_(i-1))
         public static BitArray schema1(BitArray[] textBlocks, BitArray H0)
         {
-            
-            BitArray Mi, Hi = new BitArray(H0), chipher = new BitArray(H0);
-            for(int i = 0; i < textBlocks.Length; i++)
+            BitArray Mi, Hi = new BitArray(H0);
+            BitArray chipher = null;
+            for (int i = 0; i < textBlocks.Length; i++)
             {
                 Mi = new BitArray(textBlocks[i]);
-                GeneratorDESKey generatorKey = new GeneratorDESKey(textBlocks[i]);
+                GeneratorDESKey generatorKey = new GeneratorDESKey(Mi);
 
-                CBC cbc = new CBC(generatorKey, Hi); // НЕЛЬЗЯ ЛИ ПРОСТО ЗАДАТЬ КЛЮЧ КАК textBlocks ??? без генератора то есть??
+                CBC cbc = new CBC(generatorKey, Hi); 
 
                 chipher = cbc.Encrypte(Hi, chipher);
 

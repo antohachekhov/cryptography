@@ -17,8 +17,6 @@ namespace PSZI_lr1_v2
         {
             this.generatorKeys = generatorKeys;
             des = new EncryptByDES(this.generatorKeys);
-
-            //generatorKeys.CopyTo(this.generatorKeys, 0);
             C0 = new BitArray(IV);
         }
 
